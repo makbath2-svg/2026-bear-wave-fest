@@ -1735,34 +1735,20 @@ body.lang-en .hero-title .art-text-blue {
     justify-content: space-between;
     align-items: center;
     background: rgba(26, 75, 130, 0.05);
-    border: 1px solid rgba(26, 75, 130, 0.1);
+    border: 1px solid rgba(26, 75, 130, 0.15);
     padding: 16px 20px;
-    border-radius: 12px;
+    border-radius: 12px 12px 0 0;
     font-family: var(--font-sans);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     color: #1A4B82;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.accordion-header:hover {
-    background: rgba(26, 75, 130, 0.08);
-    border-color: rgba(26, 75, 130, 0.15);
-}
-
-.accordion-arrow {
-    font-size: 1.15rem;
-    transition: transform 0.3s ease;
-}
-
-.accordion-arrow.rotated {
-    transform: rotate(180deg);
 }
 
 .accordion-content {
-    transition: max-height 0.3s ease-out;
-    overflow: hidden;
+    border: 1px solid rgba(26, 75, 130, 0.15);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .accordion-inner {
