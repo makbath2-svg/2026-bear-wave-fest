@@ -98,7 +98,7 @@ function handleRequest(e) {
         // 寫入新報名資料
         // A:時間 | B:國籍 | C:姓名 | D:Email | E:交通方式 | F:匯款後五碼 | G:匯款狀態 | H:桌次 | I:備註 | J:退出
         sheet.appendRow([
-          new Date(),
+          Utilities.formatDate(new Date(), "Asia/Taipei", "yyyy/MM/dd HH:mm:ss"),
           nationality,
           name,
           email,
