@@ -192,6 +192,13 @@ ul {
     background: rgba(0, 229, 255, 0.05);
 }
 
+.btn.disabled,
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
 /* ==========================================
    Navbar
 ========================================== */
