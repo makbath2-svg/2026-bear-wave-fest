@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪熊 Bear Wave | 陽光、熱情、包容的熊族社群</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Custom Animated Cursor -->
+    <div id="cursor-wrapper">
+        <div id="custom-cursor">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Handle -->
+                <rect x="50" y="45" width="20" height="40" rx="5" transform="rotate(-15 60 65)" fill="#1A4B82" />
+                <!-- Trigger -->
+                <rect x="40" y="55" width="10" height="15" rx="3" fill="#FF7F50" />
+                <!-- Main Body / Barrel -->
+                <rect x="10" y="35" width="70" height="25" rx="8" fill="#48D1CC" />
+                <rect x="5" y="42" width="15" height="10" rx="3" fill="#00E5FF" />
+                <!-- Water Tank -->
+                <circle cx="60" cy="30" r="10" fill="#FFD700" />
+                <rect x="57" y="35" width="6" height="6" fill="#FFD700" />
+                <circle cx="60" cy="30" r="4" fill="#FFF" opacity="0.5" />
+            </svg>
+        </div>
+    </div>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <i class="ph ph-waves"></i>
+                浪熊 Bear Wave
+            </a>
+            <div class="nav-links">
+                <a href="#events" class="btn btn-primary">所有活動</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section (Photo Wall) -->
+    <header class="hero home-hero">
+        <div class="bubbles-bg" id="bubblesContainer"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">浪熊 <span>Bear Wave</span></h1>
+            <p class="hero-subtitle">與肌肉、鬍子、陽光相遇的專屬盛會<br>擁抱你的獨特，激起熱情的浪花</p>
+        </div>
+
+        <!-- Photo Wall Grid Overlay -->
+        <div class="photo-wall" id="photoWall">
+            <!-- 照片將由 JavaScript 自動載入 -->
+        </div>
+
+        <!-- Bottom Wave Divider -->
+        <div class="wave-divider wave-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.83,121.17,196.42,112.5,238.45,106.91,280.4,87.72,321.39,56.44Z"
+                    class="shape-fill"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Event List Section -->
+    <section id="events" class="events">
+        <div class="container">
+            <h2 class="section-title">近期活動</h2>
+            <div class="event-grid">
+
+                <!-- Event Card 1: Tamsui -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="images/tamsui.png" alt="淡江農場烤肉"
+                            style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <div class="event-date">&nbsp;9/12 (六)</div>
+                    </div>
+                    <div class="event-content">
+                        <h3> <span class="art-text-blue" data-text="暮夏浪熊祭">暮夏浪熊祭</span></h3>
+                        <p><strong>2026</strong> 快抓住夏天的尾巴！來淡江農場泳池派對，<br>吃烤肉、打水仗、交朋友，一同迎秋！</p>
+                        <a href="event-tamsui.html" class="btn btn-outline">查看詳情與報名</a>
+                    </div>
+                </div>
+
+                <!-- Event Card 2: Parade GOGO -->
+                <div class="event-card">
+                    <div class="event-image">
+                        <div class="image-placeholder"><i class="ph ph-martini"></i></div>
+                        <div class="event-date">10/24 (六)</div>
+                    </div>
+                    <div class="event-content">
+                        <h3>同志大遊行 GOGO晚宴</h3>
+                        <p>遊行結束後的專屬狂歡！隱藏版酒吧酒水無限暢飲，搭配火辣 GOGO Bear 貼身熱舞。</p>
+                        <a href="event-parade.html" class="btn btn-outline">查看詳情與報名</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <h3><i class="ph ph-waves"></i> 浪熊 Bear Wave</h3>
+                <p>陽光、熱情、包容的熊族社群。</p>
+            </div>
+            <div class="footer-social">
+                <a href="#"><i class="ph ph-instagram-logo"></i></a>
+                <a href="#"><i class="ph ph-facebook-logo"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 浪熊 Bear Wave. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="images/gallery/photos.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
