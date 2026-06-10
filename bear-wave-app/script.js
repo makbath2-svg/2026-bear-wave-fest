@@ -395,12 +395,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
             const nationality = document.getElementById('reg-nationality').value;
             const transportation = document.getElementById('reg-transportation').value;
 
             const requestUrl = `${GAS_API_URL}?action=register` +
                 `&name=${encodeURIComponent(name)}` +
                 `&email=${encodeURIComponent(email)}` +
+                `&phone=${encodeURIComponent(phone)}` +
                 `&nationality=${encodeURIComponent(nationality)}` +
                 `&transportation=${encodeURIComponent(transportation)}`;
 
@@ -534,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const qName = document.getElementById('q-result-name');
                     const qNationality = document.getElementById('q-result-nationality');
                     const qEmail = document.getElementById('q-result-email');
+                    const qPhone = document.getElementById('q-result-phone');
                     const qTransportation = document.getElementById('q-result-transportation');
                     const qDigits = document.getElementById('q-result-digits');
                     const qStatus = document.getElementById('q-result-status');
@@ -544,6 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 填入基礎資料
                     if (qName) qName.innerText = result.data.name;
                     if (qEmail) qEmail.innerText = result.data.email;
+                    if (qPhone) qPhone.innerText = result.data.phone || (isCurrentEn ? 'None' : '無');
                     if (qDigits) qDigits.innerText = result.data.lastFiveDigits || (isCurrentEn ? 'Not registered' : '尚未登記');
 
                     // 填入國籍與交通方式 (新增項目)
@@ -684,11 +688,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const qTable = document.getElementById('q-result-table');
             const qDigits = document.getElementById('q-result-digits');
             const qNationality = document.getElementById('q-result-nationality');
+            const qPhone = document.getElementById('q-result-phone');
             const qTransportation = document.getElementById('q-result-transportation');
 
             const isEnNow = (lang === 'en');
 
             // 語系切換時動態轉譯票卡文字
+            if (qPhone && (qPhone.innerText === '無' || qPhone.innerText === 'None')) {
+                qPhone.innerText = isEnNow ? 'None' : '無';
+            }
             if (qDigits && (qDigits.innerText === '尚未登記' || qDigits.innerText === 'Not registered')) {
                 qDigits.innerText = isEnNow ? 'Not registered' : '尚未登記';
             }
@@ -740,6 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePlaceholders(lang) {
         const regName = document.getElementById('reg-name');
         const regEmail = document.getElementById('reg-email');
+        const regPhone = document.getElementById('reg-phone');
         const payEmail = document.getElementById('pay-email');
         const payDigits = document.getElementById('pay-digits');
         const queryEmail = document.getElementById('query-email');
@@ -747,12 +756,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lang === 'en') {
             if (regName) regName.placeholder = 'Please enter your nickname';
             if (regEmail) regEmail.placeholder = 'Please enter your email';
+            if (regPhone) regPhone.placeholder = 'Enter last 4 digits of your phone';
             if (payEmail) payEmail.placeholder = 'Please enter your registered email';
             if (payDigits) payDigits.placeholder = 'Please enter last 5 digits';
             if (queryEmail) queryEmail.placeholder = 'Please enter your registered email';
         } else {
             if (regName) regName.placeholder = '請輸入您的暱稱';
             if (regEmail) regEmail.placeholder = '請輸入您的 Email';
+            if (regPhone) regPhone.placeholder = '請輸入您的手機後四碼';
             if (payEmail) payEmail.placeholder = '請輸入您報名時填寫的 Email';
             if (payDigits) payDigits.placeholder = '請輸入 5 位數字';
             if (queryEmail) queryEmail.placeholder = '請輸入您報名時的 Email';

@@ -371,6 +371,13 @@
                             </label>
                             <input type="email" id="reg-email" required>
                         </div>
+                        <div class="form-group">
+                            <label for="reg-phone">
+                                <i class="ph ph-phone"></i> <span class="lang-zh">手機後四碼</span><span
+                                    class="lang-en">Last 4 Digits of Mobile</span>
+                            </label>
+                            <input type="text" id="reg-phone" pattern="[0-9]{4}" maxlength="4" required>
+                        </div>
 
                         <!-- 國籍選擇 -->
                         <div class="form-group">
@@ -723,7 +730,7 @@
                                 <i class="ph ph-hash"></i> <span class="lang-zh">匯款帳號後五碼</span><span
                                     class="lang-en">Last 5 Digits</span>
                             </label>
-                            <input type="text" id="pay-digits" maxlength="5" required>
+                            <input type="text" id="pay-digits" pattern="[0-9]{5}" maxlength="5" required>
                         </div>
 
                         <button type="submit" class="btn btn-secondary btn-full" id="btn-pay-submit">
@@ -769,6 +776,11 @@
                                 <span class="label"><span class="lang-zh">電子郵件</span><span class="lang-en">Email
                                         Address</span></span>
                                 <span class="val" id="q-result-email">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">手機後四碼</span><span
+                                        class="lang-en">Mobile (Last 4)</span></span>
+                                <span class="val" id="q-result-phone">-</span>
                             </div>
                             <div class="ticket-row">
                                 <span class="label"><span class="lang-zh">交通方式</span><span

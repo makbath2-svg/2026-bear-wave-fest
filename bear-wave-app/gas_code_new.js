@@ -4,7 +4,7 @@
  * 適用活動：淡水農場暮夏浪熊祭
  * 
  * 試算表欄位順序：
- * A:時間標記 | B:國籍 | C:姓名 | D:Email | E:交通方式 | F:匯款後五碼 | G:匯款狀態 | H:桌次號碼 | I:備註 | J:退出活動
+ * A:時間標記 | B:國籍 | C:姓名 | D:Email | E:手機後四碼 | F:交通方式 | G:匯款後五碼 | H:匯款狀態 | I:桌次號碼 | J:歸屬 | K:備註 | L:退出活動
  * =================================================================
  */
 
@@ -65,11 +65,27 @@ function handleRequest(e) {
     if (action === "register") {
       var name = params.name ? params.name.trim() : "";
       var email = params.email ? params.email.trim() : "";
+      var phone = params.phone ? params.phone.trim() : "";
       var nationality = params.nationality ? params.nationality.trim() : "本國人";
       var transportation = params.transportation ? params.transportation.trim() : "自行前往";
 
-      if (!name || !email) {
-        return toJSON(e, { status: "error", message: "姓名與 Email 為必填欄位！" });
+      if (!name || !email || !phone) {
+        return toJSON(e, {
+          status: "error",
+          message: nationality === "外國人"
+            ? "Name, Email, and the last 4 digits of your phone number are required!"
+            : "姓名、Email 與手機後四碼為必填欄位！"
+        });
+      }
+
+      var phonePattern = /^\d{4}$/;
+      if (!phonePattern.test(phone)) {
+        return toJSON(e, {
+          status: "error",
+          message: nationality === "外國人"
+            ? "Invalid phone number format! It must be exactly 4 digits."
+            : "手機後四碼格式不正確，須為 4 位數字！"
+        });
       }
 
       // 使用 LockService 避免多使用者並發寫入時發生衝突
@@ -96,15 +112,17 @@ function handleRequest(e) {
         }
 
         // 寫入新報名資料
-        // A:時間 | B:國籍 | C:姓名 | D:Email | E:交通方式 | F:匯款後五碼 | G:匯款狀態 | H:桌次 | I:備註 | J:退出
+        // A:時間標記 | B:國籍 | C:姓名 | D:Email | E:手機後四碼 | F:交通方式 | G:匯款後五碼 | H:匯款狀態 | I:桌次號碼 | J:歸屬 | K:備註 | L:退出活動
         sheet.appendRow([
           Utilities.formatDate(new Date(), "Asia/Taipei", "yyyy/MM/dd HH:mm:ss"),
           nationality,
           name,
           email,
+          "'" + phone,
           transportation,
           "",
           "未匯款",
+          "",
           "",
           "",
           ""
@@ -145,6 +163,11 @@ function handleRequest(e) {
         return toJSON(e, { status: "error", message: "Email 與匯款資訊為必填！" });
       }
 
+      var digitsPattern = /^\d{3}-\d{5}$/;
+      if (!digitsPattern.test(lastFiveDigits)) {
+        return toJSON(e, { status: "error", message: "匯款後五碼格式不正確，須為 5 位數字！" });
+      }
+
       var data = sheet.getDataRange().getValues();
       var foundRowIndex = -1;
 
@@ -160,8 +183,8 @@ function handleRequest(e) {
       }
 
       // 更新匯款資訊與狀態
-      sheet.getRange(foundRowIndex, 6).setValue(lastFiveDigits); // Column F: 匯款後五碼
-      sheet.getRange(foundRowIndex, 7).setValue("已登記(待對帳)"); // Column G: 匯款狀態
+      sheet.getRange(foundRowIndex, 7).setValue("'" + lastFiveDigits); // Column G: 匯款後五碼
+      sheet.getRange(foundRowIndex, 8).setValue("已登記(待對帳)"); // Column H: 匯款狀態
 
       return toJSON(e, { status: "success", message: "匯款登記成功！" });
     }
@@ -182,10 +205,11 @@ function handleRequest(e) {
               name: data[i][2],
               nationality: data[i][1] || "本國人",
               email: data[i][3],
-              transportation: data[i][4] || "自行前往",
-              lastFiveDigits: data[i][5],
-              paymentStatus: data[i][6] || "未匯款",
-              tableNumber: data[i][7]
+              phone: data[i][4] ? data[i][4].toString().replace(/^'/, "") : "",
+              transportation: data[i][5] || "自行前往",
+              lastFiveDigits: data[i][6] ? data[i][6].toString().replace(/^'/, "") : "",
+              paymentStatus: data[i][7] || "未匯款",
+              tableNumber: data[i][8]
             }
           });
         }
