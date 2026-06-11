@@ -279,7 +279,7 @@ function sendInternationalEmail(name, email, transportation) {
       </div>
       
       <p style="font-size: 0.9rem; color: #718096; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
-        If you have any questions, feel free to contact us at <a href="mailto:dreamwaver0706@gmail.com" style="color: #008B8B; text-decoration: underline;">dreamwaver0706@gmail.com</a>.<br/>
+        If you have any questions, feel free to contact us at <a href="mailto:ponbosch@gmail.com" style="color: #008B8B; text-decoration: underline;">ponbosch@gmail.com</a>.<br/>
         &copy; 2026 浪熊 Bear Wave. All rights reserved.
       </p>
     </div>
@@ -318,8 +318,9 @@ function sendDomesticEmail(name, email, transportation) {
           <p style="margin: 5px 0;"><strong>銀行名稱：</strong> ${BANK_INFO.bankName}</p>
           <p style="margin: 5px 0;"><strong>銀行帳號：</strong> ${BANK_INFO.accountNumber}</p>
         </div>
-        <p style="font-size: 0.9rem; color: #718096; margin-top: 10px;">
-          * 費用說明：自行前往 NT$1,000 / 台中車 NT$1,400 / 新竹車 NT$1,300 / 西門車 NT$1,250
+        <p style="font-size: 0.9rem; color: #f35a5aff; margin-top: 10px; line-height: 1.6;">
+          * 費用說明：<br/>
+          自行前往 NT$1,000 / 台中車 NT$1,400 / 新竹中壢車 NT$1,300 / 西門車 NT$1,250
         </p>
       </div>
       
@@ -329,7 +330,7 @@ function sendDomesticEmail(name, email, transportation) {
       </div>
       
       <p style="font-size: 0.9rem; color: #718096; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">
-        如有任何問題，歡迎隨時聯絡信箱：<a href="mailto:dreamwaver0706@gmail.com" style="color: #008B8B; text-decoration: underline;">dreamwaver0706@gmail.com</a> 與我們聯繫。<br/>
+        如有任何問題，歡迎隨時聯絡信箱：<a href="mailto:ponbosch@gmail.com" style="color: #008B8B; text-decoration: underline;">ponbosch@gmail.com</a> 與我們聯繫。<br/>
         &copy; 2026 浪熊 Bear Wave. All rights reserved.
       </p>
     </div>

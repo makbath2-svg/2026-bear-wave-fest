@@ -197,7 +197,7 @@
                 </div>
                 <div class="timeline-column">
                     <h3 class="column-title">
-                        <span class="lang-zh">新竹桃園出發</span><span class="lang-en">Hsinchu/Taoyuan Depart</span>
+                        <span class="lang-zh">新竹中壢出發</span><span class="lang-en">Hsinchu/Zhongli Depart</span>
                     </h3>
                     <div class="compact-timeline">
                         <div class="compact-timeline-item">
@@ -373,8 +373,8 @@
                         </div>
                         <div class="form-group">
                             <label for="reg-phone">
-                                <i class="ph ph-phone"></i> <span class="lang-zh">手機後四碼</span><span
-                                    class="lang-en">Last 4 Digits of Mobile</span>
+                                <i class="ph ph-phone"></i> <span class="lang-zh">手機後四碼</span><span class="lang-en">Last
+                                    4 Digits of Mobile</span>
                             </label>
                             <input type="text" id="reg-phone" pattern="[0-9]{4}" maxlength="4" required>
                         </div>
@@ -399,9 +399,9 @@
                             </label>
                             <select id="reg-transportation" required>
                                 <option value="自行前往">自行前往 (NT$1,000) / Self-drive (NT$1,000)</option>
-                                <option value="台中遊覽車">台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)</option>
-                                <option value="新竹遊覽車">新竹出發遊覽車 (NT$1,300) / Hsinchu Bus (NT$1,300)</option>
                                 <option value="西門遊覽車">西門出發遊覽車 (NT$1,250) / Ximen Bus (NT$1,250)</option>
+                                <option value="新竹中壢遊覽車">新竹中壢出發遊覽車 (NT$1,300) / Hsinchu/Zhongli Bus (NT$1,300)</option>
+                                <option value="台中遊覽車">台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)</option>
                             </select>
                         </div>
 
@@ -410,11 +410,11 @@
                                 class="lang-en">Submit Registration</span>
                         </button>
                         <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
-                            <span class="lang-zh">如有疑問請聯絡活動信箱：<a href="mailto:dreamwaver0706@gmail.com"
-                                    style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a></span>
+                            <span class="lang-zh">如有疑問請聯絡活動信箱：<a href="mailto:ponbosch@gmail.com"
+                                    style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a></span>
                             <span class="lang-en">If you have any questions, please contact event email: <a
-                                    href="mailto:dreamwaver0706@gmail.com"
-                                    style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a></span>
+                                    href="mailto:ponbosch@gmail.com"
+                                    style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a></span>
                         </div>
                     </form>
                 </div>
@@ -778,8 +778,8 @@
                                 <span class="val" id="q-result-email">-</span>
                             </div>
                             <div class="ticket-row">
-                                <span class="label"><span class="lang-zh">手機後四碼</span><span
-                                        class="lang-en">Mobile (Last 4)</span></span>
+                                <span class="label"><span class="lang-zh">手機後四碼</span><span class="lang-en">Mobile (Last
+                                        4)</span></span>
                                 <span class="val" id="q-result-phone">-</span>
                             </div>
                             <div class="ticket-row">
@@ -806,6 +806,9 @@
                     </div>
                 </div>
 
+                <!-- 統一訊息提示區 -->
+                <div id="hub-message" class="hub-message hidden"></div>
+
                 <!-- 活動聲明事項 -->
                 <div class="terms-accordion"
                     style="margin-top: 32px; border-top: 1px solid var(--border-color); padding-top: 24px;">
@@ -822,7 +825,7 @@
                             <!-- 中文聲明 -->
                             <div class="lang-zh">
                                 <ol class="terms-list">
-                                    <li><strong>繳費期限：</strong>本次活動費用為新台幣1000元，請於報名完成後7日內完成費用匯款繳納。若7日內未繳款，第8日主辦系統會自動刪除報名資料，依舊想參加者請重新報名與繳費。<br><span
+                                    <li><strong>繳費期限：</strong>本次活動費用為新台幣1000元，"送出報名資料後請至email收信讀取繳費資訊"，請於報名完成後7日內完成費用匯款繳納。若7日內未繳款，第8日主辦系統會自動刪除報名資料，依舊想參加者請重新報名與繳費。<br><span
                                             class="highlight">*若繳費後無法成功登記繳費紀錄，請盡速寄信/Email通知活動方，為您處理報名事宜。</span></li>
                                     <li><strong>繳費管道：</strong>台灣人請使用銀行轉帳匯款方式繳費，非台灣人則請使用 PayPal
                                         平台繳費。報名繳費取得匯款後五碼資料後，請回到報名網頁「2. 匯款登記」分頁填寫相關資料，才算完成報名作業。</li>
@@ -841,7 +844,7 @@
                                     <strong>備註（本次活動備有接駁車，各路段乘車地區及費用如下）：</strong>
                                     <ul>
                                         <li>(1) 台北西門上下車：250元，費用包含西門往返淡江農場</li>
-                                        <li>(2) 新竹桃園上下車：300元，費用包含新竹桃園往返淡江農場</li>
+                                        <li>(2) 新竹中壢上下車：300元，費用包含新竹中壢往返淡江農場</li>
                                         <li>(3) 台中高鐵上下車：400元，費用包含台中高鐵往返淡江農場</li>
                                     </ul>
                                 </div>
@@ -882,7 +885,7 @@
                                     <strong>Memo (Shuttle bus routes and fares):</strong>
                                     <ul>
                                         <li>(1) Taipei Ximen: NT$250 (includes round-trip to Tamsui Farm)</li>
-                                        <li>(2) Hsinchu & Taoyuan: NT$300 (includes round-trip to Tamsui Farm)</li>
+                                        <li>(2) Hsinchu & Zhongli: NT$300 (includes round-trip to Tamsui Farm)</li>
                                         <li>(3) Taichung HSR: NT$400 (includes round-trip to Tamsui Farm)</li>
                                     </ul>
                                 </div>
@@ -890,9 +893,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- 統一訊息提示區 -->
-                <div id="hub-message" class="hub-message hidden"></div>
             </div>
         </div>
     </section>
@@ -912,20 +912,19 @@
             </h3>
             <p id="reg-success-desc-domestic"
                 style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
-                <span class="lang-zh">我們已收到您的報名資料。請匯款至下方活動帳戶以完成報名（若有疑問請聯絡 <a href="mailto:dreamwaver0706@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a>）：</span>
+                <span class="lang-zh">我們已收到您的報名資料。請匯款至下方活動帳戶以完成報名（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）：</span>
                 <span class="lang-en">We have received your details. Please remit the payment to the account below
-                    (Contact: <a href="mailto:dreamwaver0706@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a>):</span>
+                    (Contact: <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>):</span>
             </p>
             <p id="reg-success-desc-international" class="hidden"
                 style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
-                <span class="lang-zh">我們已發送 PayPal 付款指引至您的信箱，請至信箱查收並完成付款（若未收到信件請聯絡 <a
-                        href="mailto:dreamwaver0706@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a>）。</span>
+                <span class="lang-zh">我們已發送 PayPal 付款指引至您的信箱，請至信箱查收並完成付款（若未收到信件請聯絡 <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）。</span>
                 <span class="lang-en">We have sent a PayPal payment guide to your email. Please check your inbox and
-                    complete payment (If not received, contact: <a href="mailto:dreamwaver0706@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">dreamwaver0706@gmail.com</a>).</span>
+                    complete payment (If not received, contact: <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>).</span>
             </p>
 
             <div class="bank-info-box" id="reg-success-bank-box">

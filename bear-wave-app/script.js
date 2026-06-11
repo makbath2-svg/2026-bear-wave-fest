@@ -346,29 +346,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     regTransportation.value = '自行前往';
                 }
             } else {
-                // 本國人選項：自行前往、台中遊覽車、新竹遊覽車、西門遊覽車
+                // 本國人選項：自行前往、西門遊覽車、新竹中壢遊覽車、台中遊覽車
                 const optSelf = document.createElement('option');
                 optSelf.value = '自行前往';
                 optSelf.text = '自行前往 (NT$1,000) / Self-drive (NT$1,000)';
-
-                const optTaichung = document.createElement('option');
-                optTaichung.value = '台中遊覽車';
-                optTaichung.text = '台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)';
-
-                const optHsinchu = document.createElement('option');
-                optHsinchu.value = '新竹遊覽車';
-                optHsinchu.text = '新竹出發遊覽車 (NT$1,300) / Hsinchu Bus (NT$1,300)';
 
                 const optXimen = document.createElement('option');
                 optXimen.value = '西門遊覽車';
                 optXimen.text = '西門出發遊覽車 (NT$1,250) / Ximen Bus (NT$1,250)';
 
-                regTransportation.add(optSelf);
-                regTransportation.add(optTaichung);
-                regTransportation.add(optHsinchu);
-                regTransportation.add(optXimen);
+                const optHsinchu = document.createElement('option');
+                optHsinchu.value = '新竹中壢遊覽車';
+                optHsinchu.text = '新竹中壢出發遊覽車 (NT$1,300) / Hsinchu/Zhongli Bus (NT$1,300)';
 
-                if (['自行前往', '台中遊覽車', '新竹遊覽車', '西門遊覽車'].includes(currentValue)) {
+                const optTaichung = document.createElement('option');
+                optTaichung.value = '台中遊覽車';
+                optTaichung.text = '台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)';
+
+                regTransportation.add(optSelf);
+                regTransportation.add(optXimen);
+                regTransportation.add(optHsinchu);
+                regTransportation.add(optTaichung);
+
+                if (['自行前往', '西門遊覽車', '新竹中壢遊覽車', '台中遊覽車'].includes(currentValue)) {
                     regTransportation.value = currentValue;
                 } else {
                     regTransportation.value = '自行前往';
@@ -562,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (isCurrentEn) {
                             if (trans === '自行前往') transText = 'Self-drive';
                             else if (trans === '台中遊覽車') transText = 'Taichung Bus';
-                            else if (trans === '新竹遊覽車') transText = 'Hsinchu Bus';
+                            else if (trans === '新竹中壢遊覽車') transText = 'Hsinchu/Zhongli Bus';
                             else if (trans === '西門遊覽車') {
                                 transText = (nat === '外國人') ? 'Ximen Shuttle Bus' : 'Ximen Bus';
                             }
@@ -715,14 +715,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isEnNow) {
                     if (transVal === '自行前往') qTransportation.innerText = 'Self-drive';
                     else if (transVal === '台中遊覽車') qTransportation.innerText = 'Taichung Bus';
-                    else if (transVal === '新竹遊覽車') qTransportation.innerText = 'Hsinchu Bus';
+                    else if (transVal === '新竹中壢遊覽車') qTransportation.innerText = 'Hsinchu/Zhongli Bus';
                     else if (transVal === '西門遊覽車' || transVal === '西門交通車(遊覽車)') {
                         qTransportation.innerText = isForeigner ? 'Ximen Shuttle Bus' : 'Ximen Bus';
                     }
                 } else {
                     if (transVal === 'Self-drive') qTransportation.innerText = '自行前往';
                     else if (transVal === 'Taichung Bus') qTransportation.innerText = '台中遊覽車';
-                    else if (transVal === 'Hsinchu Bus') qTransportation.innerText = '新竹遊覽車';
+                    else if (transVal === 'Hsinchu/Zhongli Bus') qTransportation.innerText = '新竹中壢遊覽車';
                     else if (transVal === 'Ximen Bus') qTransportation.innerText = '西門遊覽車';
                     else if (transVal === 'Ximen Shuttle Bus') qTransportation.innerText = '西門交通車(遊覽車)';
                 }
