@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // Smooth scrolling for navigation links (排除新分頁開啟的連結)
+    document.querySelectorAll('a[href^="#"]:not([target="_blank"])').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
 
@@ -278,29 +278,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('reg-success-modal');
             if (modal) modal.classList.add('hidden');
 
-            const regNationality = document.getElementById('reg-nationality');
-            const isDomestic = regNationality ? (regNationality.value === '本國人') : true;
+            // 自動切換至「3. 狀態查詢」，因為不論是轉帳或線上繳費，最終均至狀態查詢確認狀態
+            switchTab('query');
 
-            if (isDomestic) {
-                // 本國人自動將 Tabs 切換至「2. 匯款登記」
-                switchTab('pay');
-
-                // 自動把剛才報名的 Email 填入登記欄位
-                const regEmail = document.getElementById('reg-email');
+            // 自動把剛才報名的 Email 填入「2. 匯款登記」與「3. 狀態查詢」的欄位中，以方便使用者後續操作
+            const regEmail = document.getElementById('reg-email');
+            if (regEmail && regEmail.value) {
                 const payEmail = document.getElementById('pay-email');
-                if (regEmail && payEmail) {
-                    payEmail.value = regEmail.value;
-                }
-            } else {
-                // 外國人直接跳轉至「3. 狀態查詢」，避免多餘的匯款登記動作
-                switchTab('query');
-
-                // 自動把 Email 填入查詢欄位
-                const regEmail = document.getElementById('reg-email');
                 const queryEmail = document.getElementById('query-email');
-                if (regEmail && queryEmail) {
-                    queryEmail.value = regEmail.value;
-                }
+                if (payEmail) payEmail.value = regEmail.value;
+                if (queryEmail) queryEmail.value = regEmail.value;
             }
         } else if (type === 'pay') {
             const modal = document.getElementById('pay-success-modal');
@@ -316,6 +303,113 @@ document.addEventListener('DOMContentLoaded', () => {
                 queryEmail.value = payEmail.value;
             }
         }
+    };
+
+    // 關閉確認資料彈窗
+    window.closeConfirmModal = function () {
+        const confirmModal = document.getElementById('reg-confirm-modal');
+        if (confirmModal) {
+            confirmModal.classList.add('hidden');
+        }
+    };
+
+    // 確認無誤後，正式送出報名 API
+    window.submitConfirmedRegistration = function () {
+        window.closeConfirmModal();
+
+        const submitBtn = document.getElementById('btn-reg-submit');
+        const originalText = submitBtn.innerHTML;
+        const isEn = document.body.classList.contains('lang-en');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = isEn ? '<i class="ph ph-spinner ph-spin"></i> Registering...' : '<i class="ph ph-spinner ph-spin"></i> 報名資料傳送中...';
+
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const phone = document.getElementById('reg-phone').value;
+        const nationality = document.getElementById('reg-nationality').value;
+        const transportation = document.getElementById('reg-transportation').value;
+
+        const requestUrl = `${GAS_API_URL}?action=register` +
+            `&name=${encodeURIComponent(name)}` +
+            `&email=${encodeURIComponent(email)}` +
+            `&phone=${encodeURIComponent(phone)}` +
+            `&nationality=${encodeURIComponent(nationality)}` +
+            `&transportation=${encodeURIComponent(transportation)}`;
+
+        requestJSONP(requestUrl, (result) => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+
+            if (result.status === 'success') {
+                // 直接彈出精美的成功 Modal
+                const successModal = document.getElementById('reg-success-modal');
+                if (successModal) {
+                    successModal.classList.remove('hidden');
+
+                    // 根據國籍動態隱藏/顯示匯款箱、線上繳費與提示
+                    const isDomestic = (nationality === '本國人');
+                    const descDomestic = document.getElementById('reg-success-desc-domestic');
+                    const descInternational = document.getElementById('reg-success-desc-international');
+                    const bankTitle = document.getElementById('reg-success-bank-title');
+                    const bankBox = document.getElementById('reg-success-bank-box');
+                    const onlineBox = document.getElementById('reg-success-online-box');
+                    const onlineBtn = document.getElementById('btn-online-payment');
+                    const alertBox = document.getElementById('reg-success-alert-box');
+                    if (isDomestic) {
+                        successModal.classList.remove('force-en');
+                        if (descDomestic) descDomestic.classList.remove('hidden');
+                        if (descInternational) descInternational.classList.add('hidden');
+                        if (bankTitle) bankTitle.classList.remove('hidden');
+                        if (bankBox) bankBox.classList.remove('hidden');
+                        if (onlineBox) onlineBox.classList.remove('hidden');
+                        if (alertBox) alertBox.classList.remove('hidden');
+
+                        // 寫入回傳的線上繳費網址
+                        if (onlineBtn && result.data.paymentUrl) {
+                            onlineBtn.href = result.data.paymentUrl;
+                        }
+
+                        // 顯示選擇的交通方案
+                        const onlineTransZh = document.getElementById('reg-success-online-trans');
+                        const onlineTransEn = document.getElementById('reg-success-online-trans-en');
+                        if (onlineTransZh) {
+                            onlineTransZh.innerText = transportation;
+                        }
+                        if (onlineTransEn) {
+                            let transTextEn = transportation;
+                            if (transportation === '自行前往') transTextEn = 'Self-drive';
+                            else if (transportation === '台中遊覽車') transTextEn = 'Taichung Bus';
+                            else if (transportation === '新竹中壢遊覽車') transTextEn = 'Hsinchu/Zhongli Bus';
+                            else if (transportation === '西門遊覽車') transTextEn = 'Ximen Bus';
+                            onlineTransEn.innerText = transTextEn;
+                        }
+
+                        // 寫入回傳的匯款帳號資訊
+                        const bankName = document.getElementById('bank-name');
+                        const bankAccName = document.getElementById('bank-account-name');
+                        const bankAccNum = document.getElementById('bank-account-num');
+                        if (bankName) bankName.innerText = result.data.bankInfo.bankName;
+                        if (bankAccName) bankAccName.innerText = result.data.bankInfo.accountName;
+                        if (bankAccNum) bankAccNum.innerText = result.data.bankInfo.accountNumber;
+                    } else {
+                        successModal.classList.add('force-en');
+                        if (descDomestic) descDomestic.classList.add('hidden');
+                        if (descInternational) descInternational.classList.remove('hidden');
+                        if (bankTitle) bankTitle.classList.add('hidden');
+                        if (bankBox) bankBox.classList.add('hidden');
+                        if (onlineBox) onlineBox.classList.add('hidden');
+                        if (alertBox) alertBox.classList.add('hidden');
+                    }
+                }
+            } else {
+                showMessage(result.message, true);
+            }
+        }, () => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            showMessage(isEn ? "Connection error. Please try again." : "網路通訊異常，請稍後重試，或聯繫客服人員。", true);
+        });
     };
 
     // 當國籍選擇「外國人」時，動態更新交通方式的選項
@@ -379,19 +473,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTransportationOptions(); // 初始化狀態判定
     }
 
-    // 1. 活動報名表單串接 (送出 暱稱、Email、國籍、交通方式)
+    // 1. 活動報名表單監聽 (觸發確認彈窗)
     const hubRegForm = document.getElementById('form-registration');
     if (hubRegForm) {
         hubRegForm.addEventListener('submit', (e) => {
             e.preventDefault();
             hideMessage();
-
-            const submitBtn = document.getElementById('btn-reg-submit');
-            const originalText = submitBtn.innerHTML;
-            const isEn = document.body.classList.contains('lang-en');
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = isEn ? '<i class="ph ph-spinner ph-spin"></i> Registering...' : '<i class="ph ph-spinner ph-spin"></i> 報名資料傳送中...';
 
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
@@ -399,66 +486,42 @@ document.addEventListener('DOMContentLoaded', () => {
             const nationality = document.getElementById('reg-nationality').value;
             const transportation = document.getElementById('reg-transportation').value;
 
-            const requestUrl = `${GAS_API_URL}?action=register` +
-                `&name=${encodeURIComponent(name)}` +
-                `&email=${encodeURIComponent(email)}` +
-                `&phone=${encodeURIComponent(phone)}` +
-                `&nationality=${encodeURIComponent(nationality)}` +
-                `&transportation=${encodeURIComponent(transportation)}`;
+            // 寫入確認彈窗的文字
+            const confirmName = document.getElementById('confirm-name');
+            const confirmEmail = document.getElementById('confirm-email');
+            const confirmPhone = document.getElementById('confirm-phone');
+            const confirmNationality = document.getElementById('confirm-nationality');
+            const confirmTransportation = document.getElementById('confirm-transportation');
 
-            requestJSONP(requestUrl, (result) => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+            if (confirmName) confirmName.innerText = name;
+            if (confirmEmail) confirmEmail.innerText = email;
+            if (confirmPhone) confirmPhone.innerText = phone;
 
-                if (result.status === 'success') {
-                    // 直接彈出精美的成功 Modal
-                    const successModal = document.getElementById('reg-success-modal');
-                    if (successModal) {
-                        successModal.classList.remove('hidden');
+            const isEn = document.body.classList.contains('lang-en');
+            if (confirmNationality) {
+                confirmNationality.innerText = isEn ? (nationality === '本國人' ? 'Domestic' : 'International') : nationality;
+            }
 
-                        // 根據國籍動態隱藏/顯示匯款箱與提示
-                        const isDomestic = (nationality === '本國人');
-                        const descDomestic = document.getElementById('reg-success-desc-domestic');
-                        const descInternational = document.getElementById('reg-success-desc-international');
-                        const bankBox = document.getElementById('reg-success-bank-box');
-                        const alertBox = document.getElementById('reg-success-alert-box');
-                        const btnTextDomestic = successModal.querySelectorAll('.btn-text-domestic');
-                        const btnTextInternational = successModal.querySelectorAll('.btn-text-international');
-
-                        if (isDomestic) {
-                            successModal.classList.remove('force-en');
-                            if (descDomestic) descDomestic.classList.remove('hidden');
-                            if (descInternational) descInternational.classList.add('hidden');
-                            if (bankBox) bankBox.classList.remove('hidden');
-                            if (alertBox) alertBox.classList.remove('hidden');
-                            btnTextDomestic.forEach(el => el.classList.remove('hidden'));
-                            btnTextInternational.forEach(el => el.classList.add('hidden'));
-
-                            // 寫入回傳的匯款帳號資訊
-                            const bankName = document.getElementById('bank-name');
-                            const bankAccName = document.getElementById('bank-account-name');
-                            const bankAccNum = document.getElementById('bank-account-num');
-                            if (bankName) bankName.innerText = result.data.bankInfo.bankName;
-                            if (bankAccName) bankAccName.innerText = result.data.bankInfo.accountName;
-                            if (bankAccNum) bankAccNum.innerText = result.data.bankInfo.accountNumber;
-                        } else {
-                            successModal.classList.add('force-en');
-                            if (descDomestic) descDomestic.classList.add('hidden');
-                            if (descInternational) descInternational.classList.remove('hidden');
-                            if (bankBox) bankBox.classList.add('hidden');
-                            if (alertBox) alertBox.classList.add('hidden');
-                            btnTextDomestic.forEach(el => el.classList.add('hidden'));
-                            btnTextInternational.forEach(el => el.classList.remove('hidden'));
-                        }
-                    }
+            if (confirmTransportation) {
+                let transText = transportation;
+                if (isEn) {
+                    if (transportation === '自行前往') transText = 'Self-drive';
+                    else if (transportation === '台中遊覽車') transText = 'Taichung Bus';
+                    else if (transportation === '新竹中壢遊覽車') transText = 'Hsinchu/Zhongli Bus';
+                    else if (transportation === '西門遊覽車') transText = 'Ximen Bus';
                 } else {
-                    showMessage(result.message, true);
+                    if (transportation === '西門遊覽車' && nationality === '外國人') {
+                        transText = '西門交通車(遊覽車)';
+                    }
                 }
-            }, () => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                showMessage(isEn ? "Connection error. Please try again." : "網路通訊異常，請稍後重試，或聯繫客服人員。", true);
-            });
+                confirmTransportation.innerText = transText;
+            }
+
+            // 顯示確認彈窗
+            const confirmModal = document.getElementById('reg-confirm-modal');
+            if (confirmModal) {
+                confirmModal.classList.remove('hidden');
+            }
         });
     }
 

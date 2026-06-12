@@ -8,10 +8,18 @@
  * =================================================================
  */
 
-// 匯款銀行資訊 (本國人使用)
+// 匯款銀行資訊 (本國人使用 - 備用)
 const BANK_INFO = {
-  bankName: "玉山銀行 (808)",
-  accountNumber: "0587-976-021630"
+  bankName: "臺灣銀行 (004)",
+  accountNumber: "224004060158"
+};
+
+// 本國人線上繳費連結 (Oen.tw - 主要)
+const DOMESTIC_OEN_LINKS = {
+  "自行前往": "https://bearwave.oen.tw/payment-url/3F1pokoQUo7gqPBHflB9DksBCJg",
+  "西門遊覽車": "https://bearwave.oen.tw/payment-url/3F1q2Z5XsYgN9hMiJoKe8frtoBy",
+  "新竹中壢遊覽車": "https://bearwave.oen.tw/payment-url/3F1q90kXFKDaSc6oyoZUeTLmwlU",
+  "台中遊覽車": "https://bearwave.oen.tw/payment-url/3F1qEmdTcpG03oZfEt1Bz0A8UXR"
 };
 
 // 外國人付款連結 (PayPal)
@@ -131,12 +139,18 @@ function handleRequest(e) {
         // 釋放鎖定
         lock.releaseLock();
 
+        // 取得本國人對應的線上繳費連結
+        var paymentUrl = "";
+        if (nationality === "本國人") {
+          paymentUrl = DOMESTIC_OEN_LINKS[transportation] || DOMESTIC_OEN_LINKS["自行前往"];
+        }
+
         // 發送通知信
         try {
           if (nationality === "外國人") {
             sendInternationalEmail(name, email, transportation);
           } else {
-            sendDomesticEmail(name, email, transportation);
+            sendDomesticEmail(name, email, transportation, paymentUrl);
           }
         } catch (emailErr) {
           console.error("發信失敗: " + emailErr.toString());
@@ -145,7 +159,7 @@ function handleRequest(e) {
         return toJSON(e, {
           status: "success",
           message: "報名成功！",
-          data: { bankInfo: BANK_INFO }
+          data: { bankInfo: BANK_INFO, paymentUrl: paymentUrl }
         });
 
       } catch (innerErr) {
@@ -295,7 +309,7 @@ function sendInternationalEmail(name, email, transportation) {
 /**
  * 發送本國人士確認信 (包含銀行匯款指引)
  */
-function sendDomesticEmail(name, email, transportation) {
+function sendDomesticEmail(name, email, transportation, paymentUrl) {
   var subject = "【浪熊 Bear Wave】報名成功通知 - 淡水農場暮夏浪熊祭";
 
   var htmlBody = `
@@ -311,22 +325,44 @@ function sendDomesticEmail(name, email, transportation) {
         <p style="margin: 5px 0;"><strong>交通方式：</strong> ${transportation}</p>
       </div>
       
-      <div style="background-color: #fffaf0; border-left: 4px solid #dd6b20; padding: 15px; margin: 20px 0; border-radius: 4px;">
-        <h3 style="margin-top: 0; color: #c05621; font-size: 1.1rem;">匯款繳費指引</h3>
-        <p>請將活動費用匯款至以下帳戶：</p>
-        <div style="background: #ffffff; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95rem; color: #2d3748;">
-          <p style="margin: 5px 0;"><strong>銀行名稱：</strong> ${BANK_INFO.bankName}</p>
-          <p style="margin: 5px 0;"><strong>銀行帳號：</strong> ${BANK_INFO.accountNumber}</p>
+      <div style="background-color: #fffaf0; border-left: 4px solid #FF7F50; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #FF7F50; font-size: 1.1rem;">💰 繳費指引 (請優先使用線上繳費)</h3>
+        
+        <!-- 主要付款方式：線上繳費 -->
+        <div style="margin-bottom: 20px;">
+          <p style="font-weight: bold; margin-bottom: 5px; color: #2d3748;">【主要付款方式】方式一：線上繳費</p>
+          <p style="margin-top: 0; font-size: 0.9rem; color: #718096; line-height: 1.4;">這是本次活動的主要付款管道，系統已自動為您產生日後對帳方案：</p>
+          <p style="margin: 8px 0; font-size: 0.95rem; color: #FF7F50; font-weight: bold;">您所選的交通方案：${transportation}</p>
+          
+          <!-- 線上付款 Email 提醒 -->
+          <div style="margin: 12px 0; padding: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 4px; font-size: 0.9rem; color: #2d3748; line-height: 1.5;">
+            <strong style="color: #c53030;">⚠️ 請注意：線上付款介面填寫資料時，請輸入活動報名時的 Email 信箱：</strong><br/>
+            <span style="font-family: monospace; font-size: 1.1rem; background: #fff; padding: 3px 8px; border: 1px dashed #e53e3e; font-weight: bold; display: inline-block; margin: 6px 0; border-radius: 4px; color: #c53030;">${email}</span><br/>
+            輸入相同的 Email，系統才能自動為您完成核對與銷帳。
+          </div>
+
+          <a href="${paymentUrl}" target="_blank" style="background-color: #FF7F50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">點此前往主要線上繳費</a>
         </div>
-        <p style="font-size: 0.9rem; color: #f35a5aff; margin-top: 10px; line-height: 1.6;">
-          * 費用說明：<br/>
-          自行前往 NT$1,000 / 台中車 NT$1,400 / 新竹中壢車 NT$1,300 / 西門車 NT$1,250
-        </p>
+        
+        <!-- 次要付款方式：轉帳匯款 -->
+        <div style="border-top: 1px dashed #cbd5e0; padding-top: 15px;">
+          <p style="font-weight: bold; margin-bottom: 5px; color: #718096;">【備用付款方式】方式二：自行 ATM 轉帳匯款 (僅限無法使用線上繳費者)</p>
+          <p style="margin-top: 0; font-size: 0.9rem; color: #718096; line-height: 1.4;">若您無法進行線上繳費，可選擇轉帳至以下帳戶（*匯款後必須至官網登記後五碼）：</p>
+          <div style="background: #ffffff; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95rem; color: #2d3748;">
+            <p style="margin: 5px 0;"><strong>銀行名稱：</strong> ${BANK_INFO.bankName}</p>
+            <p style="margin: 5px 0;"><strong>銀行帳號：</strong> ${BANK_INFO.accountNumber}</p>
+          </div>
+          <p style="font-size: 0.9rem; color: #f35a5aff; margin-top: 10px; line-height: 1.6;">
+            * 費用說明：<br/>
+            自行前往 NT$1,000 / 台中車 NT$1,400 / 新竹中壢車 NT$1,300 / 西門車 NT$1,250
+          </p>
+        </div>
       </div>
       
       <div style="background-color: #f0fff4; border-left: 4px solid #38a169; padding: 15px; margin: 20px 0; border-radius: 4px;">
         <strong>📝 重要下一步：</strong><br/>
-        匯款完成後，請務必至活動報名網頁切換到 <strong>「2. 匯款登記」</strong> 分頁，填寫您的 <strong>匯出銀行代碼</strong> 與 <strong>帳號後五碼</strong>，以利主辦單位進行對帳！
+        如果您選擇 <strong>「方式二：自行轉帳匯款」</strong>，匯款完成後請務必至活動報名網頁切換到 <strong>「2. 匯款登記」</strong> 分頁，填寫您的 <strong>匯出銀行代碼</strong> 與 <strong>帳號後五碼</strong>，以利主辦單位進行對帳！<br/>
+        如果您選擇 <strong>「方式一：線上繳費」</strong>，則<strong>無須手動登記</strong>，系統會自動在對帳完成後更新狀態！
       </div>
       
       <p style="font-size: 0.9rem; color: #718096; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">

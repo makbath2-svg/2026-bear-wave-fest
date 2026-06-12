@@ -827,8 +827,7 @@
                                 <ol class="terms-list">
                                     <li><strong>繳費期限：</strong>本次活動費用為新台幣1000元，"送出報名資料後請至email收信讀取繳費資訊"，請於報名完成後7日內完成費用匯款繳納。若7日內未繳款，第8日主辦系統會自動刪除報名資料，依舊想參加者請重新報名與繳費。<br><span
                                             class="highlight">*若繳費後無法成功登記繳費紀錄，請盡速寄信/Email通知活動方，為您處理報名事宜。</span></li>
-                                    <li><strong>繳費管道：</strong>台灣人請使用銀行轉帳匯款方式繳費，非台灣人則請使用 PayPal
-                                        平台繳費。報名繳費取得匯款後五碼資料後，請回到報名網頁「2. 匯款登記」分頁填寫相關資料，才算完成報名作業。</li>
+                                    <li><strong>繳費管道：</strong>台灣人請優先使用線上繳費方式付款（自動更新免對帳），亦可選擇銀行轉帳匯款（備用管道）。若選擇轉帳匯款，請於取得匯款後五碼資料後，回到報名網頁「2. 匯款登記」分頁填寫相關資料，才算完成報名作業；使用線上繳費者無須登記。非台灣人則請使用 PayPal 平台繳費。</li>
                                     <li><strong>截止日期：</strong>活動於 8/15 日截止報名，而報名系統將會於 8/26 日全部關閉（匯款登記也會關閉），所以請盡速於 8/26
                                         日前完成繳費作業。8/27 日開始也請不要繼續匯款，以免造成活動處理困難。</li>
                                     <li><strong>退款規則：</strong>完成報名作業後，如需申請退款，請於 9/11 日以前寄信/Email通知我們。
@@ -859,10 +858,7 @@
                                             successfully
                                             register your payment details after paying, please email the organizer
                                             immediately for assistance.</span></li>
-                                    <li><strong>Payment Methods:</strong> Taiwan residents please use bank transfer, and
-                                        international attendees please pay via PayPal. After paying and obtaining the
-                                        transaction details (last 5 digits), please return to the registration page, "2.
-                                        Payment" tab, to submit the details and finalize registration.</li>
+                                    <li><strong>Payment Methods:</strong> Taiwan residents please prioritize using online payment (credit card/convenience store, auto-matched), or optionally use bank transfer (backup). For bank transfers, after paying and obtaining the transaction details (last 5 digits), please return to the registration page, "2. Payment" tab, to submit the details and finalize registration; online payments do not require manual registration. International attendees please pay via PayPal.</li>
                                     <li><strong>Closing Dates:</strong> Registration closes on August 15, and the
                                         registration system (including payment submission) will close completely on
                                         August 26. Please complete your payment by August 26. Please do not make any
@@ -912,10 +908,9 @@
             </h3>
             <p id="reg-success-desc-domestic"
                 style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
-                <span class="lang-zh">我們已收到您的報名資料。請匯款至下方活動帳戶以完成報名（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
+                <span class="lang-zh">我們已收到您的報名資料。請選擇下方任一方式完成繳費，優先推薦線上繳費（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）：</span>
-                <span class="lang-en">We have received your details. Please remit the payment to the account below
-                    (Contact: <a href="mailto:ponbosch@gmail.com"
+                <span class="lang-en">We have received your details. Please choose one of the payment methods below to complete your registration, online payment is highly recommended (Contact: <a href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>):</span>
             </p>
             <p id="reg-success-desc-international" class="hidden"
@@ -927,16 +922,44 @@
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>).</span>
             </p>
 
+            <!-- 方式一：主要付款管道 (線上繳費) -->
+            <div id="reg-success-online-box" style="margin-bottom: 20px; padding: 16px; background: rgba(255, 127, 80, 0.1); border: 1px solid rgba(255, 127, 80, 0.2); border-radius: 12px; text-align: center;">
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--bear-rust); font-size: 1rem;">
+                    <i class="ph ph-credit-card" style="vertical-align: middle; margin-right: 4px;"></i>
+                    <span class="lang-zh">【主要付款】方式一：線上繳費</span>
+                    <span class="lang-en">【Primary】Method 1: Online Payment</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; font-weight: 500;">
+                    <span class="lang-zh">您所選的方案：<strong id="reg-success-online-trans" style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                    <span class="lang-en">Your package: <strong id="reg-success-online-trans-en" style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                </div>
+                <div style="margin-bottom: 12px; padding: 10px; background: #fff5f5; border: 1px solid #ffcbd2; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; font-weight: 700; line-height: 1.4; text-align: left;">
+                    <span class="lang-zh">⚠️ 請特別注意：前往線上付款介面時，請務必輸入您在「活動報名時填寫的 Email 信箱」，系統才能自動對帳！</span>
+                    <span class="lang-en">⚠️ Please note: In the online payment interface, you MUST enter the EXACT "Email Address used during registration" for automatic reconciliation!</span>
+                </div>
+                <a id="btn-online-payment" href="#" target="_blank" class="btn btn-primary" style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); color: white; width: 100%; box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3); font-size: 0.95rem; padding: 10px 20px;">
+                    <span class="lang-zh">前往主要線上繳費</span>
+                    <span class="lang-en">Go to Online Payment</span>
+                </a>
+            </div>
+
+            <!-- 方式二：備用付款管道 (轉帳匯款) -->
+            <div id="reg-success-bank-title" style="font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">
+                <i class="ph ph-bank" style="vertical-align: middle; margin-right: 4px;"></i>
+                <span class="lang-zh">【備用付款】方式二：轉帳匯款 (無法線上繳費者使用)</span>
+                <span class="lang-en">【Backup】Method 2: Bank Remittance (If Online Pay fails)</span>
+            </div>
+
             <div class="bank-info-box" id="reg-success-bank-box">
                 <div class="bank-row">
                     <span class="lang-zh">銀行：</span><span class="lang-en">Bank: </span>
-                    <strong id="bank-name">玉山銀行 (808)</strong>
+                    <strong id="bank-name">臺灣銀行 (004)</strong>
                 </div>
                 <div class="bank-row"
                     style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                     <div>
                         <span class="lang-zh">帳號：</span><span class="lang-en">Account Number: </span>
-                        <strong id="bank-account-num">0587-976-021630</strong>
+                        <strong id="bank-account-num">224004060158</strong>
                     </div>
                     <button type="button" class="btn-copy" id="btn-copy-account" onclick="copyBankAccount()">
                         <i class="ph ph-copy"></i> <span class="lang-zh">複製帳號</span><span class="lang-en">Copy
@@ -948,18 +971,15 @@
             <div class="alert-box" id="reg-success-alert-box">
                 <i class="ph ph-info" style="font-size: 1.5rem; color: #0288d1; margin-right: 12px;"></i>
                 <span>
-                    <span class="lang-zh">匯款完成後，請切換至 <strong>「2. 匯款登記」</strong> 分頁，登記您的匯款帳號後五碼，以便對帳！</span>
-                    <span class="lang-en">After remitting, go to the <strong>"2. Payment"</strong> tab to register your
-                        bank code & last 5 digits for verification!</span>
+                    <span class="lang-zh">若您選擇<strong>「方式二：轉帳匯款」</strong>，匯款後請切換至 <strong>「2. 匯款登記」</strong> 分頁登記後五碼，以便對帳；主要「線上繳費」則免登記對帳！</span>
+                    <span class="lang-en">If you select <strong>"Method 2: Bank Remittance"</strong>, please register your last 5 digits on the <strong>"2. Payment"</strong> tab after remitting. Online payments do not need registration!</span>
                 </span>
             </div>
 
             <button type="button" class="btn btn-primary btn-full" style="margin-top: 24px;"
                 onclick="closeModal('reg')">
-                <span class="lang-zh btn-text-domestic">我瞭解了，前往匯款</span><span class="lang-en btn-text-domestic">Got it,
-                    Proceed to Remittance</span>
-                <span class="lang-zh btn-text-international hidden">我知道了，前往狀態查詢</span><span
-                    class="lang-en btn-text-international hidden">Got it, Go to Status Query</span>
+                <span class="lang-zh">我瞭解了，關閉視窗</span>
+                <span class="lang-en">Got it, Close Window</span>
             </button>
         </div>
     </div>
@@ -980,6 +1000,58 @@
             <button type="button" class="btn btn-secondary btn-full" onclick="closeModal('pay')">
                 <span class="lang-zh">關閉視窗</span><span class="lang-en">Close Window</span>
             </button>
+        </div>
+    </div>
+
+    <!-- 3. 報名資料確認彈出視窗 -->
+    <div id="reg-confirm-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 500px;">
+            <button type="button" class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            <h3 style="text-align: center; color: var(--ocean-dark); margin-bottom: 20px; font-size: 1.5rem;">
+                <span class="lang-zh">📝 請核對您的報名資料</span><span class="lang-en">📝 Verify Registration Details</span>
+            </h3>
+            
+            <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px; font-size: 1rem; line-height: 1.8;">
+                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">暱稱</span><span class="lang-en">Nickname</span>
+                    </span>
+                    <span id="confirm-name" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">電子信箱</span><span class="lang-en">Email</span>
+                    </span>
+                    <span id="confirm-email" style="font-weight: bold; color: var(--text-main); word-break: break-all;">-</span>
+                </div>
+                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">手機後四碼</span><span class="lang-en">Phone (Last 4)</span>
+                    </span>
+                    <span id="confirm-phone" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">國籍</span><span class="lang-en">Nationality</span>
+                    </span>
+                    <span id="confirm-nationality" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div style="display: flex; padding-bottom: 4px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">交通與方案</span><span class="lang-en">Package</span>
+                    </span>
+                    <span id="confirm-transportation" style="font-weight: bold; color: var(--bear-rust);">-</span>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <button type="button" class="btn btn-outline" style="border-radius: 12px; font-size: 0.95rem; padding: 12px;" onclick="closeConfirmModal()">
+                    <span class="lang-zh">返回修改</span><span class="lang-en">Back to Edit</span>
+                </button>
+                <button type="button" class="btn btn-primary" style="border-radius: 12px; font-size: 0.95rem; padding: 12px; background: linear-gradient(135deg, var(--wave-cyan), var(--ocean-dark)); color: white; box-shadow: 0 4px 15px rgba(0, 139, 139, 0.3);" onclick="submitConfirmedRegistration()">
+                    <span class="lang-zh">確認無誤，送出</span><span class="lang-en">Confirm & Submit</span>
+                </button>
+            </div>
         </div>
     </div>
 
