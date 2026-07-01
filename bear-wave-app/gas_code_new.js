@@ -86,6 +86,17 @@ function handleRequest(e) {
         });
       }
 
+      // Email 格式驗證
+      var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        return toJSON(e, {
+          status: "error",
+          message: nationality === "外國人"
+            ? "Invalid email format!"
+            : "Email 格式不正確！"
+        });
+      }
+
       var phonePattern = /^\d{4}$/;
       if (!phonePattern.test(phone)) {
         return toJSON(e, {
@@ -108,7 +119,7 @@ function handleRequest(e) {
         var data = sheet.getDataRange().getValues();
         // 檢查 Email 是否已存在於第 D 欄 (索引 3)
         for (var i = 1; i < data.length; i++) {
-          if (data[i][3] && data[i][3].toString().toLowerCase() === email.toLowerCase()) {
+          if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
             lock.releaseLock();
             return toJSON(e, {
               status: "error",
@@ -121,7 +132,7 @@ function handleRequest(e) {
 
         // 寫入新報名資料
         // A:時間標記 | B:國籍 | C:姓名 | D:Email | E:手機後四碼 | F:交通方式 | G:匯款後五碼 | H:匯款狀態 | I:桌次號碼 | J:歸屬 | K:備註 | L:退出活動
-        sheet.appendRow([
+        var rowData = [
           Utilities.formatDate(new Date(), "Asia/Taipei", "yyyy/MM/dd HH:mm:ss"),
           nationality,
           name,
@@ -134,21 +145,23 @@ function handleRequest(e) {
           "",
           "",
           ""
-        ]);
+        ];
+        var lastRow = sheet.getLastRow();
+        sheet.getRange(lastRow + 1, 1, 1, rowData.length).setValues([rowData]);
+
+        // 強制寫入試算表，確保併發請求能讀到最新資料
+        SpreadsheetApp.flush();
 
         // 釋放鎖定
         lock.releaseLock();
 
-        // 取得本國人對應的線上繳費連結
-        var paymentUrl = "";
-        if (nationality === "本國人") {
-          paymentUrl = DOMESTIC_OEN_LINKS[transportation] || DOMESTIC_OEN_LINKS["自行前往"];
-        }
+        // 取得對應的線上繳費連結（本國人與外國人通用）
+        var paymentUrl = DOMESTIC_OEN_LINKS[transportation] || DOMESTIC_OEN_LINKS["自行前往"];
 
         // 發送通知信
         try {
           if (nationality === "外國人") {
-            sendInternationalEmail(name, email, transportation);
+            sendInternationalEmail(name, email, transportation, paymentUrl);
           } else {
             sendDomesticEmail(name, email, transportation, paymentUrl);
           }
@@ -177,16 +190,17 @@ function handleRequest(e) {
         return toJSON(e, { status: "error", message: "Email 與匯款資訊為必填！" });
       }
 
+      // 前端為兩個輸入元件（3位銀行代碼 與 5位帳號後五碼），組合後傳入格式應為 3位-5位（例如：004-12345）
       var digitsPattern = /^\d{3}-\d{5}$/;
       if (!digitsPattern.test(lastFiveDigits)) {
-        return toJSON(e, { status: "error", message: "匯款後五碼格式不正確，須為 5 位數字！" });
+        return toJSON(e, { status: "error", message: "匯款資訊格式不正確，須為：3位銀行代碼-5位帳號後五碼（例如：004-12345）！" });
       }
 
       var data = sheet.getDataRange().getValues();
       var foundRowIndex = -1;
 
       for (var i = 1; i < data.length; i++) {
-        if (data[i][3] && data[i][3].toString().toLowerCase() === email.toLowerCase()) {
+        if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
           foundRowIndex = i + 1; // 轉為 1-indexed 列號
           break;
         }
@@ -212,7 +226,7 @@ function handleRequest(e) {
 
       var data = sheet.getDataRange().getValues();
       for (var i = 1; i < data.length; i++) {
-        if (data[i][3] && data[i][3].toString().toLowerCase() === email.toLowerCase()) {
+        if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
           return toJSON(e, {
             status: "success",
             data: {
@@ -242,7 +256,7 @@ function handleRequest(e) {
 /**
  * 發送外籍人士確認信 (包含 PayPal 付款連結)
  */
-function sendInternationalEmail(name, email, transportation) {
+function sendInternationalEmail(name, email, transportation, paymentUrl) {
   var subject = "[Bear Wave] Registration Successful - Tamsui Farm Summer Bear Fest";
 
   // 判斷是否需要專車車費
@@ -261,35 +275,24 @@ function sendInternationalEmail(name, email, transportation) {
         <p style="margin: 5px 0;"><strong>Transportation:</strong> ${isShuttle ? 'Ximen Shuttle Bus (Round-trip)' : 'Self-drive'}</p>
       </div>
       
-      <div style="background-color: #fffaf0; border-left: 4px solid #dd6b20; padding: 15px; margin: 20px 0; border-radius: 4px;">
-        <h3 style="margin-top: 0; color: #c05621; font-size: 1.1rem;">PayPal Payment Instructions</h3>
-        <p>Please complete your payment via PayPal using the links below:</p>
+      <div style="background-color: #fffaf0; border-left: 4px solid #FF7F50; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #FF7F50; font-size: 1.1rem;">💳 Online Payment Instructions</h3>
+        <p>Please complete your payment via our online payment system (Oen.tw) using the link below:</p>
         
-        <!-- Event Fee Link (Always required) -->
+        <!-- Online Payment Link -->
         <div style="margin: 15px 0;">
-          <p style="font-weight: bold; margin-bottom: 5px; color: #2d3748;">1. Event Admission Fee ($1000 TWD):</p>
-          <a href="${PAYPAL_LINKS.eventFee}" target="_blank" style="background-color: #0070ba; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Pay Event Fee $1000 TWD</a>
+          <p style="font-weight: bold; margin-bottom: 5px; color: #2d3748;">Selected transportation: ${isShuttle ? 'Ximen Shuttle Bus (Total: $1250 TWD)' : 'Self-drive (Total: $1000 TWD)'}</p>
+          
+          <!-- Online Payment Email Warning -->
+          <div style="margin: 12px 0; padding: 12px; background-color: #fff5f5; border-left: 4px solid #e53e3e; border-radius: 4px; font-size: 0.95rem; color: #2d3748; line-height: 1.5;">
+            <strong style="color: #c53030;">⚠️ CRITICAL STEP FOR AUTOMATIC RECONCILIATION:</strong><br/>
+            When checking out on the payment page, you <strong>MUST</strong> enter your registered email address:<br/>
+            <span style="font-family: monospace; font-size: 1.1rem; background: #fff; padding: 3px 8px; border: 1px dashed #e53e3e; font-weight: bold; display: inline-block; margin: 6px 0; border-radius: 4px; color: #c53030;">${email}</span><br/>
+            Entering the identical email is essential for our system to automatically match and confirm your payment status.
+          </div>
+
+          <a href="${paymentUrl}" target="_blank" style="background-color: #FF7F50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">Go to Online Payment</a>
         </div>
-        
-        <!-- Bus Fee Link (Conditional) -->
-        ${isShuttle ? `
-        <div style="margin: 20px 0 15px 0; border-top: 1px dashed #cbd5e0; padding-top: 15px;">
-          <p style="font-weight: bold; margin-bottom: 5px; color: #c05621;">2. Ximen Shuttle Bus Fee ($250 TWD):</p>
-          <p style="margin-top: 0; font-size: 0.9rem; color: #718096; line-height: 1.4;">* Since you registered for the Ximen Shuttle Bus, please make sure to complete this payment as well.</p>
-          <a href="${PAYPAL_LINKS.busFee}" target="_blank" style="background-color: #0070ba; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Pay Bus Fee $250 TWD</a>
-        </div>
-        ` : `
-        <div style="margin: 20px 0 15px 0; border-top: 1px dashed #cbd5e0; padding-top: 15px;">
-          <p style="margin: 0; font-size: 0.9rem; color: #4a5568;">* Note: You selected Self-Drive, so you do not need to pay the Bus Fee. Only the Admission Fee is required.</p>
-        </div>
-        `}
-      </div>
-      
-      <div style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 15px; margin: 20px 0; border-radius: 4px; font-size: 0.95rem;">
-        <strong>⚠️ CRITICAL STEP FOR PAYMENT VERIFICATION:</strong><br/>
-        Before checking out on PayPal, please <strong>copy your registered email address</strong>:<br/>
-        <span style="font-family: monospace; font-size: 1.1rem; background: #fff; padding: 3px 8px; border: 1px dashed #e53e3e; font-weight: bold; display: inline-block; margin: 8px 0; border-radius: 4px;">${email}</span><br/>
-        and paste it directly into the <strong>"請填寫您的email"</strong> input box on the PayPal checkout screen. This is crucial for verifying and matching your payment status.
       </div>
       
       <p style="font-size: 0.9rem; color: #718096; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center;">

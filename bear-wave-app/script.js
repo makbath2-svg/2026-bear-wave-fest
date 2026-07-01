@@ -365,26 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (onlineBox) onlineBox.classList.remove('hidden');
                         if (alertBox) alertBox.classList.remove('hidden');
 
-                        // 寫入回傳的線上繳費網址
-                        if (onlineBtn && result.data.paymentUrl) {
-                            onlineBtn.href = result.data.paymentUrl;
-                        }
-
-                        // 顯示選擇的交通方案
-                        const onlineTransZh = document.getElementById('reg-success-online-trans');
-                        const onlineTransEn = document.getElementById('reg-success-online-trans-en');
-                        if (onlineTransZh) {
-                            onlineTransZh.innerText = transportation;
-                        }
-                        if (onlineTransEn) {
-                            let transTextEn = transportation;
-                            if (transportation === '自行前往') transTextEn = 'Self-drive';
-                            else if (transportation === '台中遊覽車') transTextEn = 'Taichung Bus';
-                            else if (transportation === '新竹中壢遊覽車') transTextEn = 'Hsinchu/Zhongli Bus';
-                            else if (transportation === '西門遊覽車') transTextEn = 'Ximen Bus';
-                            onlineTransEn.innerText = transTextEn;
-                        }
-
                         // 寫入回傳的匯款帳號資訊
                         const bankName = document.getElementById('bank-name');
                         const bankAccName = document.getElementById('bank-account-name');
@@ -398,8 +378,33 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (descInternational) descInternational.classList.remove('hidden');
                         if (bankTitle) bankTitle.classList.add('hidden');
                         if (bankBox) bankBox.classList.add('hidden');
-                        if (onlineBox) onlineBox.classList.add('hidden');
+                        if (onlineBox) onlineBox.classList.remove('hidden');
                         if (alertBox) alertBox.classList.add('hidden');
+                    }
+
+                    // 寫入回傳的線上繳費網址（本國人與外國人通用）
+                    if (onlineBtn && result.data.paymentUrl) {
+                        onlineBtn.href = result.data.paymentUrl;
+                    }
+
+                    // 顯示報名信箱，方便使用者在付款時填入以利自動銷帳
+                    document.querySelectorAll('.reg-success-email-display').forEach(el => {
+                        el.innerText = email;
+                    });
+
+                    // 顯示選擇的交通方案（本國人與外國人通用）
+                    const onlineTransZh = document.getElementById('reg-success-online-trans');
+                    const onlineTransEn = document.getElementById('reg-success-online-trans-en');
+                    if (onlineTransZh) {
+                        onlineTransZh.innerText = transportation;
+                    }
+                    if (onlineTransEn) {
+                        let transTextEn = transportation;
+                        if (transportation === '自行前往') transTextEn = 'Self-drive';
+                        else if (transportation === '台中遊覽車') transTextEn = 'Taichung Bus';
+                        else if (transportation === '新竹中壢遊覽車') transTextEn = 'Hsinchu/Zhongli Bus';
+                        else if (transportation === '西門遊覽車') transTextEn = 'Ximen Bus';
+                        onlineTransEn.innerText = transTextEn;
                     }
                 }
             } else {
@@ -429,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const optXimen = document.createElement('option');
                 optXimen.value = '西門遊覽車'; // 寫入資料庫為 '西門遊覽車'
-                optXimen.text = 'Event Fee (NT$1,000) & Ximen Bus (NT$250)';
+                optXimen.text = 'Event Fee & Ximen Bus (NT$1,250)';
 
                 regTransportation.add(optSelf);
                 regTransportation.add(optXimen);
