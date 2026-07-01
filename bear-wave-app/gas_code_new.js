@@ -246,6 +246,120 @@ function handleRequest(e) {
       return toJSON(e, { status: "error", message: "找不到此 Email 的報名紀錄，請確認輸入是否正確。" });
     }
 
+    // 4. 上車檢查 Action
+    if (action === "checkBoarding") {
+      var email = params.email ? params.email.trim() : "";
+      if (!email) {
+        return toJSON(e, { status: "error", message: "請輸入 Email！" });
+      }
+
+      var lock = LockService.getScriptLock();
+      try {
+        lock.waitLock(10000); // 最多等待 10 秒
+      } catch (err) {
+        return toJSON(e, { status: "error", message: "系統繁忙，請稍後重試。" });
+      }
+
+      try {
+        var data = sheet.getDataRange().getValues();
+        var foundRowIndex = -1;
+        var name = "";
+        var transportation = "";
+        var currentBoardingStatus = "";
+
+        for (var i = 1; i < data.length; i++) {
+          if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
+            foundRowIndex = i + 1; // 轉為 1-indexed 列號
+            name = data[i][2];
+            transportation = data[i][5] || "自行前往";
+            currentBoardingStatus = data[i][12] ? data[i][12].toString().trim() : "";
+            break;
+          }
+        }
+
+        if (foundRowIndex === -1) {
+          lock.releaseLock();
+          return toJSON(e, { status: "error", message: "查無此報名" });
+        }
+
+        // 檢查是否已經上車過
+        if (currentBoardingStatus === "已上車") {
+          lock.releaseLock();
+          return toJSON(e, { status: "warning", name: name, message: "此人先前已核銷上車囉！" });
+        }
+
+        // 交通方式如果為 自行前往
+        if (transportation === "自行前往") {
+          lock.releaseLock();
+          return toJSON(e, { status: "warning", name: name, message: "此人為自行前往，不需上車！" });
+        }
+
+        // 寫入上車狀態：M 欄 (第 13 欄)
+        sheet.getRange(foundRowIndex, 13).setValue("已上車");
+        SpreadsheetApp.flush();
+        lock.releaseLock();
+
+        return toJSON(e, { status: "success", name: name, message: "上車成功" });
+
+      } catch (innerErr) {
+        lock.releaseLock();
+        return toJSON(e, { status: "error", message: "寫入失敗：" + innerErr.toString() });
+      }
+    }
+
+    // 5. 入場檢查 Action
+    if (action === "checkAdmission") {
+      var email = params.email ? params.email.trim() : "";
+      if (!email) {
+        return toJSON(e, { status: "error", message: "請輸入 Email！" });
+      }
+
+      var lock = LockService.getScriptLock();
+      try {
+        lock.waitLock(10000); // 最多等待 10 秒
+      } catch (err) {
+        return toJSON(e, { status: "error", message: "系統繁忙，請稍後重試。" });
+      }
+
+      try {
+        var data = sheet.getDataRange().getValues();
+        var foundRowIndex = -1;
+        var name = "";
+        var currentAdmissionStatus = "";
+
+        for (var i = 1; i < data.length; i++) {
+          if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
+            foundRowIndex = i + 1; // 轉為 1-indexed 列號
+            name = data[i][2];
+            currentAdmissionStatus = data[i][13] ? data[i][13].toString().trim() : "";
+            break;
+          }
+        }
+
+        if (foundRowIndex === -1) {
+          lock.releaseLock();
+          return toJSON(e, { status: "error", message: "查無此報名" });
+        }
+
+        // 檢查是否已經入場過
+        if (currentAdmissionStatus === "已入場") {
+          lock.releaseLock();
+          return toJSON(e, { status: "warning", name: name, message: "此人先前已核銷入場囉！" });
+        }
+
+        // 寫入入場狀態：N 欄 (第 14 欄)
+        sheet.getRange(foundRowIndex, 14).setValue("已入場");
+        SpreadsheetApp.flush();
+        lock.releaseLock();
+
+        return toJSON(e, { status: "success", name: name, message: "入場成功" });
+
+      } catch (innerErr) {
+        lock.releaseLock();
+        return toJSON(e, { status: "error", message: "寫入失敗：" + innerErr.toString() });
+      }
+    }
+
     return toJSON(e, { status: "error", message: "未知的 action 指令！" });
 
   } catch (err) {

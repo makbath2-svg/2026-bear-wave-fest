@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪熊 Bear Wave | 上車 QR Code 核銷系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Include html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #1A4B82;
+            --primary-dark: #0f3057;
+            --accent: #FF7F50;
+            --success: #2e7d32;
+            --warning: #f57c00;
+            --error: #c62828;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .scanner-container {
+            width: 100%;
+            position: relative;
+            background-color: #020617;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        #reader {
+            width: 100% !important;
+            border: none !important;
+            background: black;
+        }
+
+        #reader video {
+            object-fit: cover !important;
+        }
+
+        /* Customize scanning box inside html5-qrcode */
+        #reader__scan_region {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .scan-frame {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #38bdf8;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.4);
+        }
+
+        .scan-laser {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 8px #38bdf8;
+            animation: laserMove 2.5s infinite linear;
+        }
+
+        @keyframes laserMove {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .select-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: #0f172a;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Modal styling for Feedback */
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            box-sizing: border-box;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background-color: #1e293b;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 320px;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            border: 2px solid var(--border-color);
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .modal.active .modal-card {
+            transform: scale(1);
+        }
+
+        .feedback-icon {
+            font-size: 4.5rem;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .feedback-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .feedback-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 12px 0 20px 0;
+            word-break: break-all;
+        }
+
+        .feedback-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Success Theme */
+        .modal.success .modal-card {
+            border-color: var(--success);
+        }
+        .modal.success .feedback-icon { color: #4caf50; }
+        .modal.success .feedback-title { color: #4caf50; }
+
+        /* Warning Theme */
+        .modal.warning .modal-card {
+            border-color: var(--warning);
+        }
+        .modal.warning .feedback-icon { color: #ff9800; }
+        .modal.warning .feedback-title { color: #ff9800; }
+
+        /* Error Theme */
+        .modal.error .modal-card {
+            border-color: var(--error);
+        }
+        .modal.error .feedback-icon { color: #f44336; }
+        .modal.error .feedback-title { color: #f44336; }
+
+        .modal-btn {
+            background-color: #334155;
+            color: var(--text-main);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .modal-btn:hover {
+            background-color: #475569;
+        }
+
+        .footer-links {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .footer-links a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .status-bar {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--error);
+        }
+
+        .status-dot.active {
+            background-color: #4caf50;
+            box-shadow: 0 0 6px #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Feedback Overlay Modal -->
+            <div id="feedback-modal" class="modal">
+                <div class="modal-card">
+                    <div id="modal-icon" class="feedback-icon"></div>
+                    <div id="modal-title" class="feedback-title"></div>
+                    <div id="modal-name" class="feedback-name"></div>
+                    <p id="modal-desc" class="feedback-desc"></p>
+                    <button type="button" class="modal-btn" onclick="closeFeedback()">
+                        <span>點擊繼續掃描 (3s)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="logo">
+                <i class="ph ph-waves"></i>
+                <span>Bear Wave</span>
+            </div>
+            <h2>🚌 上車 QR Code 核銷系統</h2>
+
+            <div class="controls">
+                <div class="select-group">
+                    <label for="camera-select"><i class="ph ph-video-camera"></i> 選擇相機鏡頭</label>
+                    <select id="camera-select">
+                        <option value="">載入中...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="scanner-container">
+                <div id="reader"></div>
+                <div class="scan-overlay">
+                    <div class="scan-frame">
+                        <div class="scan-laser"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <a href="generate-qr.html"><i class="ph ph-qr-code"></i> 測試 QR 產生器</a>
+                <a href="check-admission.html"><i class="ph ph-door"></i> 切換至入場核銷</a>
+            </div>
+
+            <div class="status-bar">
+                <div id="status-dot" class="status-dot"></div>
+                <span id="status-text">相機未啟動</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycby3lHPs1qd6CxDp_1qTIh1Ipvo-z9oiIg1WlTl6ksoRoXbsK0jZ1Fvi1jjLxisqtjs_/exec";
+        
+        let html5QrCode = null;
+        let isScanningActive = true;
+        let autoCloseTimeout = null;
+        let audioCtx = null;
+
+        // JSONP Request Helper
+        function requestJSONP(url, successCallback, errorCallback) {
+            const callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
+            window[callbackName] = function (data) {
+                successCallback(data);
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+            };
+            const script = document.createElement('script');
+            const separator = url.includes('?') ? '&' : '?';
+            script.src = `${url}${separator}callback=${callbackName}`;
+            script.onerror = function () {
+                errorCallback();
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+            };
+            document.body.appendChild(script);
+        }
+
+        // Web Audio API Sound generator (To make scanning snappy and responsive)
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playBeep(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                
+                // Resume AudioContext if suspended (browser security autoplay policies)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'success') {
+                    // Short high-pitched beep
+                    osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.12);
+                } else if (type === 'warning') {
+                    // Double medium beep
+                    osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                    
+                    setTimeout(() => {
+                        const osc2 = audioCtx.createOscillator();
+                        const gain2 = audioCtx.createGain();
+                        osc2.connect(gain2);
+                        gain2.connect(audioCtx.destination);
+                        osc2.frequency.setValueAtTime(580, audioCtx.currentTime);
+                        gain2.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                        osc2.start();
+                        osc2.stop(audioCtx.currentTime + 0.15);
+                    }, 200);
+                } else if (type === 'error') {
+                    // Low buzzer tone
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch (err) {
+                console.error("Audio playback error: ", err);
+            }
+        }
+
+        // Camera Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            Html5Qrcode.getCameras().then(devices => {
+                const cameraSelect = document.getElementById('camera-select');
+                cameraSelect.innerHTML = '';
+                
+                if (devices && devices.length > 0) {
+                    // Populate camera choices
+                    devices.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.id;
+                        // Select back camera as default if possible
+                        const label = device.label || `相機 ${index + 1}`;
+                        option.text = label;
+                        if (label.toLowerCase().includes('back') || label.toLowerCase().includes('後置') || label.toLowerCase().includes('environment')) {
+                            option.selected = true;
+                        }
+                        cameraSelect.add(option);
+                    });
+
+                    // Start default camera
+                    startCamera(cameraSelect.value);
+
+                    // Handle camera switch dropdown change
+                    cameraSelect.addEventListener('change', () => {
+                        startCamera(cameraSelect.value);
+                    });
+                } else {
+                    cameraSelect.innerHTML = '<option value="">未偵測到鏡頭</option>';
+                    updateStatus(false, "未偵測到相機鏡頭");
+                }
+            }).catch(err => {
+                console.error("Error getting cameras: ", err);
+                const cameraSelect = document.getElementById('camera-select');
+                cameraSelect.innerHTML = '<option value="">相機開啟權限遭拒</option>';
+                updateStatus(false, "取得鏡頭權限失敗");
+            });
+
+            // Unlock Audio Context on first body click
+            document.body.addEventListener('click', initAudio, { once: true });
+        });
+
+        function updateStatus(active, text) {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            if (active) {
+                statusDot.classList.add('active');
+            } else {
+                statusDot.classList.remove('active');
+            }
+            statusText.innerText = text;
+        }
+
+        function startCamera(cameraId) {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    initScanner(cameraId);
+                }).catch(err => {
+                    console.error("Failed to stop scanner: ", err);
+                    initScanner(cameraId);
+                });
+            } else {
+                initScanner(cameraId);
+            }
+        }
+
+        function initScanner(cameraId) {
+            html5QrCode = new Html5Qrcode("reader");
+            
+            const config = {
+                fps: 10,
+                qrbox: (width, height) => {
+                    const size = Math.min(width, height) * 0.7;
+                    return { width: size, height: size };
+                },
+                aspectRatio: 1.0
+            };
+
+            html5QrCode.start(
+                cameraId,
+                config,
+                onScanSuccess,
+                (errorMessage) => {
+                    // Console flooding is disabled by ignoring standard frame failures
+                }
+            ).then(() => {
+                updateStatus(true, "相機掃描中...");
+            }).catch(err => {
+                console.error("Unable to start scanner: ", err);
+                updateStatus(false, "啟動鏡頭失敗！");
+            });
+        }
+
+        // Action when QR Code is read
+        function onScanSuccess(decodedText, decodedResult) {
+            if (!isScanningActive) return; // Prevent double scanning while modal is active
+            
+            isScanningActive = false;
+            const email = decodedText.trim();
+            
+            updateStatus(false, "核銷查詢中...");
+            
+            const requestUrl = `${GAS_API_URL}?action=checkBoarding&email=${encodeURIComponent(email)}`;
+            
+            requestJSONP(requestUrl, (result) => {
+                showFeedback(result);
+            }, () => {
+                showFeedback({
+                    status: "error",
+                    message: "核銷網路失敗，請檢查網路連線。"
+                });
+            });
+        }
+
+        function showFeedback(result) {
+            const modal = document.getElementById('feedback-modal');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalTitle = document.getElementById('modal-title');
+            const modalName = document.getElementById('modal-name');
+            const modalDesc = document.getElementById('modal-desc');
+
+            // Reset modal classes
+            modal.className = 'modal active';
+            modal.classList.add(result.status); // success, warning, or error
+
+            // Populate Modal Content
+            if (result.status === 'success') {
+                playBeep('success');
+                modalIcon.innerHTML = '<i class="ph ph-check-circle"></i>';
+                modalTitle.innerText = '上車成功';
+                modalName.style.display = 'block';
+                modalName.innerText = result.name;
+                modalDesc.innerText = '已完成上車核銷紀錄！';
+            } else if (result.status === 'warning') {
+                playBeep('warning');
+                modalIcon.innerHTML = '<i class="ph ph-warning-octagon"></i>';
+                modalTitle.innerText = '自行前往';
+                modalName.style.display = 'block';
+                modalName.innerText = result.name;
+                modalDesc.innerText = result.message || '此人為自行前往，不需上車！';
+            } else {
+                playBeep('error');
+                modalIcon.innerHTML = '<i class="ph ph-x-circle"></i>';
+                modalTitle.innerText = '核銷失敗';
+                modalName.style.display = 'none';
+                modalDesc.innerText = result.message || '查無此報名，請重新確認！';
+            }
+
+            // Autoclose modal after 3 seconds
+            clearTimeout(autoCloseTimeout);
+            autoCloseTimeout = setTimeout(() => {
+                closeFeedback();
+            }, 3000);
+        }
+
+        function closeFeedback() {
+            const modal = document.getElementById('feedback-modal');
+            modal.classList.remove('active');
+            clearTimeout(autoCloseTimeout);
+            
+            // Wait 300ms for slide transition to finish before resuming scanning
+            setTimeout(() => {
+                isScanningActive = true;
+                updateStatus(true, "相機掃描中...");
+            }, 300);
+        }
+    </script>
+</body>
+</html>
