@@ -70,7 +70,7 @@ body {
     margin-left: -3px;
     margin-top: -23px;
     pointer-events: none;
-    z-index: 10000;
+    z-index: 999999 !important;
     will-change: transform;
     display: none;
     /* Hide on mobile */
@@ -333,7 +333,7 @@ ul {
     text-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.hero-title > span {
+.hero-title>span {
     display: block;
     background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold));
     -webkit-background-clip: text;
@@ -1721,9 +1721,11 @@ body.lang-en .hero-title .art-text-blue {
 #reg-success-modal.force-en .lang-zh {
     display: none !important;
 }
+
 #reg-success-modal.force-en .lang-en {
     display: inline-block !important;
 }
+
 #reg-success-modal.force-en p.lang-en,
 #reg-success-modal.force-en div.lang-en,
 #reg-success-modal.force-en h2.lang-en,
@@ -1807,4 +1809,246 @@ body.lang-en .hero-title .art-text-blue {
 
 .terms-memo ul li {
     margin-bottom: 6px;
+}
+
+/* ==========================================
+   Tab 4: Table Management Grid & Cards Styling
+   ========================================== */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.table-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-color: var(--bear-rust);
+}
+
+.table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.015);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-card-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.table-card-title i {
+    font-size: 1.1rem;
+}
+
+.table-card-body {
+    padding: 20px 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.table-card-nickname {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.table-card-footer {
+    padding: 12px 16px 16px 16px;
+}
+
+/* Modals sizing variations */
+.modal-card-small {
+    max-width: 440px !important;
+}
+
+.modal-card-large {
+    max-width: 800px !important;
+    width: 95% !important;
+}
+
+/* ==========================================
+   Table Editor Modal - Member Row Design
+   ========================================== */
+.member-row {
+    background: #fbfbfb;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    transition: all 0.25s ease;
+}
+
+.member-row:hover {
+    background: #f9f9f9;
+    border-color: rgba(255, 127, 80, 0.3);
+}
+
+.member-index-badge {
+    align-self: center;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 6px;
+    white-space: normal;
+    text-align: center;
+    min-width: 80px;
+}
+
+#member-row-1 .member-index-badge {
+    background: rgba(255, 127, 80, 0.1);
+    color: var(--bear-rust);
+    border: 1.5px solid rgba(255, 127, 80, 0.2);
+}
+
+.member-inputs {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 5.5fr 1.2fr 2fr;
+    gap: 18px;
+    align-items: center;
+}
+
+.member-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.member-input-group label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.member-input-group input {
+    background: #ffffff !important;
+}
+
+.member-name-display {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    word-break: break-all;
+}
+
+.member-action-col {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 80px;
+}
+
+.member-action-col:empty {
+    display: none;
+}
+
+/* Scroll wrapper for editor body */
+.modal-body-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.modal-body-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+/* ==========================================
+   Responsive adjustments for member-row
+   ========================================== */
+@media (max-width: 768px) {
+    .table-basic-info-box {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .member-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .member-index-badge {
+        align-self: flex-start;
+        width: 100%;
+        text-align: center;
+    }
+
+    .member-inputs {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .member-action-col {
+        justify-content: stretch;
+        width: 100%;
+    }
+
+    .member-action-col button {
+        width: 100%;
+        padding: 10px;
+    }
+}
+
+/* Color states for member rows (Validation Feedback) */
+.member-row.row-success {
+    background: #e8f5e9 !important;
+    /* Pastel Green */
+    border-color: #81c784 !important;
+}
+
+.member-row.row-success:hover {
+    background: #e8f5e9 !important;
+}
+
+.member-row.row-error {
+    background: #ffebee !important;
+    /* Pastel Pink */
+    border-color: #e57373 !important;
+}
+
+.member-row.row-error:hover {
+    background: #ffebee !important;
+}
+
+/* Placeholder Color Override (Make placeholder text lighter to distinguish from actual input value) */
+input::placeholder,
+textarea::placeholder {
+    color: #b0bec5 !important;
+    /* Soft light blue-grey */
+    opacity: 0.8 !important;
+    font-weight: 400 !important;
 }

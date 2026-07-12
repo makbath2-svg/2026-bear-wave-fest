@@ -352,6 +352,15 @@
                         <i class="ph ph-magnifying-glass"></i> <span class="lang-zh">3. 狀態查詢</span><span
                             class="lang-en">3. Status</span>
                     </button>
+                    <button class="tab-btn" id="tab-table" onclick="switchTab('table')" style="display: none;">
+                        <i class="ph ph-users-three"></i> <span class="lang-zh">4. 分桌資料</span><span class="lang-en">4.
+                            Tables</span>
+                    </button>
+                    <button class="tab-btn" id="tab-group" onclick="switchTab('group')">
+                        <i class="ph ph-chats-teardrop"></i> <span class="lang-zh">4. 揪桌友看板</span><span
+                            class="lang-en">4.
+                            Group Tables</span>
+                    </button>
                 </div>
 
                 <!-- Tab 1: 活動報名 -->
@@ -802,6 +811,92 @@
                                         Number</span></span>
                                 <span class="val"><span class="table-badge" id="q-result-table">-</span></span>
                             </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">桌暱稱</span><span class="lang-en">Table
+                                        Nickname</span></span>
+                                <span class="val" id="q-result-table-nickname">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: 分桌資料 -->
+                <div class="tab-content hidden" id="content-table">
+                    <div class="table-list-container">
+                        <div class="table-list-header">
+                            <h3 class="table-list-title">
+                                <span class="lang-zh"><i class="ph ph-layout"
+                                        style="vertical-align: middle; margin-right: 6px;"></i>分桌看板/(目前只開放10人分桌設定)</span>
+                                <span class="lang-en"><i class="ph ph-layout"
+                                        style="vertical-align: middle; margin-right: 6px;"></i>Table Board</span>
+                            </h3>
+                            <p class="table-list-desc"
+                                style="margin-top: 8px; margin-bottom: 24px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+                                <span
+                                    class="lang-zh">您可以在此查看所有桌位的使用狀態。點擊空桌「建立桌位」或已使用桌位的「修改桌位資料」進行操作。基於個資安全，此看板僅列出桌暱稱而不洩露名單。</span>
+                                <span class="lang-en">View the status of all tables. Click "Create Table" for empty
+                                    tables or "Modify Table" for used tables. For privacy, this board only shows table
+                                    nicknames and hides member list.</span>
+                            </p>
+                        </div>
+                        <div id="tables-grid" class="tables-grid">
+                            <!-- 由 JavaScript 動態生成桌位卡片 -->
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">
+                                <i class="ph ph-spinner ph-spin"
+                                    style="font-size: 2rem; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                <span class="lang-zh">載入桌位資料中...</span><span class="lang-en">Loading tables...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: 揪桌友看板 -->
+                <div class="tab-content hidden" id="content-group">
+                    <div class="table-list-container">
+                        <div class="table-list-header"
+                            style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                            <div style="flex: 1; min-width: 280px;">
+                                <h3 class="table-list-title">
+                                    <span class="lang-zh"><i class="ph ph-chats-teardrop"
+                                            style="vertical-align: middle; margin-right: 6px;"></i>揪桌友看板</span>
+                                    <span class="lang-en"><i class="ph ph-chats-teardrop"
+                                            style="vertical-align: middle; margin-right: 6px;"></i>Group Member
+                                        Board</span>
+                                </h3>
+                                <p class="table-list-desc"
+                                    style="margin-top: 8px; margin-bottom: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="lang-zh">在這裡您可以建立自己的桌友資料歐~。</span>
+                                    <span class="lang-en">Start a new group table friends or join others. No table count
+                                        limit.</span>
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="openNewGroupTableModal()"
+                                style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                <i class="ph ph-plus-circle" style="font-size: 1.25rem;"></i>
+                                <span class="lang-zh">建立新桌友資料</span><span class="lang-en">Create Group Table</span>
+                            </button>
+                        </div>
+
+                        <!-- 搜尋過濾工具列 -->
+                        <div class="search-filter-bar" style="margin-top: 20px; display: flex; align-items: center; gap: 12px; background: #fafafa; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px;">
+                            <div style="position: relative; flex: 1; min-width: 200px;">
+                                <i class="ph ph-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.15rem;"></i>
+                                <input type="text" id="group-search-input" oninput="filterGroupTables()" placeholder="搜尋桌號 ID (如 001) 或 桌暱稱..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem; background: #ffffff;">
+                            </div>
+                            <button type="button" class="btn btn-outline btn-small" onclick="clearGroupSearch()" style="padding: 8px 12px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); background: #ffffff;">
+                                <i class="ph ph-x-circle" style="font-size: 1.05rem; color: var(--text-muted);"></i>
+                                <span class="lang-zh">清除</span><span class="lang-en">Clear</span>
+                            </button>
+                        </div>
+
+                        <div id="group-tables-grid" class="tables-grid" style="margin-top: 20px;">
+                            <!-- 由 JavaScript 動態生成揪桌友卡片 -->
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">
+                                <i class="ph ph-spinner ph-spin"
+                                    style="font-size: 2rem; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                <span class="lang-zh">載入桌友資料中...</span><span class="lang-en">Loading group
+                                    tables...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -827,7 +922,8 @@
                                 <ol class="terms-list">
                                     <li><strong>繳費期限：</strong>本次活動費用為新台幣1000元，"送出報名資料後請至email收信讀取繳費資訊"，請於報名完成後7日內完成費用匯款繳納。若7日內未繳款，第8日主辦系統會自動刪除報名資料，依舊想參加者請重新報名與繳費。<br><span
                                             class="highlight">*若繳費後無法成功登記繳費紀錄，請盡速寄信/Email通知活動方，為您處理報名事宜。</span></li>
-                                    <li><strong>繳費管道：</strong>台灣人請優先使用線上繳費方式付款（自動更新免對帳），亦可選擇銀行轉帳匯款（備用管道）。若選擇轉帳匯款，請於取得匯款後五碼資料後，回到報名網頁「2. 匯款登記」分頁填寫相關資料，才算完成報名作業；使用線上繳費者無須登記。非台灣人則請使用 PayPal 平台繳費。</li>
+                                    <li><strong>繳費管道：</strong>台灣人請優先使用線上繳費方式付款（自動更新免對帳），亦可選擇銀行轉帳匯款（備用管道）。若選擇轉帳匯款，請於取得匯款後五碼資料後，回到報名網頁「2.
+                                        匯款登記」分頁填寫相關資料，才算完成報名作業；使用線上繳費者無須登記。非台灣人則請使用 PayPal 平台繳費。</li>
                                     <li><strong>截止日期：</strong>活動於 8/15 日截止報名，而報名系統將會於 8/26 日全部關閉（匯款登記也會關閉），所以請盡速於 8/26
                                         日前完成繳費作業。8/27 日開始也請不要繼續匯款，以免造成活動處理困難。</li>
                                     <li><strong>退款規則：</strong>完成報名作業後，如需申請退款，請於 9/11 日以前寄信/Email通知我們。
@@ -858,7 +954,13 @@
                                             successfully
                                             register your payment details after paying, please email the organizer
                                             immediately for assistance.</span></li>
-                                    <li><strong>Payment Methods:</strong> Taiwan residents please prioritize using online payment (credit card/convenience store, auto-matched), or optionally use bank transfer (backup). For bank transfers, after paying and obtaining the transaction details (last 5 digits), please return to the registration page, "2. Payment" tab, to submit the details and finalize registration; online payments do not require manual registration. International attendees please pay via PayPal.</li>
+                                    <li><strong>Payment Methods:</strong> Taiwan residents please prioritize using
+                                        online payment (credit card/convenience store, auto-matched), or optionally use
+                                        bank transfer (backup). For bank transfers, after paying and obtaining the
+                                        transaction details (last 5 digits), please return to the registration page, "2.
+                                        Payment" tab, to submit the details and finalize registration; online payments
+                                        do not require manual registration. International attendees please pay via
+                                        PayPal.</li>
                                     <li><strong>Closing Dates:</strong> Registration closes on August 15, and the
                                         registration system (including payment submission) will close completely on
                                         August 26. Please complete your payment by August 26. Please do not make any
@@ -910,46 +1012,58 @@
                 style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
                 <span class="lang-zh">我們已收到您的報名資料。請選擇下方任一方式完成繳費，優先推薦線上繳費（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）：</span>
-                <span class="lang-en">We have received your details. Please choose one of the payment methods below to complete your registration, online payment is highly recommended (Contact: <a href="mailto:ponbosch@gmail.com"
+                <span class="lang-en">We have received your details. Please choose one of the payment methods below to
+                    complete your registration, online payment is highly recommended (Contact: <a
+                        href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>):</span>
             </p>
             <p id="reg-success-desc-international" class="hidden"
                 style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
                 <span class="lang-zh">我們已發送線上繳費指引至您的信箱，您亦可直接點選下方按鈕進行線上繳費（若未收到信件請聯絡 <a href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）。</span>
-                <span class="lang-en">We have sent the online payment guide to your email. You can also click the button below to pay online directly (If not received, contact: <a href="mailto:ponbosch@gmail.com"
+                <span class="lang-en">We have sent the online payment guide to your email. You can also click the button
+                    below to pay online directly (If not received, contact: <a href="mailto:ponbosch@gmail.com"
                         style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>).</span>
             </p>
 
             <!-- 方式一：主要付款管道 (線上繳費) -->
-            <div id="reg-success-online-box" style="margin-bottom: 20px; padding: 16px; background: rgba(255, 127, 80, 0.1); border: 1px solid rgba(255, 127, 80, 0.2); border-radius: 12px; text-align: center;">
+            <div id="reg-success-online-box"
+                style="margin-bottom: 20px; padding: 16px; background: rgba(255, 127, 80, 0.1); border: 1px solid rgba(255, 127, 80, 0.2); border-radius: 12px; text-align: center;">
                 <div style="font-weight: 700; margin-bottom: 8px; color: var(--bear-rust); font-size: 1rem;">
                     <i class="ph ph-credit-card" style="vertical-align: middle; margin-right: 4px;"></i>
                     <span class="lang-zh">【主要付款】方式一：線上繳費</span>
                     <span class="lang-en">【Primary】Method 1: Online Payment</span>
                 </div>
                 <div style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; font-weight: 500;">
-                    <span class="lang-zh">您所選的方案：<strong id="reg-success-online-trans" style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
-                    <span class="lang-en">Your package: <strong id="reg-success-online-trans-en" style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                    <span class="lang-zh">您所選的方案：<strong id="reg-success-online-trans"
+                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                    <span class="lang-en">Your package: <strong id="reg-success-online-trans-en"
+                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
                 </div>
-                <div style="margin-bottom: 12px; padding: 12px; background: #fff5f5; border: 1px solid #ffcbd2; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; font-weight: 700; line-height: 1.5; text-align: left;">
+                <div
+                    style="margin-bottom: 12px; padding: 12px; background: #fff5f5; border: 1px solid #ffcbd2; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; font-weight: 700; line-height: 1.5; text-align: left;">
                     <span class="lang-zh">⚠️ 請特別注意：前往線上付款介面時，請務必輸入您剛才填寫的 Email 信箱：<br>
-                        <span class="reg-success-email-display" style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
+                        <span class="reg-success-email-display"
+                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
                         系統才能自動對帳！
                     </span>
-                    <span class="lang-en">⚠️ Please note: In the online payment interface, you MUST enter your registered email address:<br>
-                        <span class="reg-success-email-display" style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
+                    <span class="lang-en">⚠️ Please note: In the online payment interface, you MUST enter your
+                        registered email address:<br>
+                        <span class="reg-success-email-display"
+                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
                         for automatic reconciliation!
                     </span>
                 </div>
-                <a id="btn-online-payment" href="#" target="_blank" class="btn btn-primary" style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); color: white; width: 100%; box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3); font-size: 0.95rem; padding: 10px 20px;">
+                <a id="btn-online-payment" href="#" target="_blank" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); color: white; width: 100%; box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3); font-size: 0.95rem; padding: 10px 20px;">
                     <span class="lang-zh">前往主要線上繳費</span>
                     <span class="lang-en">Go to Online Payment</span>
                 </a>
             </div>
 
             <!-- 方式二：備用付款管道 (轉帳匯款) -->
-            <div id="reg-success-bank-title" style="font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">
+            <div id="reg-success-bank-title"
+                style="font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">
                 <i class="ph ph-bank" style="vertical-align: middle; margin-right: 4px;"></i>
                 <span class="lang-zh">【備用付款】方式二：轉帳匯款 (無法線上繳費者使用)</span>
                 <span class="lang-en">【Backup】Method 2: Bank Remittance (If Online Pay fails)</span>
@@ -976,8 +1090,11 @@
             <div class="alert-box" id="reg-success-alert-box">
                 <i class="ph ph-info" style="font-size: 1.5rem; color: #0288d1; margin-right: 12px;"></i>
                 <span>
-                    <span class="lang-zh">若您選擇<strong>「方式二：轉帳匯款」</strong>，匯款後請切換至 <strong>「2. 匯款登記」</strong> 分頁登記後五碼，以便對帳；主要「線上繳費」則免登記對帳！</span>
-                    <span class="lang-en">If you select <strong>"Method 2: Bank Remittance"</strong>, please register your last 5 digits on the <strong>"2. Payment"</strong> tab after remitting. Online payments do not need registration!</span>
+                    <span class="lang-zh">若您選擇<strong>「方式二：轉帳匯款」</strong>，匯款後請切換至 <strong>「2. 匯款登記」</strong>
+                        分頁登記後五碼，以便對帳；主要「線上繳費」則免登記對帳！</span>
+                    <span class="lang-en">If you select <strong>"Method 2: Bank Remittance"</strong>, please register
+                        your last 5 digits on the <strong>"2. Payment"</strong> tab after remitting. Online payments do
+                        not need registration!</span>
                 </span>
             </div>
 
@@ -1015,27 +1132,33 @@
             <h3 style="text-align: center; color: var(--ocean-dark); margin-bottom: 20px; font-size: 1.5rem;">
                 <span class="lang-zh">📝 請核對您的報名資料</span><span class="lang-en">📝 Verify Registration Details</span>
             </h3>
-            
-            <div style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px; font-size: 1rem; line-height: 1.8;">
-                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+
+            <div
+                style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px; font-size: 1rem; line-height: 1.8;">
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
                     <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
                         <span class="lang-zh">暱稱</span><span class="lang-en">Nickname</span>
                     </span>
                     <span id="confirm-name" style="font-weight: bold; color: var(--text-main);">-</span>
                 </div>
-                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
                     <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
                         <span class="lang-zh">電子信箱</span><span class="lang-en">Email</span>
                     </span>
-                    <span id="confirm-email" style="font-weight: bold; color: var(--text-main); word-break: break-all;">-</span>
+                    <span id="confirm-email"
+                        style="font-weight: bold; color: var(--text-main); word-break: break-all;">-</span>
                 </div>
-                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
                     <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
                         <span class="lang-zh">手機後四碼</span><span class="lang-en">Phone (Last 4)</span>
                     </span>
                     <span id="confirm-phone" style="font-weight: bold; color: var(--text-main);">-</span>
                 </div>
-                <div style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
                     <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
                         <span class="lang-zh">國籍</span><span class="lang-en">Nationality</span>
                     </span>
@@ -1048,14 +1171,444 @@
                     <span id="confirm-transportation" style="font-weight: bold; color: var(--bear-rust);">-</span>
                 </div>
             </div>
-            
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                <button type="button" class="btn btn-outline" style="border-radius: 12px; font-size: 0.95rem; padding: 12px;" onclick="closeConfirmModal()">
+                <button type="button" class="btn btn-outline"
+                    style="border-radius: 12px; font-size: 0.95rem; padding: 12px;" onclick="closeConfirmModal()">
                     <span class="lang-zh">返回修改</span><span class="lang-en">Back to Edit</span>
                 </button>
-                <button type="button" class="btn btn-primary" style="border-radius: 12px; font-size: 0.95rem; padding: 12px; background: linear-gradient(135deg, var(--wave-cyan), var(--ocean-dark)); color: white; box-shadow: 0 4px 15px rgba(0, 139, 139, 0.3);" onclick="submitConfirmedRegistration()">
+                <button type="button" class="btn btn-primary"
+                    style="border-radius: 12px; font-size: 0.95rem; padding: 12px; background: linear-gradient(135deg, var(--wave-cyan), var(--ocean-dark)); color: white; box-shadow: 0 4px 15px rgba(0, 139, 139, 0.3);"
+                    onclick="submitConfirmedRegistration()">
                     <span class="lang-zh">確認無誤，送出</span><span class="lang-en">Confirm & Submit</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 分桌密碼驗證彈出視窗 -->
+    <div id="table-password-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-small">
+            <button type="button" class="modal-close" onclick="closeTableModal('password')">&times;</button>
+            <div class="success-icon"
+                style="background: rgba(255, 127, 80, 0.1); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--bear-rust);"></i>
+            </div>
+            <h3
+                style="text-align: center; color: var(--text-main); margin-bottom: 8px; font-size: 1.35rem; font-weight: 700;">
+                <span class="lang-zh">桌位密碼驗證</span><span class="lang-en">Table Password Verify</span>
+            </h3>
+            <p
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
+                <span class="lang-zh">請輸入修改密碼以編輯：<strong id="verify-table-name-display"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                <span class="lang-en">Please enter password to edit: <strong id="verify-table-name-display-en"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+            </p>
+            <form id="form-table-password" class="hub-form" onsubmit="submitTablePassword(event)">
+                <input type="hidden" id="verify-table-id" value="">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="verify-table-pass" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                        <i class="ph ph-key"></i> <span class="lang-zh">修改密碼</span><span class="lang-en">Table
+                            Password</span>
+                    </label>
+                    <input type="password" id="verify-table-pass" required placeholder="請輸入設定密碼 / Enter Password"
+                        style="width: 100%; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="btn-password-submit"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);">
+                    <i class="ph ph-shield-check" style="margin-right: 4px; vertical-align: middle;"></i> <span
+                        class="lang-zh">驗證密碼</span><span class="lang-en">Verify Password</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. 分桌設定/編輯彈出視窗 -->
+    <div id="table-editor-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-large"
+            style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+            <!-- Header -->
+            <div class="modal-header-section"
+                style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01);">
+                <h3
+                    style="margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                    <span class="lang-zh">10人分桌設定 - 桌位 ID: <strong id="editor-table-id-display"
+                            style="color: var(--bear-rust);">-</strong></span>
+                    <span class="lang-en">10-Person Table Setup - Table ID: <strong id="editor-table-id-display-en"
+                            style="color: var(--bear-rust);">-</strong></span>
+                </h3>
+                <button type="button" class="modal-close" onclick="closeTableModal('editor')"
+                    style="position: static; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body-scroll" style="flex: 1; overflow-y: auto; padding: 24px;">
+                <!-- 桌位基本資訊 (模式A, B皆會顯示，但B中可即時更新) -->
+                <div class="table-basic-info-box"
+                    style="background: rgba(255, 127, 80, 0.03); border: 1px solid rgba(255, 127, 80, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-table-nickname"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-tag"></i> <span class="lang-zh">桌暱稱 (不可空白)</span><span class="lang-en">Table
+                                Nickname</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-table-nickname" required placeholder="例如：浪熊第一桌"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-table-nickname" class="btn btn-outline btn-small hidden"
+                                onclick="updateTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-table-password"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-key"></i> <span class="lang-zh">修改密碼 (不可空白)</span><span class="lang-en">Edit
+                                Password</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-table-password" required placeholder="請設定修改密碼"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-table-password" class="btn btn-outline btn-small hidden"
+                                onclick="updateTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10人名單填寫 -->
+                <div class="table-members-section">
+                    <h4 class="members-section-title"
+                        style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--text-main); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                        <span class="lang-zh">同桌成員 (共 10 人，人員 1 為聯絡窗口)</span>
+                        <span class="lang-en">Members (10 people max, Member 1 is contact)</span>
+                    </h4>
+
+                    <!-- 批次快速貼上區塊 (僅在新建模式下可用) -->
+                    <div id="batch-paste-section"
+                        style="background: rgba(255, 127, 80, 0.04); border: 1.5px dashed rgba(255, 127, 80, 0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h5
+                            style="margin: 0 0 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span
+                                style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">
+                                <i class="ph ph-clipboard-text" style="font-size: 1.1rem; color: var(--bear-rust);"></i>
+                                <span class="lang-zh">📋 批次快速貼上成員名單</span>
+                                <span class="lang-en">📋 Bulk Paste Members List</span>
+                            </span>
+                            <a href="#" onclick="toggleBatchPaste(event)" id="batch-paste-toggle-btn"
+                                style="font-size: 0.8rem; color: var(--bear-rust); text-decoration: none; font-weight: 600;">展開選單
+                                / Expand</a>
+                        </h5>
+                        <div id="batch-paste-container" class="hidden" style="margin-top: 10px;">
+                            <p
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4;">
+                                <span class="lang-zh">請輸入或貼上名單，每行一人，格式為「Email, 手機後四碼」（可用逗號、空格或 Tab 分隔）。例如：</span>
+                                <span class="lang-en">Paste list, one member per line, format: "Email, PhoneLast4"
+                                    (comma/space separated):</span>
+                                <br>
+                                <code
+                                    style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-top: 4px;">friend@mail.com, 1234</code>
+                            </p>
+                            <textarea id="batch-paste-textarea" rows="3"
+                                placeholder="test1@gmail.com, 1234&#10;test2@gmail.com, 5678"
+                                style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-family: monospace; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; min-height: 80px;"></textarea>
+                            <button type="button" class="btn btn-outline btn-small" onclick="applyBatchPaste()"
+                                style="padding: 6px 12px; font-weight: 600; border-color: var(--bear-rust); color: var(--bear-rust); background: white; cursor: pointer; border-radius: 6px;">
+                                <span class="lang-zh">匯入名單</span><span class="lang-en">Import</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="members-list-container" class="members-list-container"
+                        style="display: flex; flex-direction: column; gap: 16px;">
+                        <!-- JS 將動態生成 10 列成員資訊 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer-section"
+                style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01); border-radius: 0 0 16px 16px;">
+                <div class="modal-footer-left">
+                    <button type="button" id="btn-disband-table" class="btn btn-danger hidden" onclick="disbandTable()"
+                        style="background: #d32f2f; border-color: #d32f2f; color: white; display: flex; align-items: center; gap: 4px; border-radius: 8px; padding: 10px 16px; font-weight: 500;">
+                        <i class="ph ph-trash" style="font-size: 1.15rem; vertical-align: middle;"></i>
+                        <span class="lang-zh">解散並清空此桌</span><span class="lang-en">Disband Table</span>
+                    </button>
+                </div>
+                <div class="modal-footer-right" style="display: flex; gap: 12px; align-items: center;">
+                    <span id="editor-error-msg"
+                        style="color: #d32f2f; font-weight: 600; font-size: 0.95rem; margin-right: 12px; display: none;"></span>
+                    <button type="button" id="btn-create-table-submit" class="btn btn-primary"
+                        onclick="submitNewTable()"
+                        style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <i class="ph ph-check-square" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">建立分桌</span><span class="lang-en">Create Table</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeTableModal('editor')"
+                        style="border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <span class="lang-zh">關閉視窗</span><span class="lang-en">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 選擇報名人員彈出視窗 (快速選單) -->
+    <div id="member-picker-modal" class="modal hidden" style="z-index: 11000;">
+        <div class="modal-card modal-card-small"
+            style="max-width: 480px; width: 90%; border-radius: 16px; background: white; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header-section"
+                style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3
+                    style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users" style="font-size: 1.3rem; color: var(--bear-rust);"></i>
+                    <span class="lang-zh">選擇已付款報名學員</span>
+                    <span class="lang-en">Select Paid Registrant</span>
+                </h3>
+                <button type="button" onclick="closeMemberPicker()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            <div class="modal-body-section"
+                style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; max-height: 450px; overflow-y: auto;">
+                <div>
+                    <input type="text" id="member-picker-search" oninput="filterPickerMembers()"
+                        placeholder="搜尋姓名或 Email..."
+                        style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.95rem; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--bear-rust)'"
+                        onblur="this.style.borderColor='var(--border-color)'">
+                </div>
+                <div id="member-picker-list" class="modal-body-scroll"
+                    style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 280px; padding-right: 4px;">
+                    <!-- JS 將動態生成人員按鈕 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 揪桌友密碼驗證彈出視窗 -->
+    <div id="group-table-password-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-small">
+            <button type="button" class="modal-close" onclick="closeGroupTableModal('password')">&times;</button>
+            <div class="success-icon"
+                style="background: rgba(255, 127, 80, 0.1); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--bear-rust);"></i>
+            </div>
+            <h3
+                style="text-align: center; color: var(--text-main); margin-bottom: 8px; font-size: 1.35rem; font-weight: 700;">
+                <span class="lang-zh">揪桌友密碼驗證</span><span class="lang-en">Group Table Password Verify</span>
+            </h3>
+            <p
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
+                <span class="lang-zh">請輸入修改密碼以管理：<strong id="verify-group-table-name-display"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                <span class="lang-en">Please enter password to manage: <strong id="verify-group-table-name-display-en"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+            </p>
+            <form id="form-group-table-password" class="hub-form" onsubmit="submitGroupTablePassword(event)">
+                <input type="hidden" id="verify-group-table-id" value="">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="verify-group-table-pass" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                        <i class="ph ph-key"></i> <span class="lang-zh">管理密碼</span><span class="lang-en">Group Table
+                            Password</span>
+                    </label>
+                    <input type="password" id="verify-group-table-pass" required placeholder="請輸入設定密碼 / Enter Password"
+                        style="width: 100%; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="btn-group-password-submit"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);">
+                    <i class="ph ph-shield-check" style="margin-right: 4px; vertical-align: middle;"></i> <span
+                        class="lang-zh">驗證密碼</span><span class="lang-en">Verify Password</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 揪桌友設定/編輯彈出視窗 -->
+    <div id="group-table-editor-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-large"
+            style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+            <!-- Header -->
+            <div class="modal-header-section"
+                style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01);">
+                <h3
+                    style="margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-chats-teardrop" style="color: var(--bear-rust);"></i>
+                    <span class="lang-zh">桌友設定 <strong id="editor-group-table-id-display"
+                            style="color: var(--bear-rust);">-</strong></span>
+                    <span class="lang-en">Group Table <strong id="editor-group-table-id-display-en"
+                            style="color: var(--bear-rust);">-</strong></span>
+                </h3>
+                <button type="button" class="modal-close" onclick="closeGroupTableModal('editor')"
+                    style="position: static; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body-scroll" style="flex: 1; overflow-y: auto; padding: 24px;">
+                <!-- 揪桌友基本資訊 -->
+                <div class="table-basic-info-box"
+                    style="background: rgba(255, 127, 80, 0.03); border: 1px solid rgba(255, 127, 80, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-group-table-nickname"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-tag"></i> <span class="lang-zh">桌友暱稱 (不可空白)</span><span
+                                class="lang-en">Group Table
+                                Nickname</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-group-table-nickname" required placeholder="例如：熊族歡樂烤肉桌"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-group-table-nickname"
+                                class="btn btn-outline btn-small hidden" onclick="updateGroupTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-group-table-password"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-key"></i> <span class="lang-zh">修改密碼 (不可空白)</span><span class="lang-en">Edit
+                                Password</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-group-table-password" required placeholder="請設定修改密碼"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-group-table-password"
+                                class="btn btn-outline btn-small hidden" onclick="updateGroupTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10人名單填寫 -->
+                <div class="table-members-section">
+                    <!-- 提示最低人數限制 -->
+                    <div id="group-min-limit-alert"
+                        style="background: rgba(255, 165, 0, 0.1); border: 1px solid orange; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-weight: 600; color: #d87d00; font-size: 0.95rem;">
+                        <i class="ph ph-warning" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">最低送出表單人數為 <span id="group-min-limit-display">5</span> 人 (含發起人)</span>
+                        <span class="lang-en">Minimum submission count is <span id="group-min-limit-display-en">5</span>
+                            people.</span>
+                    </div>
+
+                    <h4 class="members-section-title"
+                        style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--text-main); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                        <span class="lang-zh">桌友成員 (共 10 人，人員 1 為發起人/聯絡窗口)</span>
+                        <span class="lang-en">Members (10 people max, Member 1 is creator)</span>
+                    </h4>
+
+                    <!-- 批次快速貼上區塊 (僅在新建模式下可用) -->
+                    <div id="group-batch-paste-section"
+                        style="background: rgba(255, 127, 80, 0.04); border: 1.5px dashed rgba(255, 127, 80, 0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h5
+                            style="margin: 0 0 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span
+                                style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">
+                                <i class="ph ph-clipboard-text" style="font-size: 1.1rem; color: var(--bear-rust);"></i>
+                                <span class="lang-zh">📋 批次快速貼上成員名單，多格式支援，可excel直接貼上。</span>
+                                <span class="lang-en">📋 Bulk Paste Members List</span>
+                            </span>
+                            <a href="#" onclick="toggleGroupBatchPaste(event)" id="group-batch-paste-toggle-btn"
+                                style="font-size: 0.8rem; color: var(--bear-rust); text-decoration: none; font-weight: 600;">展開選單
+                                / Expand</a>
+                        </h5>
+                        <div id="group-batch-paste-container" class="hidden" style="margin-top: 10px;">
+                            <p
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4;">
+                                <span class="lang-zh">請輸入或貼上名單，每行一人，格式為「Email, 手機後四碼」（可用逗號、空格或 Tab 分隔）。例如：</span>
+                                <span class="lang-en">Paste list, one member per line, format: "Email,
+                                    PhoneLast4":</span>
+                                <br>
+                                <code
+                                    style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-top: 4px;">friend@mail.com, 1234</code>
+                            </p>
+                            <textarea id="group-batch-paste-textarea" rows="3"
+                                placeholder="test1@gmail.com, 1234&#10;test2@gmail.com, 5678"
+                                style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-family: monospace; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; min-height: 80px;"></textarea>
+                            <button type="button" class="btn btn-outline btn-small" onclick="applyGroupBatchPaste()"
+                                style="padding: 6px 12px; font-weight: 600; border-color: var(--bear-rust); color: var(--bear-rust); background: white; cursor: pointer; border-radius: 6px;">
+                                <span class="lang-zh">匯入名單</span><span class="lang-en">Import</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="group-members-list-container" class="members-list-container"
+                        style="display: flex; flex-direction: column; gap: 16px;">
+                        <!-- JS 將動態生成 10 列成員資訊 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer-section"
+                style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01); border-radius: 0 0 16px 16px;">
+                <div class="modal-footer-left">
+                    <button type="button" id="btn-disband-group-table" class="btn btn-danger hidden"
+                        onclick="disbandGroupTable()"
+                        style="background: #d32f2f; border-color: #d32f2f; color: white; display: flex; align-items: center; gap: 4px; border-radius: 8px; padding: 10px 16px; font-weight: 500;">
+                        <i class="ph ph-trash" style="font-size: 1.15rem; vertical-align: middle;"></i>
+                        <span class="lang-zh">解散揪桌友</span><span class="lang-en">Disband Table</span>
+                    </button>
+                </div>
+                <div class="modal-footer-right" style="display: flex; gap: 12px; align-items: center;">
+                    <span id="group-editor-error-msg"
+                        style="color: #d32f2f; font-weight: 600; font-size: 0.95rem; margin-right: 12px; display: none;"></span>
+                    <button type="button" id="btn-create-group-table-submit" class="btn btn-primary"
+                        onclick="submitNewGroupTable()"
+                        style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <i class="ph ph-check-square" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">建立新揪桌資料</span><span class="lang-en">Create Table</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeGroupTableModal('editor')"
+                        style="border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <span class="lang-zh">關閉視窗</span><span class="lang-en">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 揪桌友：選擇報名人員彈出視窗 -->
+    <div id="group-member-picker-modal" class="modal hidden" style="z-index: 11000;">
+        <div class="modal-card modal-card-small"
+            style="max-width: 480px; width: 90%; border-radius: 16px; background: white; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header-section"
+                style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3
+                    style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users" style="font-size: 1.3rem; color: var(--bear-rust);"></i>
+                    <span class="lang-zh">選擇已付款報名學員</span>
+                    <span class="lang-en">Select Paid Registrant</span>
+                </h3>
+                <button type="button" onclick="closeGroupMemberPicker()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            <div class="modal-body-section"
+                style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; max-height: 450px; overflow-y: auto;">
+                <div>
+                    <input type="text" id="group-member-picker-search" oninput="filterGroupPickerMembers()"
+                        placeholder="搜尋姓名或 Email..."
+                        style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.95rem; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--bear-rust)'"
+                        onblur="this.style.borderColor='var(--border-color)'">
+                </div>
+                <div id="group-member-picker-list" class="modal-body-scroll"
+                    style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 280px; padding-right: 4px;">
+                    <!-- JS 將動態生成人員按鈕 -->
+                </div>
             </div>
         </div>
     </div>
