@@ -69,6 +69,21 @@ function handleRequest(e) {
       return toJSON(e, { status: "error", message: "錯誤：找不到任何工作表分頁！" });
     }
 
+    // 0. 取得功能旗標 Action
+    if (action === "getFeatureFlags") {
+      var flagSheet = getFeatureFlagsSheet(ss);
+      var flagData = flagSheet.getDataRange().getValues();
+      var flags = {};
+      for (var i = 1; i < flagData.length; i++) {
+        var flagName = flagData[i][0] ? flagData[i][0].toString().trim() : "";
+        var flagValue = flagData[i][1] ? flagData[i][1].toString().trim() : "";
+        if (flagName) {
+          flags[flagName] = flagValue;
+        }
+      }
+      return toJSON(e, { status: "success", flags: flags });
+    }
+
     // 1. 活動報名 Action
     if (action === "register") {
       var name = params.name ? params.name.trim() : "";
@@ -76,6 +91,29 @@ function handleRequest(e) {
       var phone = params.phone ? params.phone.trim() : "";
       var nationality = params.nationality ? params.nationality.trim() : "本國人";
       var transportation = params.transportation ? params.transportation.trim() : "自行前往";
+
+      // 檢查西門遊覽車滿額停售旗標
+      if (transportation === "西門遊覽車") {
+        var flagSheet = getFeatureFlagsSheet(ss);
+        var flagData = flagSheet.getDataRange().getValues();
+        var ximenBusSoldOut = false;
+        for (var i = 1; i < flagData.length; i++) {
+          var flagName = flagData[i][0] ? flagData[i][0].toString().trim() : "";
+          var flagValue = flagData[i][1] ? flagData[i][1].toString().trim().toUpperCase() : "";
+          if (flagName === "西門遊覽車滿額停售" && flagValue === "ON") {
+            ximenBusSoldOut = true;
+            break;
+          }
+        }
+        if (ximenBusSoldOut) {
+          return toJSON(e, {
+            status: "error",
+            message: nationality === "外國人"
+              ? "Ximen Tour Bus is fully booked and sold out!"
+              : "西門出發遊覽車已額滿停售！"
+          });
+        }
+      }
 
       if (!name || !email || !phone) {
         return toJSON(e, {
@@ -2121,22 +2159,37 @@ function getFeatureFlagsSheet(ss) {
     // 預設寫入旗標
     var defaultFlags = [
       ["自動發送 QR Code 門票", "OFF"],
-      ["揪桌友最少人數下限", "5"]
+      ["揪桌友最少人數下限", "5"],
+      ["西門遊覽車滿額停售", "OFF"]
     ];
     s.getRange(2, 1, defaultFlags.length, 2).setValues(defaultFlags);
     SpreadsheetApp.flush();
   } else {
-    // 檢查是否已包含 揪桌友最少人數下限 旗標，若無則自動補上
+    // 檢查是否已包含特定旗標，若無則自動補上
     var data = s.getDataRange().getValues();
     var hasGroupFlag = false;
+    var hasBusFlag = false;
     for (var i = 1; i < data.length; i++) {
-      if (data[i][0] && data[i][0].toString().trim() === "揪桌友最少人數下限") {
-        hasGroupFlag = true;
-        break;
+      if (data[i][0]) {
+        var flagName = data[i][0].toString().trim();
+        if (flagName === "揪桌友最少人數下限") {
+          hasGroupFlag = true;
+        }
+        if (flagName === "西門遊覽車滿額停售") {
+          hasBusFlag = true;
+        }
       }
     }
+    var needsFlush = false;
     if (!hasGroupFlag) {
       s.appendRow(["揪桌友最少人數下限", "5"]);
+      needsFlush = true;
+    }
+    if (!hasBusFlag) {
+      s.appendRow(["西門遊覽車滿額停售", "OFF"]);
+      needsFlush = true;
+    }
+    if (needsFlush) {
       SpreadsheetApp.flush();
     }
   }

@@ -2052,3 +2052,10 @@ textarea::placeholder {
     opacity: 0.8 !important;
     font-weight: 400 !important;
 }
+
+/* 西門遊覽車額滿停售選項樣式 */
+option.sold-out-option,
+select option.sold-out-option {
+    color: #ff4d4f !important;
+    text-decoration: line-through !important;
+}

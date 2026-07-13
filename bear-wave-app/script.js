@@ -1013,7 +1013,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const regNationality = document.getElementById('reg-nationality');
     const regTransportation = document.getElementById('reg-transportation');
 
+    let ximenBusSoldOut = false; // 西門遊覽車滿額停售旗標
+
     if (regNationality && regTransportation) {
+        const makeStrikethrough = (text) => {
+            return '~~' + text + '~~';
+        };
+
         const updateTransportationOptions = () => {
             const currentValue = regTransportation.value;
             regTransportation.innerHTML = '';
@@ -1026,12 +1032,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const optXimen = document.createElement('option');
                 optXimen.value = '西門遊覽車'; // 寫入資料庫為 '西門遊覽車'
-                optXimen.text = 'Event Fee & Ximen Bus (NT$1,250)';
+                if (ximenBusSoldOut) {
+                    optXimen.text = makeStrikethrough('Ximen Bus Sold Out');
+                    optXimen.disabled = true;
+                    optXimen.classList.add('sold-out-option');
+                    optXimen.style.color = '#ff4d4f';
+                    optXimen.style.textDecoration = 'line-through';
+                } else {
+                    optXimen.text = 'Event Fee & Ximen Bus (NT$1,250)';
+                }
 
                 regTransportation.add(optSelf);
                 regTransportation.add(optXimen);
 
-                if (currentValue === '自行前往' || currentValue === '西門遊覽車') {
+                if (currentValue === '自行前往' || (currentValue === '西門遊覽車' && !ximenBusSoldOut)) {
                     regTransportation.value = currentValue;
                 } else {
                     regTransportation.value = '自行前往';
@@ -1044,7 +1058,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const optXimen = document.createElement('option');
                 optXimen.value = '西門遊覽車';
-                optXimen.text = '西門出發遊覽車 (NT$1,250) / Ximen Bus (NT$1,250)';
+                if (ximenBusSoldOut) {
+                    optXimen.text = makeStrikethrough('西門遊覽車滿額停售');
+                    optXimen.disabled = true;
+                    optXimen.classList.add('sold-out-option');
+                    optXimen.style.color = '#ff4d4f';
+                    optXimen.style.textDecoration = 'line-through';
+                } else {
+                    optXimen.text = '西門出發遊覽車 (NT$1,250) / Ximen Bus (NT$1,250)';
+                }
 
                 const optHsinchu = document.createElement('option');
                 optHsinchu.value = '新竹中壢遊覽車';
@@ -1060,7 +1082,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 regTransportation.add(optTaichung);
 
                 if (['自行前往', '西門遊覽車', '新竹中壢遊覽車', '台中遊覽車'].includes(currentValue)) {
-                    regTransportation.value = currentValue;
+                    if (currentValue === '西門遊覽車' && ximenBusSoldOut) {
+                        regTransportation.value = '自行前往';
+                    } else {
+                        regTransportation.value = currentValue;
+                    }
                 } else {
                     regTransportation.value = '自行前往';
                 }
@@ -1068,6 +1094,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         regNationality.addEventListener('change', updateTransportationOptions);
         updateTransportationOptions(); // 初始化狀態判定
+
+        // 異步向 GAS API 獲取最新的功能旗標設定
+        const loadBusFeatureFlags = () => {
+            const requestUrl = `${GAS_API_URL}?action=getFeatureFlags`;
+            requestJSONP(requestUrl, (result) => {
+                if (result.status === 'success' && result.flags) {
+                    const flagVal = result.flags['西門遊覽車滿額停售'];
+                    ximenBusSoldOut = (flagVal && flagVal.toString().trim().toUpperCase() === 'ON');
+                    updateTransportationOptions();
+                }
+            }, (err) => {
+                console.error('Failed to load bus feature flags:', err);
+            });
+        };
+        loadBusFeatureFlags();
     }
 
     // 1. 活動報名表單監聽 (觸發確認彈窗)
