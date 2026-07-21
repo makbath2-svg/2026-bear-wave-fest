@@ -365,6 +365,29 @@
 
                 <!-- Tab 1: 活動報名 -->
                 <div class="tab-content" id="content-reg">
+                    <!-- 暫停報名說明公告 (由功能旗標「活動報名-停止」動態控制) -->
+                    <div id="reg-stopped-notice" class="reg-stopped-box hidden">
+                        <div class="reg-stopped-header">
+                            <div class="reg-stopped-icon">
+                                <i class="ph ph-warning-circle"></i>
+                            </div>
+                            <h3 class="reg-stopped-title">
+                                <span class="lang-zh">活動暫停報名通知</span>
+                                <span class="lang-en">Registration Temporarily Paused</span>
+                            </h3>
+                        </div>
+                        <div class="reg-stopped-body">
+                            <p class="reg-stopped-message">
+                                <span class="lang-zh">因人數報名過多，所以先暫停報名作業，目前正在協調相關事宜，尚未報名的朋友需要待8月1日後才能繼續報名。</span>
+                                <span class="lang-en">Due to high registration volume, registration is temporarily paused while we coordinate related matters. Friends who have not yet registered will need to wait until after August 1st to continue registration.</span>
+                            </p>
+                        </div>
+                        <div class="reg-stopped-footer">
+                            <span class="lang-zh"><i class="ph ph-heart" style="color: var(--bear-rust); vertical-align: middle; margin-right: 4px;"></i>造成不便敬請見諒，感謝您的熱情支持與配合！</span>
+                            <span class="lang-en"><i class="ph ph-heart" style="color: var(--bear-rust); vertical-align: middle; margin-right: 4px;"></i>We apologize for any inconvenience and thank you for your understanding!</span>
+                        </div>
+                    </div>
+
                     <form id="form-registration" class="hub-form">
                         <div class="form-group">
                             <label for="reg-name">

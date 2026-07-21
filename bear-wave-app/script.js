@@ -1014,6 +1014,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const regTransportation = document.getElementById('reg-transportation');
 
     let ximenBusSoldOut = false; // 西門遊覽車滿額停售旗標
+    let isRegStopped = false; // 活動報名暫停旗標
+
+    const updateRegistrationStoppedUI = (stopped) => {
+        isRegStopped = stopped;
+        const regNotice = document.getElementById('reg-stopped-notice');
+        const regForm = document.getElementById('form-registration');
+        if (stopped) {
+            if (regNotice) regNotice.classList.remove('hidden');
+            if (regForm) regForm.classList.add('hidden');
+        } else {
+            if (regNotice) regNotice.classList.add('hidden');
+            if (regForm) regForm.classList.remove('hidden');
+        }
+    };
 
     if (regNationality && regTransportation) {
         const makeStrikethrough = (text) => {
@@ -1096,19 +1110,25 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTransportationOptions(); // 初始化狀態判定
 
         // 異步向 GAS API 獲取最新的功能旗標設定
-        const loadBusFeatureFlags = () => {
+        const loadFeatureFlags = () => {
             const requestUrl = `${GAS_API_URL}?action=getFeatureFlags`;
             requestJSONP(requestUrl, (result) => {
                 if (result.status === 'success' && result.flags) {
+                    // 1. 西門遊覽車滿額停售
                     const flagVal = result.flags['西門遊覽車滿額停售'];
                     ximenBusSoldOut = (flagVal && flagVal.toString().trim().toUpperCase() === 'ON');
                     updateTransportationOptions();
+
+                    // 2. 活動報名暫停
+                    const regStopVal = result.flags['活動報名-停止'];
+                    const stopped = (regStopVal && regStopVal.toString().trim().toUpperCase() === 'ON');
+                    updateRegistrationStoppedUI(stopped);
                 }
             }, (err) => {
-                console.error('Failed to load bus feature flags:', err);
+                console.error('Failed to load feature flags:', err);
             });
         };
-        loadBusFeatureFlags();
+        loadFeatureFlags();
     }
 
     // 1. 活動報名表單監聽 (觸發確認彈窗)
@@ -1117,6 +1137,14 @@ document.addEventListener('DOMContentLoaded', () => {
         hubRegForm.addEventListener('submit', (e) => {
             e.preventDefault();
             hideMessage();
+
+            if (isRegStopped) {
+                const isEn = document.body.classList.contains('lang-en');
+                alert(isEn 
+                    ? "Due to high registration volume, registration is temporarily paused while we coordinate related matters. Friends who have not yet registered will need to wait until after August 1st to continue registration." 
+                    : "因人數報名過多，所以先暫停報名作業，目前正在協調相關事宜，尚未報名的朋友需要待8月1日後才能繼續報名。");
+                return;
+            }
 
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;

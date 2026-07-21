@@ -92,6 +92,27 @@ function handleRequest(e) {
       var nationality = params.nationality ? params.nationality.trim() : "本國人";
       var transportation = params.transportation ? params.transportation.trim() : "自行前往";
 
+      // 檢查活動報名是否停止旗標
+      var flagSheet = getFeatureFlagsSheet(ss);
+      var flagData = flagSheet.getDataRange().getValues();
+      var regStopped = false;
+      for (var i = 1; i < flagData.length; i++) {
+        var flagName = flagData[i][0] ? flagData[i][0].toString().trim() : "";
+        var flagValue = flagData[i][1] ? flagData[i][1].toString().trim().toUpperCase() : "";
+        if (flagName === "活動報名-停止" && flagValue === "ON") {
+          regStopped = true;
+          break;
+        }
+      }
+      if (regStopped) {
+        return toJSON(e, {
+          status: "error",
+          message: nationality === "外國人"
+            ? "Due to high registration volume, registration is temporarily paused while we coordinate related matters. Friends who have not yet registered will need to wait until after August 1st to continue registration."
+            : "因人數報名過多，所以先暫停報名作業，目前正在協調相關事宜，尚未報名的朋友需要待8月1日後才能繼續報名。"
+        });
+      }
+
       // 檢查西門遊覽車滿額停售旗標
       if (transportation === "西門遊覽車") {
         var flagSheet = getFeatureFlagsSheet(ss);
@@ -2159,6 +2180,8 @@ function getFeatureFlagsSheet(ss) {
     // 預設寫入旗標
     var defaultFlags = [
       ["自動發送 QR Code 門票", "OFF"],
+      ["車位報名-停止", "OFF"],
+      ["活動報名-停止", "OFF"],
       ["揪桌友最少人數下限", "5"],
       ["西門遊覽車滿額停售", "OFF"]
     ];
@@ -2169,6 +2192,8 @@ function getFeatureFlagsSheet(ss) {
     var data = s.getDataRange().getValues();
     var hasGroupFlag = false;
     var hasBusFlag = false;
+    var hasRegStopFlag = false;
+    var hasParkingStopFlag = false;
     for (var i = 1; i < data.length; i++) {
       if (data[i][0]) {
         var flagName = data[i][0].toString().trim();
@@ -2177,6 +2202,12 @@ function getFeatureFlagsSheet(ss) {
         }
         if (flagName === "西門遊覽車滿額停售") {
           hasBusFlag = true;
+        }
+        if (flagName === "活動報名-停止") {
+          hasRegStopFlag = true;
+        }
+        if (flagName === "車位報名-停止") {
+          hasParkingStopFlag = true;
         }
       }
     }
@@ -2187,6 +2218,14 @@ function getFeatureFlagsSheet(ss) {
     }
     if (!hasBusFlag) {
       s.appendRow(["西門遊覽車滿額停售", "OFF"]);
+      needsFlush = true;
+    }
+    if (!hasRegStopFlag) {
+      s.appendRow(["活動報名-停止", "OFF"]);
+      needsFlush = true;
+    }
+    if (!hasParkingStopFlag) {
+      s.appendRow(["車位報名-停止", "OFF"]);
       needsFlush = true;
     }
     if (needsFlush) {
