@@ -108,8 +108,8 @@ function handleRequest(e) {
         return toJSON(e, {
           status: "error",
           message: nationality === "外國人"
-            ? "Due to high registration volume, registration is temporarily paused while we coordinate related matters. Friends who have not yet registered will need to wait until after August 1st to continue registration."
-            : "因人數報名過多，所以先暫停報名作業，目前正在協調相關事宜，尚未報名的朋友需要待8月1日後才能繼續報名。"
+            ? "Due to enthusiastic response and high demand, registration is temporarily paused while we coordinate related arrangements. Friends who have not yet completed registration are kindly invited to register after August 1st. We apologize for any inconvenience and thank you for your support and patience!"
+            : "因目前報名人數踴躍，我們將暫時停止受理報名，並積極協調相關安排。尚未完成報名的朋友，敬請於 8 月 1 日後再行報名。造成不便，敬請見諒，也感謝大家的支持與耐心等候！"
         });
       }
 

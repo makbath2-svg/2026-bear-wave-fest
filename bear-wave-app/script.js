@@ -1014,9 +1014,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const regTransportation = document.getElementById('reg-transportation');
 
     let ximenBusSoldOut = false; // 西門遊覽車滿額停售旗標
+    let flagsLoaded = false;
     let isRegStopped = false; // 活動報名暫停旗標
 
+    const regSubmitBtn = document.getElementById('btn-reg-submit');
+    if (regSubmitBtn) {
+        regSubmitBtn.disabled = true;
+        regSubmitBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> <span class="lang-zh">檢查報名狀態中...</span><span class="lang-en">Checking status...</span>';
+    }
+
     const updateRegistrationStoppedUI = (stopped) => {
+        flagsLoaded = true;
         isRegStopped = stopped;
         const regNotice = document.getElementById('reg-stopped-notice');
         const regForm = document.getElementById('form-registration');
@@ -1026,6 +1034,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (regNotice) regNotice.classList.add('hidden');
             if (regForm) regForm.classList.remove('hidden');
+            if (regSubmitBtn) {
+                regSubmitBtn.disabled = false;
+                regSubmitBtn.innerHTML = '<i class="ph ph-paper-plane-right"></i> <span class="lang-zh">立即報名</span><span class="lang-en">Submit Registration</span>';
+            }
         }
     };
 
@@ -1123,9 +1135,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     const regStopVal = result.flags['活動報名-停止'];
                     const stopped = (regStopVal && regStopVal.toString().trim().toUpperCase() === 'ON');
                     updateRegistrationStoppedUI(stopped);
+                } else {
+                    flagsLoaded = true;
+                    if (regSubmitBtn) {
+                        regSubmitBtn.disabled = false;
+                        regSubmitBtn.innerHTML = '<i class="ph ph-paper-plane-right"></i> <span class="lang-zh">立即報名</span><span class="lang-en">Submit Registration</span>';
+                    }
                 }
             }, (err) => {
                 console.error('Failed to load feature flags:', err);
+                flagsLoaded = true;
+                if (regSubmitBtn) {
+                    regSubmitBtn.disabled = false;
+                    regSubmitBtn.innerHTML = '<i class="ph ph-paper-plane-right"></i> <span class="lang-zh">立即報名</span><span class="lang-en">Submit Registration</span>';
+                }
             });
         };
         loadFeatureFlags();
@@ -1138,11 +1161,17 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             hideMessage();
 
+            if (!flagsLoaded) {
+                const isEn = document.body.classList.contains('lang-en');
+                alert(isEn ? "Loading system status, please try again in a moment." : "系統正在驗證報名狀態中，請稍候再試。");
+                return;
+            }
+
             if (isRegStopped) {
                 const isEn = document.body.classList.contains('lang-en');
                 alert(isEn 
-                    ? "Due to high registration volume, registration is temporarily paused while we coordinate related matters. Friends who have not yet registered will need to wait until after August 1st to continue registration." 
-                    : "因人數報名過多，所以先暫停報名作業，目前正在協調相關事宜，尚未報名的朋友需要待8月1日後才能繼續報名。");
+                    ? "Due to enthusiastic response and high demand, registration is temporarily paused while we coordinate related arrangements. Friends who have not yet completed registration are kindly invited to register after August 1st. We apologize for any inconvenience and thank you for your support and patience!" 
+                    : "因目前報名人數踴躍，我們將暫時停止受理報名，並積極協調相關安排。尚未完成報名的朋友，敬請於 8 月 1 日後再行報名。造成不便，敬請見諒，也感謝大家的支持與耐心等候！");
                 return;
             }
 
