@@ -939,65 +939,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (successModal) {
                     successModal.classList.remove('hidden');
 
-                    // 根據國籍動態隱藏/顯示匯款箱、線上繳費與提示
                     const isDomestic = (nationality === '本國人');
-                    const descDomestic = document.getElementById('reg-success-desc-domestic');
-                    const descInternational = document.getElementById('reg-success-desc-international');
-                    const bankTitle = document.getElementById('reg-success-bank-title');
-                    const bankBox = document.getElementById('reg-success-bank-box');
-                    const onlineBox = document.getElementById('reg-success-online-box');
-                    const onlineBtn = document.getElementById('btn-online-payment');
-                    const alertBox = document.getElementById('reg-success-alert-box');
                     if (isDomestic) {
                         successModal.classList.remove('force-en');
-                        if (descDomestic) descDomestic.classList.remove('hidden');
-                        if (descInternational) descInternational.classList.add('hidden');
-                        if (bankTitle) bankTitle.classList.remove('hidden');
-                        if (bankBox) bankBox.classList.remove('hidden');
-                        if (onlineBox) onlineBox.classList.remove('hidden');
-                        if (alertBox) alertBox.classList.remove('hidden');
-
-                        // 寫入回傳的匯款帳號資訊
-                        const bankName = document.getElementById('bank-name');
-                        const bankAccName = document.getElementById('bank-account-name');
-                        const bankAccNum = document.getElementById('bank-account-num');
-                        if (bankName) bankName.innerText = result.data.bankInfo.bankName;
-                        if (bankAccName) bankAccName.innerText = result.data.bankInfo.accountName;
-                        if (bankAccNum) bankAccNum.innerText = result.data.bankInfo.accountNumber;
                     } else {
                         successModal.classList.add('force-en');
-                        if (descDomestic) descDomestic.classList.add('hidden');
-                        if (descInternational) descInternational.classList.remove('hidden');
-                        if (bankTitle) bankTitle.classList.add('hidden');
-                        if (bankBox) bankBox.classList.add('hidden');
-                        if (onlineBox) onlineBox.classList.remove('hidden');
-                        if (alertBox) alertBox.classList.add('hidden');
                     }
 
-                    // 寫入回傳的線上繳費網址（本國人與外國人通用）
-                    if (onlineBtn && result.data.paymentUrl) {
-                        onlineBtn.href = result.data.paymentUrl;
-                    }
-
-                    // 顯示報名信箱，方便使用者在付款時填入以利自動銷帳
+                    // 顯示報名信箱，方便使用者確認前往收信
                     document.querySelectorAll('.reg-success-email-display').forEach(el => {
                         el.innerText = email;
                     });
-
-                    // 顯示選擇的交通方案（本國人與外國人通用）
-                    const onlineTransZh = document.getElementById('reg-success-online-trans');
-                    const onlineTransEn = document.getElementById('reg-success-online-trans-en');
-                    if (onlineTransZh) {
-                        onlineTransZh.innerText = transportation;
-                    }
-                    if (onlineTransEn) {
-                        let transTextEn = transportation;
-                        if (transportation === '自行前往') transTextEn = 'Self-drive';
-                        else if (transportation === '台中遊覽車') transTextEn = 'Taichung Bus';
-                        else if (transportation === '新竹中壢遊覽車') transTextEn = 'Hsinchu/Zhongli Bus';
-                        else if (transportation === '西門遊覽車') transTextEn = 'Ximen Bus';
-                        onlineTransEn.innerText = transTextEn;
-                    }
                 }
             } else {
                 showMessage(result.message, true);

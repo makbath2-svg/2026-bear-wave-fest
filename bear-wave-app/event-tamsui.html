@@ -382,6 +382,21 @@
                                 <span class="lang-en">Due to enthusiastic response and high demand, registration is temporarily paused while we coordinate related arrangements.<br>Friends who have not yet completed registration are kindly invited to register after August 1st. We apologize for any inconvenience and thank you for your support and patience!</span>
                             </p>
                         </div>
+                        <div class="reg-stopped-footer" style="display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px;">
+                            <div style="font-size: 0.95rem; color: var(--text-main); font-weight: 600;">
+                                <span class="lang-zh">如有任何疑問、團體諮詢或特殊需求，歡迎隨時聯繫客服：</span>
+                                <span class="lang-en">If you have any questions, group inquiries, or special requests, feel free to contact us:</span>
+                            </div>
+                            <a href="mailto:ponbosch@gmail.com" class="btn" style="background: linear-gradient(135deg, #1A4B82, #008B8B); color: #ffffff !important; padding: 10px 22px; border-radius: 50px; font-size: 0.95rem; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(26, 75, 130, 0.25); transition: transform 0.2s ease;">
+                                <i class="ph ph-envelope-simple-open" style="font-size: 1.2rem;"></i>
+                                <span class="lang-zh" style="color: #ffffff !important;">聯絡活動客服信箱 (ponbosch@gmail.com)</span>
+                                <span class="lang-en" style="color: #ffffff !important;">Contact Support (ponbosch@gmail.com)</span>
+                            </a>
+                            <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px; line-height: 1.5;">
+                                <span class="lang-zh">💡 已完成報名者，可直接切換至上方 <strong>「3. 狀態查詢」</strong> 分頁查看對帳狀態與桌次。</span>
+                                <span class="lang-en">💡 Already registered? Click <strong>"3. Status"</strong> above to check your payment status and table assignment.</span>
+                            </div>
+                        </div>
                     </div>
 
                     <form id="form-registration" class="hub-form">
@@ -1020,107 +1035,52 @@
 
     <!-- 1. 報名成功彈出視窗 -->
     <div id="reg-success-modal" class="modal-overlay hidden">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 520px;">
             <button type="button" class="modal-close" onclick="closeModal('reg')">&times;</button>
-            <div class="success-icon"><i class="ph ph-check-circle" style="font-size: 3.5rem; color: #2e7d32;"></i>
+            <div class="success-icon" style="text-align: center; margin-bottom: 12px;">
+                <i class="ph ph-envelope-simple-open" style="font-size: 3.5rem; color: #1A4B82;"></i>
             </div>
-            <h3 style="text-align: center; color: #2e7d32; margin-bottom: 12px; font-size: 1.5rem;">
-                <span class="lang-zh">🎉 報名成功！</span><span class="lang-en">🎉 Registration Successful!</span>
+            <h3 style="text-align: center; color: var(--ocean-dark); margin-bottom: 16px; font-size: 1.5rem;">
+                <span class="lang-zh">🎉 報名成功！</span>
+                <span class="lang-en">🎉 Registration Successful!</span>
             </h3>
-            <p id="reg-success-desc-domestic"
-                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
-                <span class="lang-zh">我們已收到您的報名資料。請選擇下方任一方式完成繳費，優先推薦線上繳費（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）：</span>
-                <span class="lang-en">We have received your details. Please choose one of the payment methods below to
-                    complete your registration, online payment is highly recommended (Contact: <a
-                        href="mailto:ponbosch@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>):</span>
-            </p>
-            <p id="reg-success-desc-international" class="hidden"
-                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
-                <span class="lang-zh">我們已發送線上繳費指引至您的信箱，您亦可直接點選下方按鈕進行線上繳費（若未收到信件請聯絡 <a href="mailto:ponbosch@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）。</span>
-                <span class="lang-en">We have sent the online payment guide to your email. You can also click the button
-                    below to pay online directly (If not received, contact: <a href="mailto:ponbosch@gmail.com"
-                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>).</span>
+
+            <p style="text-align: center; margin-bottom: 20px; color: var(--text-main); line-height: 1.6; font-size: 0.98rem;">
+                <span class="lang-zh">我們已收到您的報名資料！系統已將詳細的<strong>繳費方式與連結指引</strong>發送至您的 Email 信箱：</span>
+                <span class="lang-en">We have received your details! Detailed <strong>payment instructions & links</strong> have been sent to your email address:</span>
             </p>
 
-            <!-- 方式一：主要付款管道 (線上繳費) -->
-            <div id="reg-success-online-box"
-                style="margin-bottom: 20px; padding: 16px; background: rgba(255, 127, 80, 0.1); border: 1px solid rgba(255, 127, 80, 0.2); border-radius: 12px; text-align: center;">
-                <div style="font-weight: 700; margin-bottom: 8px; color: var(--bear-rust); font-size: 1rem;">
-                    <i class="ph ph-credit-card" style="vertical-align: middle; margin-right: 4px;"></i>
-                    <span class="lang-zh">【主要付款】方式一：線上繳費</span>
-                    <span class="lang-en">【Primary】Method 1: Online Payment</span>
+            <div style="background: rgba(26, 75, 130, 0.06); border: 1px solid rgba(26, 75, 130, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 20px; text-align: center;">
+                <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 4px;">
+                    <span class="lang-zh">您的報名信箱：</span><span class="lang-en">Your Registered Email:</span>
                 </div>
-                <div style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; font-weight: 500;">
-                    <span class="lang-zh">您所選的方案：<strong id="reg-success-online-trans"
-                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
-                    <span class="lang-en">Your package: <strong id="reg-success-online-trans-en"
-                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
-                </div>
-                <div
-                    style="margin-bottom: 12px; padding: 12px; background: #fff5f5; border: 1px solid #ffcbd2; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; font-weight: 700; line-height: 1.5; text-align: left;">
-                    <span class="lang-zh">⚠️ 請特別注意：前往線上付款介面時，請務必輸入您剛才填寫的 Email 信箱：<br>
-                        <span class="reg-success-email-display"
-                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
-                        系統才能自動對帳！
-                    </span>
-                    <span class="lang-en">⚠️ Please note: In the online payment interface, you MUST enter your
-                        registered email address:<br>
-                        <span class="reg-success-email-display"
-                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
-                        for automatic reconciliation!
-                    </span>
-                </div>
-                <a id="btn-online-payment" href="#" target="_blank" class="btn btn-primary"
-                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); color: white; width: 100%; box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3); font-size: 0.95rem; padding: 10px 20px;">
-                    <span class="lang-zh">前往主要線上繳費</span>
-                    <span class="lang-en">Go to Online Payment</span>
-                </a>
+                <div class="reg-success-email-display" style="font-family: monospace; font-size: 1.15rem; font-weight: 700; color: #1A4B82; word-break: break-all;">-</div>
             </div>
 
-            <!-- 方式二：備用付款管道 (轉帳匯款) -->
-            <div id="reg-success-bank-title"
-                style="font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">
-                <i class="ph ph-bank" style="vertical-align: middle; margin-right: 4px;"></i>
-                <span class="lang-zh">【備用付款】方式二：轉帳匯款 (無法線上繳費者使用)</span>
-                <span class="lang-en">【Backup】Method 2: Bank Remittance (If Online Pay fails)</span>
-            </div>
-
-            <div class="bank-info-box" id="reg-success-bank-box">
-                <div class="bank-row">
-                    <span class="lang-zh">銀行：</span><span class="lang-en">Bank: </span>
-                    <strong id="bank-name">臺灣銀行 (004)</strong>
+            <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 12px; padding: 16px; margin-bottom: 24px; font-size: 0.9rem; line-height: 1.6; color: #5d4037;">
+                <div style="font-weight: 700; color: #e65100; margin-bottom: 8px;">
+                    <i class="ph ph-info" style="vertical-align: middle; font-size: 1.1rem; margin-right: 4px;"></i>
+                    <span class="lang-zh">重要收信與繳費提醒：</span><span class="lang-en">Important Payment Notice:</span>
                 </div>
-                <div class="bank-row"
-                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                    <div>
-                        <span class="lang-zh">帳號：</span><span class="lang-en">Account Number: </span>
-                        <strong id="bank-account-num">224004060158</strong>
-                    </div>
-                    <button type="button" class="btn-copy" id="btn-copy-account" onclick="copyBankAccount()">
-                        <i class="ph ph-copy"></i> <span class="lang-zh">複製帳號</span><span class="lang-en">Copy
-                            Account</span>
-                    </button>
-                </div>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 6px;">
+                        <span class="lang-zh">請登入信箱收取標題為 <strong>「【浪熊 Bear Wave】報名成功通知」</strong> 之信件以進行繳費。</span>
+                        <span class="lang-en">Please check your inbox for an email titled <strong>"【浪熊 Bear Wave】Registration Confirmation"</strong> to proceed with payment.</span>
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                        <span class="lang-zh">若未在收件匣看到信件，請務必檢查<strong>垃圾郵件／促銷郵件匣</strong>。</span>
+                        <span class="lang-en">If not found in your inbox, please check your <strong>Spam / Junk folder</strong>.</span>
+                    </li>
+                    <li>
+                        <span class="lang-zh">如有任何疑問，請聯絡客服信箱：<a href="mailto:ponbosch@gmail.com" style="color: #1A4B82; text-decoration: underline; font-weight: 600;">ponbosch@gmail.com</a></span>
+                        <span class="lang-en">For questions, contact support: <a href="mailto:ponbosch@gmail.com" style="color: #1A4B82; text-decoration: underline; font-weight: 600;">ponbosch@gmail.com</a></span>
+                    </li>
+                </ul>
             </div>
 
-            <div class="alert-box" id="reg-success-alert-box">
-                <i class="ph ph-info" style="font-size: 1.5rem; color: #0288d1; margin-right: 12px;"></i>
-                <span>
-                    <span class="lang-zh">若您選擇<strong>「方式二：轉帳匯款」</strong>，匯款後請切換至 <strong>「2. 匯款登記」</strong>
-                        分頁登記後五碼，以便對帳；主要「線上繳費」則免登記對帳！</span>
-                    <span class="lang-en">If you select <strong>"Method 2: Bank Remittance"</strong>, please register
-                        your last 5 digits on the <strong>"2. Payment"</strong> tab after remitting. Online payments do
-                        not need registration!</span>
-                </span>
-            </div>
-
-            <button type="button" class="btn btn-primary btn-full" style="margin-top: 24px;"
-                onclick="closeModal('reg')">
-                <span class="lang-zh">我瞭解了，關閉視窗</span>
-                <span class="lang-en">Got it, Close Window</span>
+            <button type="button" class="btn btn-primary btn-full" style="background: linear-gradient(135deg, #1A4B82, #008B8B); color: #ffffff !important; border: none; font-size: 1.05rem; padding: 14px 24px; box-shadow: 0 4px 15px rgba(26, 75, 130, 0.3); margin-top: 8px;" onclick="closeModal('reg')">
+                <span class="lang-zh" style="color: #ffffff !important;">我瞭解了，前往查詢狀態</span>
+                <span class="lang-en" style="color: #ffffff !important;">Got it, Go to Status Query</span>
             </button>
         </div>
     </div>
