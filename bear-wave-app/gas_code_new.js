@@ -113,25 +113,37 @@ function handleRequest(e) {
         });
       }
 
-      // 檢查西門遊覽車滿額停售旗標
-      if (transportation === "西門遊覽車") {
+      // 檢查遊覽車滿額停售旗標
+      if (["西門遊覽車", "新竹中壢遊覽車", "台中遊覽車"].indexOf(transportation) !== -1) {
         var flagSheet = getFeatureFlagsSheet(ss);
         var flagData = flagSheet.getDataRange().getValues();
-        var ximenBusSoldOut = false;
+        var busSoldOut = false;
+        var targetFlagName = transportation + "滿額停售";
         for (var i = 1; i < flagData.length; i++) {
           var flagName = flagData[i][0] ? flagData[i][0].toString().trim() : "";
           var flagValue = flagData[i][1] ? flagData[i][1].toString().trim().toUpperCase() : "";
-          if (flagName === "西門遊覽車滿額停售" && flagValue === "ON") {
-            ximenBusSoldOut = true;
+          if (flagName === targetFlagName && flagValue === "ON") {
+            busSoldOut = true;
             break;
           }
         }
-        if (ximenBusSoldOut) {
+        // 若為新竹中壢或台中遊覽車且旗標尚未設定（預設為停售）
+        if ((transportation === "新竹中壢遊覽車" || transportation === "台中遊覽車") && !busSoldOut) {
+          var hasExplicitFlag = false;
+          for (var i = 1; i < flagData.length; i++) {
+            if (flagData[i][0] && flagData[i][0].toString().trim() === targetFlagName) {
+              hasExplicitFlag = true;
+              break;
+            }
+          }
+          if (!hasExplicitFlag) busSoldOut = true;
+        }
+        if (busSoldOut) {
           return toJSON(e, {
             status: "error",
             message: nationality === "外國人"
-              ? "Ximen Tour Bus is fully booked and sold out!"
-              : "西門出發遊覽車已額滿停售！"
+              ? transportation + " is fully booked and sold out!"
+              : transportation + "已額滿停售！"
           });
         }
       }
@@ -2183,7 +2195,9 @@ function getFeatureFlagsSheet(ss) {
       ["車位報名-停止", "OFF"],
       ["活動報名-停止", "OFF"],
       ["揪桌友最少人數下限", "5"],
-      ["西門遊覽車滿額停售", "OFF"]
+      ["西門遊覽車滿額停售", "OFF"],
+      ["新竹中壢遊覽車滿額停售", "ON"],
+      ["台中遊覽車滿額停售", "ON"]
     ];
     s.getRange(2, 1, defaultFlags.length, 2).setValues(defaultFlags);
     SpreadsheetApp.flush();
@@ -2192,6 +2206,8 @@ function getFeatureFlagsSheet(ss) {
     var data = s.getDataRange().getValues();
     var hasGroupFlag = false;
     var hasBusFlag = false;
+    var hasHsinchuFlag = false;
+    var hasTaichungFlag = false;
     var hasRegStopFlag = false;
     var hasParkingStopFlag = false;
     for (var i = 1; i < data.length; i++) {
@@ -2202,6 +2218,12 @@ function getFeatureFlagsSheet(ss) {
         }
         if (flagName === "西門遊覽車滿額停售") {
           hasBusFlag = true;
+        }
+        if (flagName === "新竹中壢遊覽車滿額停售") {
+          hasHsinchuFlag = true;
+        }
+        if (flagName === "台中遊覽車滿額停售") {
+          hasTaichungFlag = true;
         }
         if (flagName === "活動報名-停止") {
           hasRegStopFlag = true;
@@ -2218,6 +2240,14 @@ function getFeatureFlagsSheet(ss) {
     }
     if (!hasBusFlag) {
       s.appendRow(["西門遊覽車滿額停售", "OFF"]);
+      needsFlush = true;
+    }
+    if (!hasHsinchuFlag) {
+      s.appendRow(["新竹中壢遊覽車滿額停售", "ON"]);
+      needsFlush = true;
+    }
+    if (!hasTaichungFlag) {
+      s.appendRow(["台中遊覽車滿額停售", "ON"]);
       needsFlush = true;
     }
     if (!hasRegStopFlag) {

@@ -966,6 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const regTransportation = document.getElementById('reg-transportation');
 
     let ximenBusSoldOut = false; // 西門遊覽車滿額停售旗標
+    let hsinchuBusSoldOut = true; // 新竹中壢遊覽車滿額停售旗標
+    let taichungBusSoldOut = true; // 台中遊覽車滿額停售旗標
     let flagsLoaded = false;
     let isRegStopped = false; // 活動報名暫停旗標
 
@@ -1048,11 +1050,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const optHsinchu = document.createElement('option');
                 optHsinchu.value = '新竹中壢遊覽車';
-                optHsinchu.text = '新竹中壢出發遊覽車 (NT$1,300) / Hsinchu/Zhongli Bus (NT$1,300)';
+                if (hsinchuBusSoldOut) {
+                    optHsinchu.text = makeStrikethrough('新竹中壢遊覽車滿額停售');
+                    optHsinchu.disabled = true;
+                    optHsinchu.classList.add('sold-out-option');
+                    optHsinchu.style.color = '#ff4d4f';
+                    optHsinchu.style.textDecoration = 'line-through';
+                } else {
+                    optHsinchu.text = '新竹中壢出發遊覽車 (NT$1,300) / Hsinchu/Zhongli Bus (NT$1,300)';
+                }
 
                 const optTaichung = document.createElement('option');
                 optTaichung.value = '台中遊覽車';
-                optTaichung.text = '台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)';
+                if (taichungBusSoldOut) {
+                    optTaichung.text = makeStrikethrough('台中遊覽車滿額停售');
+                    optTaichung.disabled = true;
+                    optTaichung.classList.add('sold-out-option');
+                    optTaichung.style.color = '#ff4d4f';
+                    optTaichung.style.textDecoration = 'line-through';
+                } else {
+                    optTaichung.text = '台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)';
+                }
 
                 regTransportation.add(optSelf);
                 regTransportation.add(optXimen);
@@ -1060,7 +1078,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 regTransportation.add(optTaichung);
 
                 if (['自行前往', '西門遊覽車', '新竹中壢遊覽車', '台中遊覽車'].includes(currentValue)) {
-                    if (currentValue === '西門遊覽車' && ximenBusSoldOut) {
+                    if ((currentValue === '西門遊覽車' && ximenBusSoldOut) ||
+                        (currentValue === '新竹中壢遊覽車' && hsinchuBusSoldOut) ||
+                        (currentValue === '台中遊覽車' && taichungBusSoldOut)) {
                         regTransportation.value = '自行前往';
                     } else {
                         regTransportation.value = currentValue;
@@ -1078,9 +1098,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const requestUrl = `${GAS_API_URL}?action=getFeatureFlags`;
             requestJSONP(requestUrl, (result) => {
                 if (result.status === 'success' && result.flags) {
-                    // 1. 西門遊覽車滿額停售
-                    const flagVal = result.flags['西門遊覽車滿額停售'];
-                    ximenBusSoldOut = (flagVal && flagVal.toString().trim().toUpperCase() === 'ON');
+                    // 1. 各遊覽車滿額停售旗標
+                    const flagXimen = result.flags['西門遊覽車滿額停售'];
+                    if (flagXimen !== undefined) ximenBusSoldOut = (flagXimen.toString().trim().toUpperCase() === 'ON');
+
+                    const flagHsinchu = result.flags['新竹中壢遊覽車滿額停售'];
+                    if (flagHsinchu !== undefined) hsinchuBusSoldOut = (flagHsinchu.toString().trim().toUpperCase() === 'ON');
+
+                    const flagTaichung = result.flags['台中遊覽車滿額停售'];
+                    if (flagTaichung !== undefined) taichungBusSoldOut = (flagTaichung.toString().trim().toUpperCase() === 'ON');
+
                     updateTransportationOptions();
 
                     // 2. 活動報名暫停
