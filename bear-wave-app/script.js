@@ -810,6 +810,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 分頁切換功能 (掛載到 window 以供 HTML onclick 呼叫)
     window.switchTab = function (tabName) {
+        const tabRegBtn = document.getElementById('tab-reg');
+        if (tabName === 'reg' && tabRegBtn && (tabRegBtn.disabled || tabRegBtn.classList.contains('tab-disabled') || isRegStopped)) {
+            const isEn = document.body.classList.contains('lang-en');
+            alert(isEn ? "Event registration closed on August 15th! Please use '3. Status' to check your status and table." : "本活動已於 8 月 15 日正式截止報名！已報名者請切換至「3. 狀態查詢」查看對帳狀態與桌次。");
+            tabName = 'query'; // 強制導向狀態查詢
+        }
         const tabs = ['reg', 'pay', 'query', 'table', 'group'];
         tabs.forEach(tab => {
             const btn = document.getElementById(`tab-${tab}`);
@@ -982,10 +988,19 @@ document.addEventListener('DOMContentLoaded', () => {
         isRegStopped = stopped;
         const regNotice = document.getElementById('reg-stopped-notice');
         const regForm = document.getElementById('form-registration');
+        const tabRegBtn = document.getElementById('tab-reg');
+        const topBanner = document.getElementById('reg-closed-top-banner');
+
         if (stopped) {
             if (regNotice) regNotice.classList.remove('hidden');
             if (regForm) regForm.classList.add('hidden');
+            if (tabRegBtn) {
+                tabRegBtn.disabled = true;
+                tabRegBtn.classList.add('tab-disabled');
+            }
+            if (topBanner) topBanner.classList.remove('hidden');
         } else {
+            // 若未停止（或當前預設狀態）
             if (regNotice) regNotice.classList.add('hidden');
             if (regForm) regForm.classList.remove('hidden');
             if (regSubmitBtn) {

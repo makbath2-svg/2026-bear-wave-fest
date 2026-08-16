@@ -70,8 +70,8 @@
                 <span class="lang-zh">抓住夏天的尾巴，來淡水農場吃烤肉、玩水、交朋友！</span>
                 <span class="lang-en">Catch the end of summer! BBQ, pool play, and make friends!</span>
             </p>
-            <a href="#register" class="btn btn-primary btn-large">
-                <span class="lang-zh">立即報名</span><span class="lang-en">Register Now</span>
+            <a href="#register" class="btn btn-primary btn-large" onclick="switchTab('query')">
+                <span class="lang-zh">查詢報名狀態 (8/15報名已截止)</span><span class="lang-en">Check Status (Reg Closed)</span>
             </a>
         </div>
         <div class="wave-divider wave-bottom">
@@ -338,33 +338,45 @@
                         tables below.</span>
                 </p>
 
+                <!-- 報名截止醒目頂部公告欄 -->
+                <div id="reg-closed-top-banner" class="reg-closed-alert-banner">
+                    <div class="reg-closed-banner-icon">
+                        <i class="ph ph-warning-circle"></i>
+                    </div>
+                    <div class="reg-closed-banner-content">
+                        <h4>
+                            <span class="lang-zh">⚠️ 活動報名已截止公告 (8/15 截止)</span>
+                            <span class="lang-en">⚠️ Registration Closed Announcement (Closed on 8/15)</span>
+                        </h4>
+                        <p>
+                            <span class="lang-zh">本活動已於 <strong>8 月 15 日正式截止報名</strong>。已完成報名者，請儘速於 <strong>8 月 26 日前完成繳費與「2. 匯款登記」</strong>。<br>報名系統與匯款對帳登記將於 <strong>8 月 26 日 23:59 完全關閉</strong>，8/27 起請勿繼續匯款。</span>
+                            <span class="lang-en">Event registration officially closed on <strong>August 15th</strong>. Registered participants please complete payment and <strong>"2. Payment Submission" before August 26th</strong>.<br>The system will completely close on <strong>August 26th 23:59</strong>.</span>
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Tabs 選項卡切換 -->
                 <div class="hub-tabs">
-                    <button class="tab-btn active" id="tab-reg" onclick="switchTab('reg')">
-                        <i class="ph ph-user-plus"></i> <span class="lang-zh">1. 活動報名</span><span class="lang-en">1.
-                            Register</span>
+                    <button class="tab-btn tab-disabled disabled" id="tab-reg" disabled onclick="switchTab('reg')">
+                        <i class="ph ph-user-plus"></i> <span class="lang-zh">1. 活動報名</span><span class="lang-en">1. Register</span>
+                        <span class="badge-closed lang-zh">報名已截止</span><span class="badge-closed lang-en">Closed</span>
                     </button>
                     <button class="tab-btn" id="tab-pay" onclick="switchTab('pay')">
-                        <i class="ph ph-receipt"></i> <span class="lang-zh">2. 匯款登記</span><span class="lang-en">2.
-                            Payment</span>
+                        <i class="ph ph-receipt"></i> <span class="lang-zh">2. 匯款登記</span><span class="lang-en">2. Payment</span>
                     </button>
-                    <button class="tab-btn" id="tab-query" onclick="switchTab('query')">
-                        <i class="ph ph-magnifying-glass"></i> <span class="lang-zh">3. 狀態查詢</span><span
-                            class="lang-en">3. Status</span>
+                    <button class="tab-btn active" id="tab-query" onclick="switchTab('query')">
+                        <i class="ph ph-magnifying-glass"></i> <span class="lang-zh">3. 狀態查詢</span><span class="lang-en">3. Status</span>
                     </button>
                     <button class="tab-btn" id="tab-table" onclick="switchTab('table')" style="display: none;">
-                        <i class="ph ph-users-three"></i> <span class="lang-zh">4. 分桌資料</span><span class="lang-en">4.
-                            Tables</span>
+                        <i class="ph ph-users-three"></i> <span class="lang-zh">4. 分桌資料</span><span class="lang-en">4. Tables</span>
                     </button>
                     <button class="tab-btn" id="tab-group" onclick="switchTab('group')">
-                        <i class="ph ph-chats-teardrop"></i> <span class="lang-zh">4. 揪桌友看板</span><span
-                            class="lang-en">4.
-                            Group Tables</span>
+                        <i class="ph ph-chats-teardrop"></i> <span class="lang-zh">4. 揪桌友看板</span><span class="lang-en">4. Group Tables</span>
                     </button>
                 </div>
 
-                <!-- Tab 1: 活動報名 -->
-                <div class="tab-content" id="content-reg">
+                <!-- Tab 1: 活動報名 (已截止禁用) -->
+                <div class="tab-content hidden" id="content-reg">
                     <!-- 暫停報名說明公告 (由功能旗標「活動報名-停止」動態控制) -->
                     <div id="reg-stopped-notice" class="reg-stopped-box hidden">
                         <div class="reg-stopped-header">
@@ -783,8 +795,8 @@
                     </form>
                 </div>
 
-                <!-- Tab 3: 狀態查詢 -->
-                <div class="tab-content hidden" id="content-query">
+                <!-- Tab 3: 狀態查詢 (預設選取顯示) -->
+                <div class="tab-content" id="content-query">
                     <form id="form-query" class="hub-form">
                         <div class="form-group">
                             <label for="query-email">

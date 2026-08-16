@@ -1194,9 +1194,13 @@ textarea:focus {
     margin-bottom: 32px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.05);
     padding-bottom: 8px;
+    padding-top: 10px;
+    position: relative;
+    overflow: visible;
 }
 
 .tab-btn {
+    position: relative;
     flex: 1;
     background: none;
     border: none;
@@ -2144,4 +2148,86 @@ select option.sold-out-option {
     font-size: 0.9rem;
     color: var(--text-muted);
     font-weight: 500;
+}
+
+/* ==========================================
+   報名截止 UI 樣式 (Disabled Tab, Badge & Top Alert Banner)
+   ========================================== */
+.tab-btn.tab-disabled,
+.tab-btn:disabled {
+    opacity: 0.7;
+    background: rgba(220, 220, 220, 0.45) !important;
+    color: #8c8c8c !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    border: 1px dashed rgba(140, 140, 140, 0.4) !important;
+}
+
+.tab-btn.tab-disabled:hover {
+    background: rgba(220, 220, 220, 0.45) !important;
+    color: #8c8c8c !important;
+    transform: none !important;
+}
+
+.badge-closed {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+    color: #ffffff !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(255, 77, 79, 0.4);
+    white-space: nowrap;
+    z-index: 10;
+    letter-spacing: 0.5px;
+    animation: pulseBadge 2s infinite ease-in-out;
+}
+
+@keyframes pulseBadge {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    50% { transform: translateX(-50%) scale(1.06); opacity: 0.95; }
+}
+
+.reg-closed-alert-banner {
+    background: linear-gradient(135deg, #fff1f0 0%, #ffe5e5 100%);
+    border: 2px solid #ff4d4f;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    box-shadow: 0 8px 24px rgba(255, 77, 79, 0.15);
+    text-align: left;
+}
+
+.reg-closed-banner-icon {
+    font-size: 2rem;
+    color: #ff4d4f;
+    line-height: 1;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.reg-closed-banner-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #cf1322;
+}
+
+.reg-closed-banner-content p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #5c0011;
+}
+
+.reg-closed-banner-content strong {
+    color: #d9363e;
+    font-weight: 700;
 }
