@@ -254,8 +254,24 @@ function handleRequest(e) {
 
     // 2. 登記匯款後五碼 Action (本國人使用)
     if (action === "submitPayment") {
-      var email = params.email ? params.email.trim() : "";
-      var lastFiveDigits = params.lastFiveDigits ? params.lastFiveDigits.trim() : "";
+      // 檢查匯款登記分頁停用旗標
+      var flagSheet = getFeatureFlagsSheet(ss);
+      var flagData = flagSheet.getDataRange().getValues();
+      var payDisabled = false;
+      for (var i = 1; i < flagData.length; i++) {
+        var flagName = flagData[i][0] ? flagData[i][0].toString().trim() : "";
+        var flagValue = flagData[i][1] ? flagData[i][1].toString().trim().toUpperCase() : "";
+        if (flagName === "匯款登記分頁_停用" && flagValue === "ON") {
+          payDisabled = true;
+          break;
+        }
+      }
+      if (payDisabled) {
+        return toJSON(e, {
+          status: "error",
+          message: "匯款登記對帳系統目前已關閉！"
+        });
+      }
 
       if (!email || !lastFiveDigits) {
         return toJSON(e, { status: "error", message: "Email 與匯款資訊為必填！" });

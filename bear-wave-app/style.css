@@ -1925,7 +1925,8 @@ body.lang-en .hero-title .art-text-blue {
     min-width: 80px;
 }
 
-#member-row-1 .member-index-badge {
+#member-row-1 .member-index-badge,
+#group-member-row-1 .member-index-badge {
     background: rgba(255, 127, 80, 0.1);
     color: var(--bear-rust);
     border: 1.5px solid rgba(255, 127, 80, 0.2);
@@ -1934,8 +1935,8 @@ body.lang-en .hero-title .art-text-blue {
 .member-inputs {
     flex: 1;
     display: grid;
-    grid-template-columns: 5.5fr 1.2fr 2fr;
-    gap: 18px;
+    grid-template-columns: minmax(160px, 2.2fr) minmax(110px, 1fr) minmax(110px, 1.2fr);
+    gap: 14px;
     align-items: center;
 }
 
@@ -1951,10 +1952,15 @@ body.lang-en .hero-title .art-text-blue {
     color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .member-input-group input {
     background: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem !important;
+    border: 1px solid var(--border-color) !important;
 }
 
 .member-name-display {

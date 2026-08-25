@@ -780,16 +780,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // 萬能 JSONP 請求發送器：徹底解決 Google Apps Script 302 重導向帶來的 CORS 假性網路錯誤
     function requestJSONP(url, successCallback, errorCallback) {
         const callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
+        let timer = null;
 
         // 全域掛載回呼函式
         window[callbackName] = function (data) {
+            if (timer) clearTimeout(timer);
             successCallback(data);
-            // 執行後清理，避免佔用記憶體
             delete window[callbackName];
             if (script.parentNode) {
                 document.body.removeChild(script);
             }
         };
+
+        // 設定 15 秒超時保護，避免網路暫時卡住
+        timer = setTimeout(function () {
+            delete window[callbackName];
+            if (script.parentNode) {
+                document.body.removeChild(script);
+            }
+            if (errorCallback) errorCallback();
+        }, 15000);
 
         // 建立動態 script 標籤繞過 CORS
         const script = document.createElement('script');
@@ -798,7 +808,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 異常處理
         script.onerror = function () {
-            errorCallback();
+            if (timer) clearTimeout(timer);
+            if (errorCallback) errorCallback();
             delete window[callbackName];
             if (script.parentNode) {
                 document.body.removeChild(script);
@@ -817,9 +828,9 @@ document.addEventListener('DOMContentLoaded', () => {
             tabName = 'query'; // 強制導向狀態查詢
         }
         const tabPayBtn = document.getElementById('tab-pay');
-        if (tabName === 'pay' && tabPayBtn && (tabPayBtn.disabled || tabPayBtn.classList.contains('tab-disabled'))) {
+        if (tabName === 'pay' && (isPayDisabled || (tabPayBtn && (tabPayBtn.disabled || tabPayBtn.classList.contains('tab-disabled'))))) {
             const isEn = document.body.classList.contains('lang-en');
-            alert(isEn ? "Payment submission closed on August 26th! Please use '3. Status' to check your payment status and table." : "匯款登記已於 8 月 26 日 23:59 正式關閉！已匯款學員請切換至「3. 狀態查詢」查看對帳狀態與桌次。");
+            alert(isEn ? "Payment registration is currently closed! Please use '3. Status' to check your payment status and table." : "匯款登記分頁目前已關閉停用！已匯款學員請切換至「3. 狀態查詢」查看對帳狀態與桌次。");
             tabName = 'query'; // 強制導向狀態查詢
         }
         const tabs = ['reg', 'pay', 'query', 'table', 'group'];
@@ -989,6 +1000,15 @@ document.addEventListener('DOMContentLoaded', () => {
         regSubmitBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> <span class="lang-zh">檢查報名狀態中...</span><span class="lang-en">Checking status...</span>';
     }
 
+    window.handleHeroRegClick = function (e) {
+        if (isRegStopped) {
+            if (e) e.preventDefault();
+            const regSection = document.getElementById("register");
+            if (regSection) regSection.scrollIntoView({ behavior: "smooth" });
+            window.switchTab("query");
+        }
+    };
+
     const updateRegistrationStoppedUI = (stopped) => {
         flagsLoaded = true;
         isRegStopped = stopped;
@@ -996,6 +1016,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const regForm = document.getElementById('form-registration');
         const tabRegBtn = document.getElementById('tab-reg');
         const topBanner = document.getElementById('reg-closed-top-banner');
+        const heroBtnText = document.getElementById('hero-reg-btn-text');
+        const heroBtnTextEn = document.getElementById('hero-reg-btn-text-en');
 
         if (stopped) {
             if (regNotice) regNotice.classList.remove('hidden');
@@ -1005,14 +1027,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 tabRegBtn.classList.add('tab-disabled');
             }
             if (topBanner) topBanner.classList.remove('hidden');
+            if (heroBtnText) heroBtnText.innerText = '查詢報名狀態';
+            if (heroBtnTextEn) heroBtnTextEn.innerText = 'Query Status';
         } else {
             // 若未停止（或當前預設狀態）
             if (regNotice) regNotice.classList.add('hidden');
             if (regForm) regForm.classList.remove('hidden');
+            if (heroBtnText) heroBtnText.innerText = '立即報名';
+            if (heroBtnTextEn) heroBtnTextEn.innerText = 'Register Now';
             if (regSubmitBtn) {
                 regSubmitBtn.disabled = false;
                 regSubmitBtn.innerHTML = '<i class="ph ph-paper-plane-right"></i> <span class="lang-zh">立即報名</span><span class="lang-en">Submit Registration</span>';
             }
+        }
+    };
+
+    let isPayDisabled = true; // 網頁載入預設為停用 (Disable)
+
+    window.updatePayTabUI = function (isDisabled) {
+        isPayDisabled = isDisabled;
+        const tabPayBtn = document.getElementById('tab-pay');
+        const badgePayClosed = document.getElementById('badge-pay-closed');
+        const badgePayClosedEn = document.getElementById('badge-pay-closed-en');
+        if (tabPayBtn) {
+            if (isDisabled) {
+                tabPayBtn.disabled = true;
+                tabPayBtn.classList.add('tab-disabled', 'disabled');
+                if (badgePayClosed) badgePayClosed.style.display = 'inline-block';
+                if (badgePayClosedEn) badgePayClosedEn.style.display = 'inline-block';
+            } else {
+                tabPayBtn.disabled = false;
+                tabPayBtn.classList.remove('tab-disabled', 'disabled');
+                if (badgePayClosed) badgePayClosed.style.display = 'none';
+                if (badgePayClosedEn) badgePayClosedEn.style.display = 'none';
+            }
+        }
+    };
+
+    let isGroupReadOnly = false; // 預設為可新建修改模式 (OFF)
+
+    window.updateGroupBoardModeUI = function (isReadOnly) {
+        isGroupReadOnly = isReadOnly;
+        const btnNewGroup = document.getElementById("btn-open-new-group");
+        const headerTitleZh = document.getElementById("group-board-title-zh");
+        const headerTitleEn = document.getElementById("group-board-title-en");
+        const headerDescZh = document.getElementById("group-board-desc-zh");
+        const headerDescEn = document.getElementById("group-board-desc-en");
+
+        if (btnNewGroup) {
+            btnNewGroup.style.display = isReadOnly ? "none" : "inline-flex";
+        }
+        if (headerTitleZh) {
+            headerTitleZh.innerHTML = isReadOnly 
+                ? '<i class="ph ph-chats-teardrop" style="vertical-align: middle; margin-right: 6px;"></i>揪桌友看板 (純唯讀)'
+                : '<i class="ph ph-chats-teardrop" style="vertical-align: middle; margin-right: 6px;"></i>揪桌友看板';
+        }
+        if (headerTitleEn) {
+            headerTitleEn.innerHTML = isReadOnly 
+                ? '<i class="ph ph-chats-teardrop" style="vertical-align: middle; margin-right: 6px;"></i>Group Member Board (Read-Only)'
+                : '<i class="ph ph-chats-teardrop" style="vertical-align: middle; margin-right: 6px;"></i>Group Member Board';
+        }
+        if (headerDescZh) {
+            headerDescZh.innerText = isReadOnly
+                ? '本看板目前為唯讀狀態，輸入桌號密碼驗證後即可查看成員詳情。'
+                : '發起揪桌、管理成員名單，或是查看熱門揪桌狀況！';
+        }
+        if (headerDescEn) {
+            headerDescEn.innerText = isReadOnly
+                ? 'This board is currently in read-only mode. Enter password to view table details.'
+                : 'Create a group table, manage members, or check popular tables!';
+        }
+
+        if (window.allGroupTablesList && typeof window.renderGroupTablesFromCache === 'function') {
+            window.renderGroupTablesFromCache();
         }
     };
 
@@ -1135,6 +1222,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     const regStopVal = result.flags['活動報名-停止'];
                     const stopped = (regStopVal && regStopVal.toString().trim().toUpperCase() === 'ON');
                     updateRegistrationStoppedUI(stopped);
+
+                    // 3. 匯款登記分頁停用旗標 (ON = Disable分頁, OFF = Enable分頁, 網頁預設載入時為 Disable)
+                    const payStopVal = result.flags['匯款登記分頁_停用'];
+                    if (payStopVal !== undefined && payStopVal !== null) {
+                        const isPayOff = (payStopVal.toString().trim().toUpperCase() === 'OFF');
+                        if (typeof window.updatePayTabUI === 'function') {
+                            window.updatePayTabUI(!isPayOff);
+                        }
+                    } else {
+                        if (typeof window.updatePayTabUI === 'function') {
+                            window.updatePayTabUI(true);
+                        }
+                    }
+
+                    // 4. 揪桌友看板唯讀旗標 (OFF = 可新建修改模式, ON = 純唯讀模式 - 需密碼)
+                    const groupReadOnlyVal = result.flags['揪桌友看板_唯讀'];
+                    if (groupReadOnlyVal !== undefined && groupReadOnlyVal !== null) {
+                        const isGroupRO = (groupReadOnlyVal.toString().trim().toUpperCase() === 'ON');
+                        if (typeof window.updateGroupBoardModeUI === 'function') {
+                            window.updateGroupBoardModeUI(isGroupRO);
+                        }
+                    } else {
+                        if (typeof window.updateGroupBoardModeUI === 'function') {
+                            window.updateGroupBoardModeUI(false);
+                        }
+                    }
                 } else {
                     flagsLoaded = true;
                     if (regSubmitBtn) {
@@ -2584,6 +2697,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === "success") {
                 window.allGroupTablesList = result.tables;
                 groupMinLimit = result.minLimit || 5;
+                if (typeof window.updateGroupBoardModeUI === 'function') {
+                    window.updateGroupBoardModeUI(isGroupReadOnly);
+                }
                 
                 // 更新提示訊息中的限制人數
                 const limitDisp = document.getElementById("group-min-limit-display");
@@ -2624,29 +2740,35 @@ document.addEventListener('DOMContentLoaded', () => {
                         ? (isEn ? "Full (10/10)" : "已額滿 (10/10人)")
                         : (isEn ? `Recruiting: ${table.memberCount}/10` : `徵求中：${table.memberCount}/10人`);
                         
-                    card.innerHTML = `
-                        <div class="table-card-header">
-                            <div class="table-card-title">
-                                <i class="ph ph-chats-teardrop" style="color: var(--bear-rust);"></i>
-                                <span>ID: ${table.id}</span>
+                        const btnClickFunc = `openGroupVerifyPassword('${table.id}')`;
+                        const btnIcon = isGroupReadOnly ? "ph-eye" : "ph-gear";
+                        const btnText = isGroupReadOnly 
+                            ? (isEn ? "View Member List (Pass Req.)" : "👁️ 查看成員名單 (需密碼)")
+                            : (isEn ? "Manage or Join Table" : "⚙️ 管理或加入此桌");
+
+                        card.innerHTML = `
+                            <div class="table-card-header">
+                                <div class="table-card-title">
+                                    <i class="ph ph-chats-teardrop" style="color: var(--bear-rust);"></i>
+                                    <span>ID: ${table.id}</span>
+                                </div>
+                                <span class="table-card-status badge ${isFull ? 'status-confirmed' : 'status-unpaid'}">${statusText}</span>
                             </div>
-                            <span class="table-card-status badge ${isFull ? 'status-confirmed' : 'status-unpaid'}">${statusText}</span>
-                        </div>
-                        <div class="table-card-body" style="padding: 16px 20px;">
-                            <div class="table-card-nickname" style="font-size: 1.35rem; font-weight: 800; margin-bottom: 12px; color: var(--bear-rust); letter-spacing: 0.5px;">${displayName}</div>
-                            
-                            <!-- 進度條 -->
-                            <div style="background: var(--border-color); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
-                                <div style="background: ${progressColor}; width: ${progressPercent}%; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+                            <div class="table-card-body" style="padding: 16px 20px;">
+                                <div class="table-card-nickname" style="font-size: 1.35rem; font-weight: 800; margin-bottom: 12px; color: var(--bear-rust); letter-spacing: 0.5px;">${displayName}</div>
+                                
+                                <!-- 進度條 -->
+                                <div style="background: var(--border-color); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                                    <div style="background: ${progressColor}; width: ${progressPercent}%; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="table-card-footer" style="padding: 12px 20px 20px 20px;">
-                            <button type="button" class="btn btn-outline btn-full" onclick="openViewGroupTableDetails('${table.id}')">
-                                <i class="ph ph-eye" style="margin-right: 4px; vertical-align: middle;"></i>
-                                ${isEn ? "View Member List" : "查看成員名單"}
-                            </button>
-                        </div>
-                    `;
+                            <div class="table-card-footer" style="padding: 12px 20px 20px 20px;">
+                                <button type="button" class="btn ${isGroupReadOnly ? 'btn-outline' : 'btn-primary'} btn-full" onclick="${btnClickFunc}">
+                                    <i class="ph ${btnIcon}" style="margin-right: 4px; vertical-align: middle;"></i>
+                                    ${btnText}
+                                </button>
+                            </div>
+                        `;
                     grid.appendChild(card);
                 });
                 
@@ -2669,14 +2791,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const isEn = document.body.classList.contains("lang-en");
         
-        const idDisplay = document.getElementById("editor-group-table-id-display");
-        const idDisplayEn = document.getElementById("editor-group-table-id-display-en");
-        if (idDisplay) idDisplay.innerText = isEn ? "Auto Increment" : "自動遞增";
-        if (idDisplayEn) idDisplayEn.innerText = "Auto Increment";
-        
+        const modalTitleZh = document.getElementById("group-editor-modal-title");
+        const modalTitleEn = document.getElementById("group-editor-modal-title-en");
+        if (modalTitleZh) modalTitleZh.innerHTML = `建立新桌友資料 <strong id="editor-group-table-id-display" style="color: var(--bear-rust);">${isEn ? "Auto Increment" : "自動遞增"}</strong>`;
+        if (modalTitleEn) modalTitleEn.innerHTML = `Create Group Table <strong id="editor-group-table-id-display-en" style="color: var(--bear-rust);">Auto Increment</strong>`;
+
+        const membersTitleZh = document.getElementById("group-editor-members-title-zh");
+        const membersTitleEn = document.getElementById("group-editor-members-title-en");
+        if (membersTitleZh) membersTitleZh.innerText = "桌友成員名單 (最多10人)";
+        if (membersTitleEn) membersTitleEn.innerText = "Group Members (Max 10)";
+
         const nicknameInput = document.getElementById("editor-group-table-nickname");
         const passwordInput = document.getElementById("editor-group-table-password");
-        if (nicknameInput) nicknameInput.value = "";
+        if (nicknameInput) {
+            nicknameInput.value = "";
+            nicknameInput.readOnly = false;
+        }
         if (passwordInput) passwordInput.value = "";
         
         // 隱藏單項變更按鈕 (新建模式不需要)
@@ -2685,29 +2815,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnNick) btnNick.classList.add("hidden");
         if (btnPass) btnPass.classList.add("hidden");
         
-        // 顯示全表單送出按鈕，隱藏解散按鈕
+        // 顯示建立此桌按鈕，隱藏解散與儲存變更按鈕
         const btnCreate = document.getElementById("btn-create-group-table-submit");
         const btnDisband = document.getElementById("btn-disband-group-table");
+        const btnSaveEditor = document.getElementById("btn-save-group-editor");
         if (btnCreate) btnCreate.classList.remove("hidden");
         if (btnDisband) btnDisband.classList.add("hidden");
+        if (btnSaveEditor) btnSaveEditor.classList.add("hidden");
         
-        // 顯示批次貼上區塊 (僅在新建模式)
+        // 顯示批次貼上區塊與密碼填寫欄
         const batchSection = document.getElementById("group-batch-paste-section");
         if (batchSection) batchSection.classList.remove("hidden");
-        
-        const batchToggle = document.getElementById("group-batch-paste-toggle-btn");
-        if (batchToggle) batchToggle.innerText = isEn ? "Expand" : "展開選單";
-        const batchContainer = document.getElementById("group-batch-paste-container");
-        if (batchContainer) batchContainer.classList.add("hidden");
-        
-        const batchTextarea = document.getElementById("group-batch-paste-textarea");
-        if (batchTextarea) batchTextarea.value = "";
+        const passGroup = document.getElementById("group-editor-password-group");
+        if (passGroup) passGroup.classList.remove("hidden");
         
         const errorMsg = document.getElementById("group-editor-error-msg");
         if (errorMsg) errorMsg.style.display = "none";
         
-        // 渲染 10 個空的輸入框
-        renderGroupEditorRows(null, true);
+        // 渲染 10 個空的可編輯輸入框 (isReadOnly = false)
+        renderGroupEditorRows(null, true, false);
         
         const editorModal = document.getElementById("group-table-editor-modal");
         if (editorModal) {
@@ -2740,6 +2866,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const passwordModal = document.getElementById("group-table-password-modal");
         if (passwordModal) passwordModal.classList.remove("hidden");
     };
+    window.openGroupTablePasswordModal = window.openGroupVerifyPassword;
 
     // D. 驗證密碼送出
     window.submitGroupTablePassword = function (event) {
@@ -2793,29 +2920,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const passwordInput = document.getElementById("editor-group-table-password");
         if (nicknameInput) {
             nicknameInput.value = data.nickname;
-            nicknameInput.readOnly = true;
+            nicknameInput.readOnly = isGroupReadOnly;
         }
         if (passwordInput) passwordInput.value = password;
         
-        // 隱藏所有修改/變更/解散按鈕 (鎖定為純唯讀)
         const btnNick = document.getElementById("btn-save-group-table-nickname");
         const btnPass = document.getElementById("btn-save-group-table-password");
-        if (btnNick) btnNick.classList.add("hidden");
-        if (btnPass) btnPass.classList.add("hidden");
-        
         const btnCreate = document.getElementById("btn-create-group-table-submit");
         const btnDisband = document.getElementById("btn-disband-group-table");
-        if (btnCreate) btnCreate.classList.add("hidden");
-        if (btnDisband) btnDisband.classList.add("hidden");
-        
+        const btnSaveEditor = document.getElementById("btn-save-group-editor");
         const batchSection = document.getElementById("group-batch-paste-section");
-        if (batchSection) batchSection.classList.add("hidden");
+        const passGroup = document.getElementById("group-editor-password-group");
+        const modalTitleZh = document.getElementById("group-editor-modal-title");
+        const modalTitleEn = document.getElementById("group-editor-modal-title-en");
+        const membersTitleZh = document.getElementById("group-editor-members-title-zh");
+        const membersTitleEn = document.getElementById("group-editor-members-title-en");
+
+        if (isGroupReadOnly) {
+            if (modalTitleZh) modalTitleZh.innerHTML = `桌友設定 (唯讀) <strong id="editor-group-table-id-display" style="color: var(--bear-rust);">${data.tableId}</strong>`;
+            if (modalTitleEn) modalTitleEn.innerHTML = `Table Details (Read-Only) <strong id="editor-group-table-id-display-en" style="color: var(--bear-rust);">${data.tableId}</strong>`;
+            if (membersTitleZh) membersTitleZh.innerText = "桌友成員 (純唯讀瀏覽)";
+            if (membersTitleEn) membersTitleEn.innerText = "Group Members (Read-Only)";
+
+            if (btnNick) btnNick.classList.add("hidden");
+            if (btnPass) btnPass.classList.add("hidden");
+            if (btnCreate) btnCreate.classList.add("hidden");
+            if (btnDisband) btnDisband.classList.add("hidden");
+            if (btnSaveEditor) btnSaveEditor.classList.add("hidden");
+            if (batchSection) batchSection.classList.add("hidden");
+            if (passGroup) passGroup.classList.add("hidden");
+        } else {
+            if (modalTitleZh) modalTitleZh.innerHTML = `桌友設定 <strong id="editor-group-table-id-display" style="color: var(--bear-rust);">${data.tableId}</strong>`;
+            if (modalTitleEn) modalTitleEn.innerHTML = `Table Settings <strong id="editor-group-table-id-display-en" style="color: var(--bear-rust);">${data.tableId}</strong>`;
+            if (membersTitleZh) membersTitleZh.innerText = "桌友成員 (共 10 人，人員 1 為發起人/聯絡窗口)";
+            if (membersTitleEn) membersTitleEn.innerText = "Group Members (Total 10, Member 1 is Creator)";
+
+            if (btnNick) btnNick.classList.remove("hidden");
+            if (btnPass) btnPass.classList.remove("hidden");
+            if (btnCreate) btnCreate.classList.add("hidden");
+            if (btnDisband) btnDisband.classList.remove("hidden");
+            if (btnSaveEditor) btnSaveEditor.classList.add("hidden"); // 隱藏多餘的儲存變更按鈕
+            if (batchSection) batchSection.classList.add("hidden");
+            if (passGroup) passGroup.classList.remove("hidden");
+        }
         
         const errorMsg = document.getElementById("group-editor-error-msg");
         if (errorMsg) errorMsg.style.display = "none";
         
-        // 渲染 10 位名單 (純唯讀模式 isReadOnly = true)
-        renderGroupEditorRows(data.members, false, true);
+        // 根據 isGroupReadOnly 動態決定是否唯讀
+        renderGroupEditorRows(data.members, false, isGroupReadOnly);
         
         const passwordModal = document.getElementById("group-table-password-modal");
         if (passwordModal) passwordModal.classList.add("hidden");
@@ -2890,8 +3043,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 渲染 10 位揪桌名單 (純唯讀模式下完全不提供編輯/刪除按紐)
-    function renderGroupEditorRows(members, isNew, isReadOnly = true) {
+    // 渲染 10 位揪桌名單 (動態支援可編輯模式與純唯讀模式)
+    function renderGroupEditorRows(members, isNew, isReadOnly = false) {
         const container = document.getElementById("group-members-list-container");
         if (!container) return;
         
@@ -2906,7 +3059,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const labelZh = (i === 1) ? "人員1<br><span style='font-size: 0.75rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;'>發起人</span>" : `人員${i}`;
             const labelEn = (i === 1) ? "Member 1<br><span style='font-size: 0.75rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;'>Creator</span>" : `Member ${i}`;
             
-            // 唯讀模式：純展示成員資料
             const member = (members && members[i - 1]) ? members[i - 1] : { email: "", phone: "", name: "" };
             const emailVal = member.email || "";
             const phoneVal = member.phone || "";
@@ -2916,38 +3068,135 @@ document.addEventListener('DOMContentLoaded', () => {
                 memberRow.classList.add("row-success");
             }
             
-            const maskedEmail = emailVal ? maskEmail(emailVal) : "-";
-            const maskedPhone = phoneVal ? `***${phoneVal.slice(-1)}` : "-";
-            const displayName = nameVal || (isEn ? "Empty Slot" : "空位（尚未加入）");
-            
-            const maskedEmailEscaped = escapeHtml(maskedEmail);
-            const maskedPhoneEscaped = escapeHtml(maskedPhone);
-            const displayNameEscaped = escapeHtml(displayName);
-            
-            memberRow.innerHTML = `
-                <div class="member-index-badge">
-                    <span class="lang-zh">${labelZh}</span>
-                    <span class="lang-en">${labelEn}</span>
-                </div>
-                <div class="member-inputs" id="group-inputs-view-${i}">
-                    <div class="member-input-group">
-                        <label>Email Address</label>
-                        <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedEmailEscaped}</span>
+            if (isReadOnly) {
+                // 唯讀模式：純展示成員資料
+                const maskedEmail = emailVal ? maskEmail(emailVal) : "-";
+                const maskedPhone = phoneVal ? `***${phoneVal.slice(-1)}` : "-";
+                const displayName = nameVal || (isEn ? "Empty Slot" : "空位（尚未加入）");
+                
+                const maskedEmailEscaped = escapeHtml(maskedEmail);
+                const maskedPhoneEscaped = escapeHtml(maskedPhone);
+                const displayNameEscaped = escapeHtml(displayName);
+                
+                memberRow.innerHTML = `
+                    <div class="member-index-badge">
+                        <span class="lang-zh">${labelZh}</span>
+                        <span class="lang-en">${labelEn}</span>
                     </div>
-                    <div class="member-input-group">
-                        <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
-                        <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedPhoneEscaped}</span>
+                    <div class="member-inputs" id="group-inputs-view-${i}">
+                        <div class="member-input-group">
+                            <label>Email Address</label>
+                            <span style="font-weight:600; font-family:monospace; color:var(--text-main); font-size:0.9rem; padding:6px 0;">${maskedEmailEscaped}</span>
+                        </div>
+                        <div class="member-input-group">
+                            <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
+                            <span style="font-weight:600; font-family:monospace; color:var(--text-main); font-size:0.9rem; padding:6px 0;">${maskedPhoneEscaped}</span>
+                        </div>
+                        <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
+                            <label>${isEn ? "Real Name" : "報名姓名"}</label>
+                            <span style="font-weight:700; color:${nameVal ? 'var(--bear-rust)' : 'var(--text-muted)'}; font-size:0.95rem; padding:6px 0;">${displayNameEscaped}</span>
+                        </div>
                     </div>
-                    <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
-                        <label>${isEn ? "Real Name" : "報名姓名"}</label>
-                        <span style="font-weight:700; color:${nameVal ? 'var(--ocean-dark)' : 'var(--text-muted)'};">${displayNameEscaped}</span>
+                    <div class="member-action-col" id="group-action-view-${i}" style="display: none !important;"></div>
+                `;
+            } else if (isNew) {
+                // 建立新桌模式：直接提供 10 個欄位供快速填寫
+                memberRow.innerHTML = `
+                    <div class="member-index-badge">
+                        <span class="lang-zh">${labelZh}</span>
+                        <span class="lang-en">${labelEn}</span>
                     </div>
-                </div>
-                <div class="member-action-col" id="group-action-view-${i}" style="display: none !important;"></div>
-            `;
+                    <div class="member-inputs" id="group-inputs-view-${i}">
+                        <div class="member-input-group">
+                            <label>Email Address</label>
+                            <input type="email" id="group-email-field-${i}" value="${escapeHtml(emailVal)}" placeholder="輸入 Email" onblur="verifyGroupMemberInput(${i})">
+                        </div>
+                        <div class="member-input-group">
+                            <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
+                            <input type="text" id="group-phone-field-${i}" maxlength="4" value="${escapeHtml(phoneVal)}" placeholder="後4碼" onblur="verifyGroupMemberInput(${i})">
+                        </div>
+                        <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
+                            <label>${isEn ? "Real Name" : "對帳姓名"}</label>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span id="group-name-display-${i}" style="font-weight:700; color:${nameVal ? 'var(--ocean-dark)' : 'var(--text-muted)'};">${nameVal ? escapeHtml(nameVal) : '-'}</span>
+                                <i id="group-spinner-${i}" class="ph ph-spinner ph-spin hidden" style="color:var(--primary);"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="member-action-col" id="group-action-view-${i}">
+                        <button type="button" class="btn-clear-row" onclick="clearGroupMemberRow(${i})" title="${isEn ? 'Clear Slot' : '清空此位'}" style="background: none; border: none; cursor: pointer; color: #ff4d4f; font-size: 1.1rem; padding: 6px;">
+                            <i class="ph ph-trash"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                // 管理現有桌位模式：平時展示，點擊「修改」或「+ 加入」才開啟編輯
+                const maskedEmail = emailVal ? maskEmail(emailVal) : "-";
+                const maskedPhone = phoneVal ? `***${phoneVal.slice(-1)}` : "-";
+                const displayName = nameVal || (isEn ? "Empty Slot" : "空位（尚未加入）");
+                
+                let actionHtml = '';
+                if (emailVal) {
+                    actionHtml = `
+                        <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                            <button type="button" class="btn btn-outline" onclick="enableGroupRowEdit(${i})" style="border: 1.5px solid var(--bear-rust); color: var(--bear-rust); border-radius: 20px; padding: 6px 16px; font-size: 0.9rem; font-weight: 700; background: white;">
+                                <i class="ph ph-note-pencil" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "Edit" : "修改"}
+                            </button>
+                            ${i === 1 ? '' : `<button type="button" id="btn-group-remove-member-${i}" class="btn btn-outline" onclick="removeGroupMember(${i})" style="color:#d32f2f; border: 1.5px solid #d32f2f; border-radius: 20px; padding: 4px 14px; font-size: 0.8rem; font-weight: 600; background: white;">
+                                <i class="ph ph-trash" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "移出" : "移出"}
+                            </button>`}
+                        </div>
+                    `;
+                } else {
+                    actionHtml = `
+                        <button type="button" class="btn btn-outline" onclick="enableGroupRowEdit(${i})" style="border: 1.5px solid var(--bear-rust); color: var(--bear-rust); border-radius: 20px; padding: 6px 16px; font-size: 0.9rem; font-weight: 700; background: white;">
+                            <i class="ph ph-plus" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "Join" : "+ 加入"}
+                        </button>
+                    `;
+                }
+
+                memberRow.innerHTML = `
+                    <div class="member-index-badge">
+                        <span class="lang-zh">${labelZh}</span>
+                        <span class="lang-en">${labelEn}</span>
+                    </div>
+                    <div class="member-inputs" id="group-inputs-view-${i}">
+                        <div class="member-input-group">
+                            <label>Email Address</label>
+                            <span style="font-weight:600; font-family:monospace; color:var(--text-main); font-size:0.9rem; padding:6px 0;">${escapeHtml(maskedEmail)}</span>
+                        </div>
+                        <div class="member-input-group">
+                            <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
+                            <span style="font-weight:600; font-family:monospace; color:var(--text-main); font-size:0.9rem; padding:6px 0;">${escapeHtml(maskedPhone)}</span>
+                        </div>
+                        <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
+                            <label>${isEn ? "Real Name" : "報名姓名"}</label>
+                            <span style="font-weight:700; color:${nameVal ? 'var(--bear-rust)' : 'var(--text-muted)'}; font-size:0.95rem; padding:6px 0;">${escapeHtml(displayName)}</span>
+                        </div>
+                    </div>
+                    <div class="member-action-col" id="group-action-view-${i}">
+                        ${actionHtml}
+                    </div>
+                `;
+            }
             container.appendChild(memberRow);
         }
     }
+
+    // 清空揪桌單列成員輸入
+    window.clearGroupMemberRow = function (i) {
+        const emailInput = document.getElementById(`group-email-field-${i}`);
+        const phoneInput = document.getElementById(`group-phone-field-${i}`);
+        const nameDisplay = document.getElementById(`group-name-display-${i}`);
+        const row = document.getElementById(`group-member-row-${i}`);
+        if (emailInput) emailInput.value = "";
+        if (phoneInput) phoneInput.value = "";
+        if (nameDisplay) {
+            nameDisplay.innerText = "-";
+            nameDisplay.style.color = "var(--text-muted)";
+        }
+        if (row) row.classList.remove("row-success", "row-error");
+    };
 
     // H. 新建模式下，輸入框失去焦點自動查詢付款狀態
     window.verifyGroupMemberInput = function (index, retryCount) {
@@ -3025,7 +3274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (spinner) spinner.classList.remove("hidden");
         
-        const requestUrl = `${GAS_API_URL}?action=verifyMemberForGroup&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&currentTableId=${encodeURIComponent(activeGroupTableId)}`;
+        const requestUrl = `${GAS_API_URL}?action=verifyMember&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}&currentTableId=${encodeURIComponent(activeGroupTableId)}`;
         requestJSONP(requestUrl, (result) => {
             if (spinner) spinner.classList.add("hidden");
             if (result.status === "success") {
@@ -3076,6 +3325,293 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    };
+
+    // 1. 變更桌暱稱與密碼
+    window.updateGroupTableNicknameAndPassword = function () {
+        const newNickname = document.getElementById("editor-group-table-nickname").value.trim();
+        const passwordInput = document.getElementById("editor-group-table-password");
+        const newPassword = passwordInput ? passwordInput.value.trim() : "";
+        const isEn = document.body.classList.contains("lang-en");
+
+        if (!newNickname) {
+            window.showToast(isEn ? "Please enter nickname!" : "請輸入桌暱稱！", "error");
+            return;
+        }
+
+        const passwordToUse = (window.currentGroupTableData && window.currentGroupTableData.password) 
+            ? window.currentGroupTableData.password 
+            : newPassword;
+
+        if (!passwordToUse) {
+            window.showToast(isEn ? "Password missing!" : "密碼遺失，請重新驗證密碼！", "error");
+            return;
+        }
+
+        const btn = document.getElementById("btn-save-group-table-nickname");
+        const originalText = btn ? btn.innerHTML : "";
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
+        }
+
+        const requestUrl = `${GAS_API_URL}?action=updateGroupTableInfo&tableId=${encodeURIComponent(activeGroupTableId)}&password=${encodeURIComponent(passwordToUse)}&newNickname=${encodeURIComponent(newNickname)}&newPassword=${encodeURIComponent(newPassword || passwordToUse)}`;
+
+        requestJSONP(requestUrl, (result) => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            if (result.status === "success") {
+                window.showToast(result.message, "success");
+                if (window.currentGroupTableData) window.currentGroupTableData.nickname = newNickname;
+                if (typeof loadGroupTablesGrid === "function") loadGroupTablesGrid();
+            } else {
+                window.showToast(result.message, "error");
+            }
+        }, () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            window.showToast(isEn ? "Network error." : "網路修改失敗。", "error");
+        });
+    };
+
+    // 2. 單獨變更密碼
+    window.updateGroupTablePasswordOnly = function () {
+        const newPassword = document.getElementById("editor-group-table-password").value.trim();
+        const nicknameInput = document.getElementById("editor-group-table-nickname");
+        const nickname = nicknameInput ? nicknameInput.value.trim() : "";
+        const isEn = document.body.classList.contains("lang-en");
+
+        if (!newPassword || newPassword.length < 6) {
+            window.showToast(isEn ? "Password must be at least 6 digits!" : "管理密碼長度須至少為6位！", "error");
+            return;
+        }
+
+        const currentPass = (window.currentGroupTableData && window.currentGroupTableData.password) ? window.currentGroupTableData.password : "";
+
+        const btn = document.getElementById("btn-save-group-table-password");
+        const originalText = btn ? btn.innerHTML : "";
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i>`;
+        }
+
+        const requestUrl = `${GAS_API_URL}?action=updateGroupTableInfo&tableId=${encodeURIComponent(activeGroupTableId)}&password=${encodeURIComponent(currentPass)}&newNickname=${encodeURIComponent(nickname)}&newPassword=${encodeURIComponent(newPassword)}`;
+
+        requestJSONP(requestUrl, (result) => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            if (result.status === "success") {
+                window.showToast(result.message, "success");
+                if (window.currentGroupTableData) window.currentGroupTableData.password = newPassword;
+            } else {
+                window.showToast(result.message, "error");
+            }
+        }, () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            window.showToast(isEn ? "Network error." : "網路修改失敗。", "error");
+        });
+    };
+
+    // 3. 批量解析貼上
+    window.toggleGroupBatchPaste = function (e) {
+        if (e) e.preventDefault();
+        const container = document.getElementById("group-batch-paste-container");
+        const toggleBtn = document.getElementById("group-batch-paste-toggle-btn");
+        if (!container) return;
+        if (container.classList.contains("hidden")) {
+            container.classList.remove("hidden");
+            if (toggleBtn) toggleBtn.innerText = "收合選單 / Collapse";
+        } else {
+            container.classList.add("hidden");
+            if (toggleBtn) toggleBtn.innerText = "展開選單 / Expand";
+        }
+    };
+
+    window.applyGroupBatchPaste = function () {
+        window.parseGroupBatchPaste();
+    };
+
+    window.submitNewGroupTable = function () {
+        window.saveNewGroupTable();
+    };
+
+    window.parseGroupBatchPaste = function () {
+        const inputArea = document.getElementById("group-batch-paste-textarea") || document.getElementById("group-batch-paste-input");
+        const isEn = document.body.classList.contains("lang-en");
+        if (!inputArea) return;
+        
+        const rawText = inputArea.value.trim();
+        if (!rawText) {
+            window.showToast(isEn ? "Please paste text first!" : "請先貼上成員文字資料！", "error");
+            return;
+        }
+
+        const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+        if (lines.length === 0) return;
+
+        let slotIndex = 1;
+        lines.slice(0, 10).forEach((line, lineIdx) => {
+            const parts = line.split(/[,，\s\t]+/).map(p => p.trim()).filter(p => p !== "");
+            if (parts.length >= 2) {
+                const email = parts[0];
+                const phone = parts[1];
+                const targetIndex = slotIndex;
+                setTimeout(() => {
+                    const emailField = document.getElementById(`group-email-field-${targetIndex}`);
+                    const phoneField = document.getElementById(`group-phone-field-${targetIndex}`);
+                    if (emailField && phoneField) {
+                        emailField.value = email;
+                        phoneField.value = phone;
+                        window.verifyGroupMemberInput(targetIndex);
+                    }
+                }, lineIdx * 350);
+            }
+            slotIndex++;
+        });
+
+        window.showToast(isEn ? "Batch parsed successfully!" : "批量填寫完成，正在自動驗證資料...", "success");
+    };
+
+    // 4. 解散桌位
+    window.disbandGroupTable = function () {
+        const isEn = document.body.classList.contains("lang-en");
+        if (!confirm(isEn ? "Are you sure you want to disband this group table?" : "確定要解散此揪桌嗎？解散後此桌位將完全刪除！")) {
+            return;
+        }
+
+        const password = (window.currentGroupTableData && window.currentGroupTableData.password) 
+            ? window.currentGroupTableData.password 
+            : "";
+
+        const btn = document.getElementById("btn-disband-group-table");
+        const originalText = btn ? btn.innerHTML : "";
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> ${isEn ? "Disbanding..." : "解散中..."}`;
+        }
+
+        const requestUrl = `${GAS_API_URL}?action=disbandGroupTable&tableId=${encodeURIComponent(activeGroupTableId)}&password=${encodeURIComponent(password)}`;
+
+        requestJSONP(requestUrl, (result) => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            if (result.status === "success") {
+                window.showToast(result.message, "success");
+                closeGroupTableModal('editor');
+                loadGroupTablesGrid();
+            } else {
+                window.showToast(result.message, "error");
+            }
+        }, () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            window.showToast(isEn ? "Network error." : "網路連線失敗。", "error");
+        });
+    };
+
+    // 5. 建立新桌位
+    window.saveNewGroupTable = function () {
+        const nickname = document.getElementById("editor-group-table-nickname").value.trim();
+        const password = document.getElementById("editor-group-table-password").value.trim();
+        const isEn = document.body.classList.contains("lang-en");
+
+        if (!password || password.length < 6) {
+            window.showToast(isEn ? "Please enter a 6-digit password!" : "請設定 6 位數以上的管理密碼！", "error");
+            return;
+        }
+
+        const members = [];
+        for (let i = 1; i <= 10; i++) {
+            const emailField = document.getElementById(`group-email-field-${i}`);
+            const phoneField = document.getElementById(`group-phone-field-${i}`);
+            if (emailField && phoneField) {
+                const email = emailField.value.trim();
+                const phone = phoneField.value.trim();
+                if (email && phone) {
+                    members.push({ email: email, phone: phone });
+                }
+            }
+        }
+
+        if (members.length < groupMinLimit) {
+            window.showToast(isEn ? `At least ${groupMinLimit} members required!` : `建桌人數不得低於 ${groupMinLimit} 人！`, "error");
+            return;
+        }
+
+        const btn = document.getElementById("btn-create-group-table-submit");
+        const originalText = btn ? btn.innerHTML : "";
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> ${isEn ? "Creating..." : "建立中..."}`;
+        }
+
+        const requestUrl = `${GAS_API_URL}?action=saveGroupTable&nickname=${encodeURIComponent(nickname)}&password=${encodeURIComponent(password)}&members=${encodeURIComponent(JSON.stringify(members))}`;
+
+        requestJSONP(requestUrl, (result) => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            if (result.status === "success") {
+                window.showToast(result.message, "success");
+                closeGroupTableModal('editor');
+                loadGroupTablesGrid();
+            } else {
+                window.showToast(result.message, "error");
+            }
+        }, () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+            window.showToast(isEn ? "Network error." : "網路連線失敗。", "error");
+        });
+    };
+
+    // 6. 儲存桌友成員變更
+    window.saveGroupTableMembers = function () {
+        const isEn = document.body.classList.contains("lang-en");
+        const btn = document.getElementById("btn-save-group-editor");
+        const originalText = btn ? btn.innerHTML : "";
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-spinner ph-spin"></i> ${isEn ? "Saving..." : "儲存中..."}`;
+        }
+
+        // 1. 若暱稱有修改，自動執行修訂
+        const nickname = document.getElementById("editor-group-table-nickname").value.trim();
+        if (nickname && nickname !== (window.currentGroupTableData ? window.currentGroupTableData.nickname : "")) {
+            window.updateGroupTableNicknameAndPassword();
+        }
+
+        // 2. 若有單列正在處於輸入與驗證狀態，自動幫使用者儲存
+        for (let i = 1; i <= 10; i++) {
+            const singleSaveBtn = document.getElementById(`btn-group-save-member-${i}`);
+            if (singleSaveBtn && !singleSaveBtn.disabled) {
+                window.saveSingleGroupMember(i);
+            }
+        }
+
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+        window.showToast(isEn ? "Changes saved successfully!" : "桌友資料已成功儲存！", "success");
+        closeGroupTableModal('editor');
+        loadGroupTablesGrid();
     };
 
     // I. 管理模式下，點擊「加入」或新增成員
