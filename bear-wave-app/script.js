@@ -1315,6 +1315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (qTransportation) {
                         const trans = result.data.transportation || '自行前往';
+                        const busTrip = result.data.busNumber || result.data.busTrip || result.data.busNo || '';
                         const nat = result.data.nationality || '本國人';
                         let transText = trans;
                         if (isCurrentEn) {
@@ -1328,6 +1329,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (trans === '西門遊覽車' && nat === '外國人') {
                                 transText = '西門交通車(遊覽車)';
                             }
+                        }
+
+                        // 合併呈現 交通方式 + (車次別)
+                        if (busTrip) {
+                            transText += ` (${busTrip})`;
                         }
                         qTransportation.innerText = transText;
                     }

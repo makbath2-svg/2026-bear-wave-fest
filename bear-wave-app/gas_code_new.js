@@ -298,6 +298,17 @@ function handleRequest(e) {
       var data = sheet.getDataRange().getValues();
       for (var i = 1; i < data.length; i++) {
         if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
+          // 車次別為 Column Q (第 17 欄，索引 16)
+          var busTrip = data[i][16] ? data[i][16].toString().replace(/^'/, "").trim() : "";
+          if (!busTrip) {
+            // 向下相容搜尋
+            if (data[i][14] !== undefined && data[i][14] !== null && data[i][14].toString().trim() !== "") {
+              busTrip = data[i][14].toString().replace(/^'/, "").trim();
+            } else if (data[i][15] !== undefined && data[i][15] !== null && data[i][15].toString().trim() !== "") {
+              busTrip = data[i][15].toString().replace(/^'/, "").trim();
+            }
+          }
+
           return toJSON(e, {
             status: "success",
             data: {
@@ -306,6 +317,8 @@ function handleRequest(e) {
               email: data[i][3],
               phone: data[i][4] ? data[i][4].toString().replace(/^'/, "") : "",
               transportation: data[i][5] || "自行前往",
+              busNumber: busTrip,
+              busTrip: busTrip,
               lastFiveDigits: data[i][6] ? data[i][6].toString().replace(/^'/, "") : "",
               paymentStatus: data[i][7] || "未匯款",
               tableNumber: data[i][8],
