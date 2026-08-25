@@ -816,6 +816,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(isEn ? "Event registration closed on August 15th! Please use '3. Status' to check your status and table." : "本活動已於 8 月 15 日正式截止報名！已報名者請切換至「3. 狀態查詢」查看對帳狀態與桌次。");
             tabName = 'query'; // 強制導向狀態查詢
         }
+        const tabPayBtn = document.getElementById('tab-pay');
+        if (tabName === 'pay' && tabPayBtn && (tabPayBtn.disabled || tabPayBtn.classList.contains('tab-disabled'))) {
+            const isEn = document.body.classList.contains('lang-en');
+            alert(isEn ? "Payment submission closed on August 26th! Please use '3. Status' to check your payment status and table." : "匯款登記已於 8 月 26 日 23:59 正式關閉！已匯款學員請切換至「3. 狀態查詢」查看對帳狀態與桌次。");
+            tabName = 'query'; // 強制導向狀態查詢
+        }
         const tabs = ['reg', 'pay', 'query', 'table', 'group'];
         tabs.forEach(tab => {
             const btn = document.getElementById(`tab-${tab}`);
@@ -2629,9 +2635,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div class="table-card-footer" style="padding: 12px 20px 20px 20px;">
-                            <button type="button" class="btn btn-outline btn-full" onclick="openGroupVerifyPassword('${table.id}')">
-                                <i class="ph ph-pencil-simple" style="margin-right: 4px; vertical-align: middle;"></i>
-                                ${isEn ? "Manage / Join" : "管理或加入此桌"}
+                            <button type="button" class="btn btn-outline btn-full" onclick="openViewGroupTableDetails('${table.id}')">
+                                <i class="ph ph-eye" style="margin-right: 4px; vertical-align: middle;"></i>
+                                ${isEn ? "View Member List" : "查看成員名單"}
                             </button>
                         </div>
                     `;
@@ -2779,30 +2785,31 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const nicknameInput = document.getElementById("editor-group-table-nickname");
         const passwordInput = document.getElementById("editor-group-table-password");
-        if (nicknameInput) nicknameInput.value = data.nickname;
+        if (nicknameInput) {
+            nicknameInput.value = data.nickname;
+            nicknameInput.readOnly = true;
+        }
         if (passwordInput) passwordInput.value = password;
         
-        // 顯示單項變更按鈕 (編輯模式可各自更新暱稱/密碼)
+        // 隱藏所有修改/變更/解散按鈕 (鎖定為純唯讀)
         const btnNick = document.getElementById("btn-save-group-table-nickname");
         const btnPass = document.getElementById("btn-save-group-table-password");
-        if (btnNick) btnNick.classList.remove("hidden");
-        if (btnPass) btnPass.classList.remove("hidden");
+        if (btnNick) btnNick.classList.add("hidden");
+        if (btnPass) btnPass.classList.add("hidden");
         
-        // 隱藏新建按鈕，顯示解散按鈕
         const btnCreate = document.getElementById("btn-create-group-table-submit");
         const btnDisband = document.getElementById("btn-disband-group-table");
         if (btnCreate) btnCreate.classList.add("hidden");
-        if (btnDisband) btnDisband.classList.remove("hidden");
+        if (btnDisband) btnDisband.classList.add("hidden");
         
-        // 隱藏批次貼上區塊 (僅在新建模式下開放)
         const batchSection = document.getElementById("group-batch-paste-section");
         if (batchSection) batchSection.classList.add("hidden");
         
         const errorMsg = document.getElementById("group-editor-error-msg");
         if (errorMsg) errorMsg.style.display = "none";
         
-        // 渲染 10 位名單 (可獨立編輯 / 刪除)
-        renderGroupEditorRows(data.members, false);
+        // 渲染 10 位名單 (純唯讀模式 isReadOnly = true)
+        renderGroupEditorRows(data.members, false, true);
         
         const passwordModal = document.getElementById("group-table-password-modal");
         if (passwordModal) passwordModal.classList.add("hidden");
@@ -2832,8 +2839,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // G. 渲染 10 位揪桌名單
-    function renderGroupEditorRows(members, isNew) {
+    // G. 開啟純唯讀桌資料詳情
+    window.openViewGroupTableDetails = function (tableId) {
+        activeGroupTableId = tableId;
+        const isEn = document.body.classList.contains("lang-en");
+        
+        let tableData = null;
+        if (window.allGroupTablesList) {
+            tableData = window.allGroupTablesList.find(x => x.id === tableId);
+        }
+        
+        const idDisplay = document.getElementById("editor-group-table-id-display");
+        const idDisplayEn = document.getElementById("editor-group-table-id-display-en");
+        if (idDisplay) idDisplay.innerText = tableId;
+        if (idDisplayEn) idDisplayEn.innerText = tableId;
+        
+        const nicknameInput = document.getElementById("editor-group-table-nickname");
+        if (nicknameInput) {
+            nicknameInput.value = tableData ? (tableData.nickname || `揪桌友 ${tableId}`) : `揪桌友 ${tableId}`;
+            nicknameInput.readOnly = true;
+        }
+        
+        const container = document.getElementById("group-members-list-container");
+        const editorModal = document.getElementById("group-table-editor-modal");
+        if (editorModal) editorModal.classList.remove("hidden");
+        
+        if (tableData && tableData.members && tableData.members.length > 0) {
+            renderGroupEditorRows(tableData.members, false, true);
+        } else {
+            if (container) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);"><i class="ph ph-spinner ph-spin" style="font-size:1.5rem; display:block; margin:0 auto 8px auto;"></i> ${isEn ? "Loading member details..." : "載入成員資料中..."}</div>`;
+            }
+            const requestUrl = `${GAS_API_URL}?action=getGroupTableDetails&tableId=${encodeURIComponent(tableId)}`;
+            requestJSONP(requestUrl, (result) => {
+                if (result.status === "success" && result.data) {
+                    if (nicknameInput) nicknameInput.value = result.data.nickname || `揪桌友 ${tableId}`;
+                    renderGroupEditorRows(result.data.members, false, true);
+                } else {
+                    if (container) container.innerHTML = `<div style="text-align:center; padding:20px; color:#d32f2f;">${isEn ? "Failed to load member details." : "載入成員資料失敗。"}</div>`;
+                }
+            }, () => {
+                if (container) container.innerHTML = `<div style="text-align:center; padding:20px; color:#d32f2f;">${isEn ? "Connection error." : "連線失敗。"}</div>`;
+            });
+        }
+    };
+
+    // 渲染 10 位揪桌名單 (純唯讀模式下完全不提供編輯/刪除按紐)
+    function renderGroupEditorRows(members, isNew, isReadOnly = true) {
         const container = document.getElementById("group-members-list-container");
         if (!container) return;
         
@@ -2848,90 +2900,45 @@ document.addEventListener('DOMContentLoaded', () => {
             const labelZh = (i === 1) ? "人員1<br><span style='font-size: 0.75rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;'>發起人</span>" : `人員${i}`;
             const labelEn = (i === 1) ? "Member 1<br><span style='font-size: 0.75rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;'>Creator</span>" : `Member ${i}`;
             
-            if (isNew) {
-                // 新建模式下，每個 slot 可以呼叫選人 picker，或手動填入
-                memberRow.innerHTML = `
-                    <div class="member-index-badge">
-                        <span class="lang-zh">${labelZh}</span>
-                        <span class="lang-en">${labelEn}</span>
-                    </div>
-                    <div class="member-inputs">
-                        <div class="member-input-group">
-                            <label>Email Address</label>
-                            <input type="email" class="member-email" id="group-email-field-${i}" onblur="verifyGroupMemberInput(${i})" placeholder="example@mail.com" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color);">
-                        </div>
-                        <div class="member-input-group">
-                            <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
-                            <input type="text" class="member-phone" id="group-phone-field-${i}" onblur="verifyGroupMemberInput(${i})" maxlength="4" placeholder="1234" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border-color);">
-                        </div>
-                        <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
-                            <label>${isEn ? "Real Name" : "報名姓名"}</label>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span class="member-name-display" id="group-name-display-${i}" style="font-weight:600; color:var(--text-muted);">-</span>
-                                <span id="group-spinner-${i}" class="hidden"><i class="ph ph-spinner ph-spin" style="color:var(--bear-rust);"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="member-action-col"></div>
-                `;
-            } else {
-                // 修改模式：預設唯讀
-                const member = (members && members[i - 1]) ? members[i - 1] : { email: "", phone: "", name: "" };
-                const emailVal = member.email || "";
-                const phoneVal = member.phone || "";
-                const nameVal = member.name || "";
-                
-                if (emailVal && nameVal) {
-                    memberRow.classList.add("row-success");
-                }
-                
-                const maskedEmail = emailVal ? maskEmail(emailVal) : "-";
-                const maskedPhone = phoneVal ? `***${phoneVal.slice(-1)}` : "-";
-                const displayName = nameVal || (isEn ? "Empty Slot" : "空位（尚未加入）");
-                
-                const maskedEmailEscaped = escapeHtml(maskedEmail);
-                const maskedPhoneEscaped = escapeHtml(maskedPhone);
-                const displayNameEscaped = escapeHtml(displayName);
-                
-                memberRow.innerHTML = `
-                    <div class="member-index-badge">
-                        <span class="lang-zh">${labelZh}</span>
-                        <span class="lang-en">${labelEn}</span>
-                    </div>
-                    <div class="member-inputs" id="group-inputs-view-${i}">
-                        <div class="member-input-group">
-                            <label>Email Address</label>
-                            <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedEmailEscaped}</span>
-                        </div>
-                        <div class="member-input-group">
-                            <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
-                            <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedPhoneEscaped}</span>
-                        </div>
-                        <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
-                            <label>${isEn ? "Real Name" : "報名姓名"}</label>
-                            <span style="font-weight:700; color:${nameVal ? 'var(--ocean-dark)' : 'var(--text-muted)'};">${displayNameEscaped}</span>
-                        </div>
-                    </div>
-                    <div class="member-action-col" id="group-action-view-${i}">
-                        ${emailVal 
-                            ? `<div style="display:flex; flex-direction:column; gap:6px; width:100%;">
-                                 <button type="button" class="btn btn-outline btn-small" onclick="enableGroupRowEdit(${i})" style="border-color: var(--bear-rust); color: var(--bear-rust);">
-                                   <i class="ph ph-note-pencil" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "Edit" : "修改"}
-                                 </button>
-                                 ${i === 1 
-                                     ? "" 
-                                     : `<button type="button" id="btn-group-remove-member-${i}" class="btn btn-outline btn-small" onclick="removeGroupMember(${i})" style="color:#d32f2f; border-color:#d32f2f;">
-                                          <i class="ph ph-trash" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "Remove" : "移出"}
-                                        </button>`
-                                 }
-                               </div>`
-                            : `<button type="button" class="btn btn-outline btn-small" onclick="enableGroupRowEdit(${i})">
-                                 <i class="ph ph-plus" style="margin-right:2px; vertical-align:middle;"></i>${isEn ? "Join" : "加入"}
-                               </button>`
-                        }
-                    </div>
-                `;
+            // 唯讀模式：純展示成員資料
+            const member = (members && members[i - 1]) ? members[i - 1] : { email: "", phone: "", name: "" };
+            const emailVal = member.email || "";
+            const phoneVal = member.phone || "";
+            const nameVal = member.name || "";
+            
+            if (emailVal && nameVal) {
+                memberRow.classList.add("row-success");
             }
+            
+            const maskedEmail = emailVal ? maskEmail(emailVal) : "-";
+            const maskedPhone = phoneVal ? `***${phoneVal.slice(-1)}` : "-";
+            const displayName = nameVal || (isEn ? "Empty Slot" : "空位（尚未加入）");
+            
+            const maskedEmailEscaped = escapeHtml(maskedEmail);
+            const maskedPhoneEscaped = escapeHtml(maskedPhone);
+            const displayNameEscaped = escapeHtml(displayName);
+            
+            memberRow.innerHTML = `
+                <div class="member-index-badge">
+                    <span class="lang-zh">${labelZh}</span>
+                    <span class="lang-en">${labelEn}</span>
+                </div>
+                <div class="member-inputs" id="group-inputs-view-${i}">
+                    <div class="member-input-group">
+                        <label>Email Address</label>
+                        <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedEmailEscaped}</span>
+                    </div>
+                    <div class="member-input-group">
+                        <label>${isEn ? "Phone (Last 4)" : "手機後四碼"}</label>
+                        <span style="font-weight:500; font-family:monospace; color:var(--text-main);">${maskedPhoneEscaped}</span>
+                    </div>
+                    <div class="member-input-group member-name-group" style="display:flex; flex-direction:column; justify-content:center;">
+                        <label>${isEn ? "Real Name" : "報名姓名"}</label>
+                        <span style="font-weight:700; color:${nameVal ? 'var(--ocean-dark)' : 'var(--text-muted)'};">${displayNameEscaped}</span>
+                    </div>
+                </div>
+                <div class="member-action-col" id="group-action-view-${i}" style="display: none !important;"></div>
+            `;
             container.appendChild(memberRow);
         }
     }

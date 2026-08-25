@@ -1530,7 +1530,54 @@ function handleRequest(e) {
       return toJSON(e, { status: "success", results: results });
     }
 
-    // D. 驗證密碼載入揪桌友詳細資料
+    // D-1. 純唯讀查詢揪桌友詳細資料 (無需密碼)
+    if (action === "getGroupTableDetails") {
+      var tableId = params.tableId ? formatGroupTableId(params.tableId) : "";
+      if (!tableId) {
+        return toJSON(e, { status: "error", message: "請提供揪桌友 ID！" });
+      }
+
+      var groupSheet = getGroupTableSheet(ss);
+      var groupData = groupSheet.getDataRange().getValues();
+      var foundRow = null;
+      for (var i = 1; i < groupData.length; i++) {
+        var currentId = groupData[i][0] ? formatGroupTableId(groupData[i][0]) : "";
+        if (currentId === tableId) {
+          foundRow = groupData[i];
+          break;
+        }
+      }
+
+      if (!foundRow) {
+        return toJSON(e, { status: "error", message: "找不到此揪桌友 ID。" });
+      }
+
+      var nickname = foundRow[1] ? foundRow[1].toString().trim() : "";
+      var regData = sheet.getDataRange().getValues();
+      var members = [];
+      var emailCols = [3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+      for (var c = 0; c < emailCols.length; c++) {
+        var colIndex = emailCols[c];
+        var emailStr = foundRow[colIndex] ? foundRow[colIndex].toString().trim() : "";
+        if (!emailStr) {
+          members.push({ email: "", phone: "", name: "" });
+          continue;
+        }
+        var memberName = "";
+        var memberPhone = "";
+        for (var k = 1; k < regData.length; k++) {
+          if (regData[k][3] && regData[k][3].toString().trim().toLowerCase() === emailStr.toLowerCase()) {
+            memberName = regData[k][2] ? regData[k][2].toString().trim() : "";
+            memberPhone = regData[k][4] ? regData[k][4].toString().replace(/^'/, "").trim() : "";
+            break;
+          }
+        }
+        members.push({ email: emailStr, phone: memberPhone, name: memberName });
+      }
+      return toJSON(e, { status: "success", data: { tableId: tableId, nickname: nickname, members: members } });
+    }
+
+    // D-2. 驗證密碼載入揪桌友詳細資料
     if (action === "verifyGroupTablePassword") {
       var tableId = params.tableId ? formatGroupTableId(params.tableId) : "";
       var password = params.password ? params.password.trim() : "";
