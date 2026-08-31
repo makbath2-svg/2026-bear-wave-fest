@@ -344,10 +344,13 @@
                         <i class="ph ph-warning-circle"></i>
                     </div>
                     <div class="reg-closed-banner-content">
-
+                        <h4>
+                            <span class="lang-zh">⚠️ 匯款與對帳登記已截止</span>
+                            <span class="lang-en">⚠️ Payment Submission Closed</span>
+                        </h4>
                         <p>
-                            <span class="lang-zh">本活動已截止新報名，「2. 匯款登記」對帳系統將於 <strong>今晚 (8 月 26 日) 23:59:59 正式關閉</strong>。<br>已匯款學員請儘速於今晚截止前完成登記；完成登記後可切換至 <strong>「3. 狀態查詢」</strong> 查看對帳結果與桌次。</span>
-                            <span class="lang-en">Payment submission system will be closed tonight (Aug 26) at 23:59:59. Please submit your payment info before midnight.</span>
+                            <span class="lang-zh">「活動報名」「匯款登記」分頁已正式關閉。請直接切換至 <strong>「3. 狀態查詢」</strong> 查看您的對帳結果與桌次安排。</span>
+                            <span class="lang-en">"1. Register" and "2. Payment" tabs are now officially closed. Please switch to <strong>"3. Status"</strong> to view your payment status and table assignment.</span>
                         </p>
                     </div>
                 </div>
@@ -826,6 +829,17 @@
                                         Nickname</span></span>
                                 <span class="val" id="q-result-table-nickname">-</span>
                             </div>
+                            <div class="ticket-row" id="row-qr-send" style="margin-top: 15px; padding-top: 15px; border-top: 1.5px dashed var(--border-color); display: flex; flex-direction: column; gap: 8px; align-items: stretch;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="label"><span class="lang-zh">電子票券發送</span><span class="lang-en">QR Ticket Email</span></span>
+                                    <span class="val"><span class="badge" id="q-result-qr-sent" style="background: #f1f5f9; color: #475569;">未開放</span></span>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btn-send-qr-email" onclick="handleSendQREmail(event)" style="width: 100%; padding: 10px; margin-top: 5px; font-weight: 600; font-size: 0.95rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;" disabled>
+                                    <i class="ph ph-paper-plane-tilt" style="font-size: 1.15rem;"></i>
+                                    <span class="lang-zh" id="btn-send-qr-text">寄出 QR 碼至信箱</span>
+                                    <span class="lang-en" id="btn-send-qr-text-en">Send QR Code to Email</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -934,8 +948,8 @@
                                             class="highlight">*若繳費後無法成功登記繳費紀錄，請盡速寄信/Email通知活動方，為您處理報名事宜。</span></li>
                                     <li><strong>繳費管道：</strong>台灣人請優先使用線上繳費方式付款（自動更新免對帳），亦可選擇銀行轉帳匯款（備用管道）。若選擇轉帳匯款，請於取得匯款後五碼資料後，回到報名網頁「2.
                                         匯款登記」分頁填寫相關資料，才算完成報名作業；使用線上繳費者無須登記。非台灣人則請使用 PayPal 平台繳費。</li>
-                                    <li><strong>截止日期：</strong>活動於 8/15 日截止報名，而報名系統將會於 8/26 日全部關閉（匯款登記也會關閉），所以請盡速於 8/26
-                                        日前完成繳費作業。8/27 日開始也請不要繼續匯款，以免造成活動處理困難。</li>
+                                    <li><strong>截止日期：</strong>活動於 8/15 日截止報名，而報名系統將會於 8/31 日全部關閉（匯款登記也會關閉），所以請盡速於 8/31
+                                        日前完成繳費作業。9/1 日開始也請不要繼續匯款，以免造成活動處理困難。</li>
                                     <li><strong>退款規則：</strong>完成報名作業後，如需申請退款，請於 9/11 日以前寄信/Email通知我們。
                                         <ul>
                                             <li>8/15 日以前申請退款者，將全額退還費用。</li>
@@ -973,8 +987,8 @@
                                         PayPal.</li>
                                     <li><strong>Closing Dates:</strong> Registration closes on August 15, and the
                                         registration system (including payment submission) will close completely on
-                                        August 26. Please complete your payment by August 26. Please do not make any
-                                        transfers starting August 27 to avoid processing difficulties.</li>
+                                        August 31. Please complete your payment by August 31. Please do not make any
+                                        transfers starting September 1 to avoid processing difficulties.</li>
                                     <li><strong>Refund Policy:</strong> If you need to request a refund after completing
                                         registration, please email us before September 11.
                                         <ul>

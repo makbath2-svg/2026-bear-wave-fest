@@ -1485,6 +1485,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         qTableNickname.innerText = nicknameText;
                     }
 
+                    // 更新【寄出QR碼至信箱】按鈕狀態與權限
+                    if (typeof window.updateSendQREmailButtonUI === 'function') {
+                        window.updateSendQREmailButtonUI(result.data.email, result.data.phone, result.data.qrSent);
+                    }
+
                     if (resultCard) resultCard.classList.remove('hidden');
                 } else {
                     showMessage(result.message, true);
@@ -1496,6 +1501,166 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // 全域冷卻倒數計時器與 QR 發信控制
+    window.qrEmailCooldownTimer = null;
+    window.qrEmailCooldownActive = false;
+
+    // 在狀態查詢回傳時，更新【寄出QR碼至信箱】按鈕狀態
+    window.updateSendQREmailButtonUI = function (email, phone, qrSentStr) {
+        const btnSend = document.getElementById('btn-send-qr-email');
+        const qQrSentBadge = document.getElementById('q-result-qr-sent');
+        const btnTextZh = document.getElementById('btn-send-qr-text');
+        const btnTextEn = document.getElementById('btn-send-qr-text-en');
+        const isEn = document.body.classList.contains('lang-en');
+
+        if (!btnSend) return;
+
+        btnSend.setAttribute('data-email', email || '');
+        btnSend.setAttribute('data-phone', phone || '');
+
+        const valStr = (qrSentStr !== undefined && qrSentStr !== null) ? qrSentStr.toString().trim() : '';
+
+        if (qQrSentBadge) {
+            if (!valStr || valStr === '未寄出') {
+                qQrSentBadge.innerText = isEn ? 'Not Released' : '未開放';
+                qQrSentBadge.style.background = '#f1f5f9';
+                qQrSentBadge.style.color = '#475569';
+            } else if (valStr === '0') {
+                qQrSentBadge.innerText = isEn ? 'Pending' : '待寄出';
+                qQrSentBadge.style.background = '#fff7ed';
+                qQrSentBadge.style.color = '#c2410c';
+            } else if (valStr === 'Err') {
+                qQrSentBadge.innerText = isEn ? 'Failed' : '發送失敗';
+                qQrSentBadge.style.background = '#fef2f2';
+                qQrSentBadge.style.color = '#dc2626';
+            } else if (/^\d+$/.test(valStr)) {
+                const num = parseInt(valStr, 10);
+                if (num >= 99) {
+                    qQrSentBadge.innerText = isEn ? 'Limit Exceeded (99+)' : '超過99次';
+                    qQrSentBadge.style.background = '#fef2f2';
+                    qQrSentBadge.style.color = '#dc2626';
+                } else {
+                    qQrSentBadge.innerText = isEn ? `Sent (${num} times)` : `已寄出 (${num}次)`;
+                    qQrSentBadge.style.background = '#f0fdf4';
+                    qQrSentBadge.style.color = '#15803d';
+                }
+            } else {
+                qQrSentBadge.innerText = valStr;
+            }
+        }
+
+        // 判斷按鈕權限與是否可點擊
+        // 規則：未寄出 / 空白 / 其他未定義 -> 停用！
+        // 0, Err, 1~98 -> 可點擊！
+        // >= 99 -> 停用，顯示超過99次
+        if (!valStr || valStr === '未寄出' || (!/^\d+$/.test(valStr) && valStr !== '0' && valStr !== 'Err')) {
+            btnSend.disabled = true;
+            if (btnTextZh) btnTextZh.innerText = '寄出 QR 碼至信箱 (未開放)';
+            if (btnTextEn) btnTextEn.innerText = 'Send QR Code to Email (Not Released)';
+        } else if (/^\d+$/.test(valStr) && parseInt(valStr, 10) >= 99) {
+            btnSend.disabled = true;
+            if (btnTextZh) btnTextZh.innerText = '已超過99次寄出上限';
+            if (btnTextEn) btnTextEn.innerText = 'Limit Exceeded (99+)';
+        } else {
+            // 可點擊狀態（受 30 秒冷卻鎖定影響）
+            if (!window.qrEmailCooldownActive) {
+                btnSend.disabled = false;
+                if (btnTextZh) btnTextZh.innerText = '寄出 QR 碼至信箱';
+                if (btnTextEn) btnTextEn.innerText = 'Send QR Code to Email';
+            }
+        }
+    };
+
+    // 處理學員按下【寄出QR碼至信箱】按鈕事件
+    window.handleSendQREmail = function (e) {
+        if (e) e.preventDefault();
+
+        const btnSend = document.getElementById('btn-send-qr-email');
+        if (!btnSend || btnSend.disabled) return;
+
+        const email = btnSend.getAttribute('data-email');
+        const phone = btnSend.getAttribute('data-phone');
+
+        if (!email && !phone) {
+            window.showToast('無法取得 Email 資料，請重新查詢！', 'error');
+            return;
+        }
+
+        const isEn = document.body.classList.contains('lang-en');
+        const btnTextZh = document.getElementById('btn-send-qr-text');
+        const btnTextEn = document.getElementById('btn-send-qr-text-en');
+
+        // 鎖定按鈕，防止連續點擊
+        btnSend.disabled = true;
+        if (btnTextZh) btnTextZh.innerHTML = '<i class="ph ph-spinner ph-spin"></i> 寄信中...';
+        if (btnTextEn) btnTextEn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending...';
+
+        const requestUrl = `${GAS_API_URL}?action=sendQREmail&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(phone)}`;
+
+        requestJSONP(requestUrl, (result) => {
+            if (result.status === 'success') {
+                window.showToast(result.message || 'QR Code 電子票券已成功寄送至您的信箱！', 'success');
+
+                // 更新 UI Badge 與次數
+                window.updateSendQREmailButtonUI(email, phone, result.qrSent || '1');
+
+                // 啟動 30 秒冷卻倒數計時器
+                window.startQREmail30sCooldown();
+            } else {
+                btnSend.disabled = false;
+                if (btnTextZh) btnTextZh.innerText = '寄出 QR 碼至信箱';
+                if (btnTextEn) btnTextEn.innerText = 'Send QR Code to Email';
+                window.showToast(result.message || '寄送信件失敗，請稍後重試！', 'error');
+            }
+        }, () => {
+            btnSend.disabled = false;
+            if (btnTextZh) btnTextZh.innerText = '寄出 QR 碼至信箱';
+            if (btnTextEn) btnTextEn.innerText = 'Send QR Code to Email';
+            window.showToast(isEn ? 'Network error. Please try again.' : '網路連線異常，請稍後重試。', 'error');
+        });
+    };
+
+    // 30 秒冷卻倒數計時器
+    window.startQREmail30sCooldown = function () {
+        const btnSend = document.getElementById('btn-send-qr-email');
+        const btnTextZh = document.getElementById('btn-send-qr-text');
+        const btnTextEn = document.getElementById('btn-send-qr-text-en');
+
+        if (!btnSend) return;
+
+        window.qrEmailCooldownActive = true;
+        btnSend.disabled = true;
+
+        let countdown = 30;
+        if (btnTextZh) btnTextZh.innerText = `已寄出 (${countdown}s 後可重寄)`;
+        if (btnTextEn) btnTextEn.innerText = `Sent (${countdown}s cooldown)`;
+
+        if (window.qrEmailCooldownTimer) clearInterval(window.qrEmailCooldownTimer);
+
+        window.qrEmailCooldownTimer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                if (btnTextZh) btnTextZh.innerText = `已寄出 (${countdown}s 後可重寄)`;
+                if (btnTextEn) btnTextEn.innerText = `Sent (${countdown}s cooldown)`;
+            } else {
+                clearInterval(window.qrEmailCooldownTimer);
+                window.qrEmailCooldownActive = false;
+
+                // 重新解鎖按鈕（若未超限）
+                const email = btnSend.getAttribute('data-email');
+                const phone = btnSend.getAttribute('data-phone');
+                const qQrSentBadge = document.getElementById('q-result-qr-sent');
+                const currentBadgeText = qQrSentBadge ? qQrSentBadge.innerText : '';
+
+                if (currentBadgeText.indexOf('超過99次') === -1 && currentBadgeText.indexOf('未開放') === -1) {
+                    btnSend.disabled = false;
+                    if (btnTextZh) btnTextZh.innerText = '再次寄出 QR 碼至信箱';
+                    if (btnTextEn) btnTextEn.innerText = 'Resend QR Code to Email';
+                }
+            }
+        }, 1000);
+    };
 
     // ==========================================
     // 中英雙語切換功能 (Bilingual Language Switcher)

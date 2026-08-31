@@ -576,11 +576,11 @@
             if (!isScanningActive) return; // Prevent double scanning while modal is active
             
             isScanningActive = false;
-            const email = decodedText.trim();
+            const codeVal = decodedText.trim();
             
             updateStatus(false, "核銷查詢中...");
             
-            const requestUrl = `${GAS_API_URL}?action=checkBoarding&email=${encodeURIComponent(email)}`;
+            const requestUrl = `${GAS_API_URL}?action=checkBoarding&code=${encodeURIComponent(codeVal)}&email=${encodeURIComponent(codeVal)}`;
             
             requestJSONP(requestUrl, (result) => {
                 showFeedback(result);

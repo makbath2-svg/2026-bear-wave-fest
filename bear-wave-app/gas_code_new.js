@@ -28,6 +28,79 @@ const PAYPAL_LINKS = {
   busFee: "https://www.paypal.com/ncp/payment/XLXLAJNBUUJRN"       // 專車費 $250 TWD
 };
 
+// 固定內建加密金鑰
+const SECRET_KEY = "BearWave2026_GregBoy";
+
+/**
+ * 簡易對稱加密（與 Base64 結合），將敏感 Email 轉為加密文字 Token
+ */
+function encryptText(text) {
+  if (!text) return "";
+  var clean = text.toString().trim().toLowerCase();
+  var key = SECRET_KEY;
+  var result = "";
+  for (var i = 0; i < clean.length; i++) {
+    var c = clean.charCodeAt(i);
+    var k = key.charCodeAt(i % key.length);
+    result += String.fromCharCode(c ^ k);
+  }
+  return Utilities.base64EncodeWebSafe(Utilities.newBlob(result).getBytes());
+}
+
+/**
+ * 對稱解密，將加密 Token 還原為原始 Email
+ */
+function decryptText(encoded) {
+  if (!encoded) return "";
+  try {
+    var decodedBytes = Utilities.base64DecodeWebSafe(encoded.toString().trim());
+    var text = Utilities.newBlob(decodedBytes).getDataAsString();
+    var key = SECRET_KEY;
+    var result = "";
+    for (var i = 0; i < text.length; i++) {
+      var c = text.charCodeAt(i);
+      var k = key.charCodeAt(i % key.length);
+      result += String.fromCharCode(c ^ k);
+    }
+    return result.toLowerCase();
+  } catch (e) {
+    return "";
+  }
+}
+
+/**
+ * 模式 A 100% 嚴格安全解密：
+ * 僅接受經 SECRET_KEY 解密成功的 Token 密文。
+ * 拒絕直接傳入明文 Email (含 @) 或無效密文，防止有心人士打字冒用！
+ */
+function getStrictEncryptedEmail(codeParam, emailParam) {
+  var rawCode = codeParam ? codeParam.toString().trim() : "";
+  var rawEmail = emailParam ? emailParam.toString().trim() : "";
+
+  // 1. 若輸入的 rawCode 直接包含 @ 符號 (代表為明文 Email)，基於資安原則直接拒絕！
+  if (rawCode && rawCode.indexOf("@") > -1) {
+    return "";
+  }
+
+  // 2. 嘗試解密 rawCode Token
+  if (rawCode) {
+    var decrypted = decryptText(rawCode);
+    if (decrypted && decrypted.indexOf("@") > -1) {
+      return decrypted.toLowerCase();
+    }
+  }
+
+  // 3. 若 emailParam 不是明文 Email 而是傳了 Token (備用相容)
+  if (rawEmail && rawEmail.indexOf("@") === -1) {
+    var decryptedAlt = decryptText(rawEmail);
+    if (decryptedAlt && decryptedAlt.indexOf("@") > -1) {
+      return decryptedAlt.toLowerCase();
+    }
+  }
+
+  return "";
+}
+
 /**
  * 輔助函式：將資料轉為 JSON 或相容前端的 JSONP 輸出（解決跨網域 CORS 問題）
  */
@@ -325,6 +398,8 @@ function handleRequest(e) {
             }
           }
 
+          var qrSentVal = data[i][14] !== undefined && data[i][14] !== null ? data[i][14].toString().replace(/^'/, "").trim() : "";
+
           return toJSON(e, {
             status: "success",
             data: {
@@ -338,7 +413,8 @@ function handleRequest(e) {
               lastFiveDigits: data[i][6] ? data[i][6].toString().replace(/^'/, "") : "",
               paymentStatus: data[i][7] || "未匯款",
               tableNumber: data[i][8],
-              tableNickname: data[i][9] || ""
+              tableNickname: data[i][9] || "",
+              qrSent: qrSentVal
             }
           });
         }
@@ -347,11 +423,130 @@ function handleRequest(e) {
       return toJSON(e, { status: "error", message: "找不到此 Email 的報名紀錄，請確認輸入是否正確。" });
     }
 
+    // 3.5 學員自主點擊【寄出QR碼至信箱】 Action
+    if (action === "sendQREmail") {
+      var email = params.email ? params.email.trim() : "";
+      var phone = params.phone ? params.phone.trim() : "";
+
+      if (!email && !phone) {
+        return toJSON(e, { status: "error", message: "請提供 Email 或手機號碼！" });
+      }
+
+      // A. CacheService 30 秒冷卻時間檢查 (防爆刷)
+      var cache = CacheService.getScriptCache();
+      var cacheKey = "mail_cd_" + (email || phone).toLowerCase();
+      if (cache.get(cacheKey)) {
+        return toJSON(e, { status: "error", message: "請求太頻繁，請 30 秒後再試！" });
+      }
+
+      // B. MailApp 今日剩餘配額檢查
+      var remainingDailyQuota = MailApp.getRemainingDailyQuota();
+      if (remainingDailyQuota <= 0) {
+        return toJSON(e, { status: "error", message: "今日發件配額已滿，請明日再試！" });
+      }
+
+      // C. 取得寫入鎖，確保試算表競爭安全
+      var lock = LockService.getScriptLock();
+      try {
+        lock.waitLock(10000);
+      } catch (err) {
+        return toJSON(e, { status: "error", message: "系統繁忙，請稍後重試。" });
+      }
+
+      try {
+        var data = sheet.getDataRange().getValues();
+        var foundRowIndex = -1;
+        var studentName = "";
+        var studentEmail = "";
+        var studentPhone = "";
+        var studentTrans = "";
+        var studentBusTrip = "";
+        var qrStatus = "";
+        var withdrawalStatus = "";
+
+        for (var i = 1; i < data.length; i++) {
+          var rowEmail = data[i][3] ? data[i][3].toString().trim().toLowerCase() : "";
+          var rowPhone = data[i][4] ? data[i][4].toString().replace(/^'/, "").trim() : "";
+
+          if ((email && rowEmail === email.toLowerCase()) || (phone && rowPhone === phone)) {
+            foundRowIndex = i + 1; // 1-indexed
+            studentName = data[i][2] || "貴賓";
+            studentEmail = data[i][3] ? data[i][3].toString().trim() : "";
+            studentPhone = rowPhone;
+            studentTrans = data[i][5] || "自行前往";
+            studentBusTrip = data[i][16] ? data[i][16].toString().replace(/^'/, "").trim() : "";
+            qrStatus = data[i][14] !== undefined && data[i][14] !== null ? data[i][14].toString().replace(/^'/, "").trim() : "";
+            withdrawalStatus = data[i][11] ? data[i][11].toString().trim() : "";
+            break;
+          }
+        }
+
+        if (foundRowIndex === -1) {
+          lock.releaseLock();
+          return toJSON(e, { status: "error", message: "找不到對應的報名紀錄！" });
+        }
+
+        if (withdrawalStatus) {
+          lock.releaseLock();
+          return toJSON(e, { status: "error", message: "該報名已被標記為取消/退出，無法發送票券！" });
+        }
+
+        // D. 欄位 O 權限與次數判讀規則：
+        var targetNewCount = 1;
+
+        if (qrStatus === "0" || qrStatus === "Err") {
+          targetNewCount = 1;
+        } else if (/^\d+$/.test(qrStatus)) {
+          var numVal = parseInt(qrStatus, 10);
+          if (numVal >= 99) {
+            lock.releaseLock();
+            return toJSON(e, { status: "error", message: "已超過99次寄出上限，無法再發送！" });
+          }
+          targetNewCount = numVal + 1;
+        } else {
+          // 未寄出 / 空白 / 其他未定義字串
+          lock.releaseLock();
+          return toJSON(e, { status: "error", message: "目前狀態未開放自主發信 (欄位O非 0/已發送)，請聯繫管理員！" });
+        }
+
+        // E. 生成加密 Token 與 QR Code (含車次別與車長)
+        var encryptedToken = encryptText(studentEmail);
+        var htmlBody = buildQRCodeEmailBody(studentName, studentEmail, studentTrans, encryptedToken, studentBusTrip);
+
+        // F. 發送郵件 (帶入 2 份 PDF 實體附件)
+        MailApp.sendEmail({
+          to: studentEmail,
+          subject: "【浪熊 Bear Wave】您的活動入場票券 QR Code / Your Event Ticket QR Code",
+          htmlBody: htmlBody,
+          attachments: getPDFAttachments()
+        });
+
+        // G. 寫回欄位 O (Column 15) 並更新快取
+        sheet.getRange(foundRowIndex, 15).setValue(targetNewCount);
+        SpreadsheetApp.flush();
+        lock.releaseLock();
+
+        // 寫入 30 秒冷卻
+        cache.put(cacheKey, "true", 30);
+
+        return toJSON(e, {
+          status: "success",
+          message: "QR Code 電子票券已成功寄送至您的信箱！",
+          qrSent: targetNewCount.toString()
+        });
+
+      } catch (sendErr) {
+        lock.releaseLock();
+        console.error("sendQREmail Error: " + sendErr.toString());
+        return toJSON(e, { status: "error", message: "發送信件失敗：" + sendErr.toString() });
+      }
+    }
+
     // 4. 上車檢查 Action
     if (action === "checkBoarding") {
-      var email = params.email ? params.email.trim() : "";
+      var email = getStrictEncryptedEmail(params.code, params.email);
       if (!email) {
-        return toJSON(e, { status: "error", message: "請輸入 Email！" });
+        return toJSON(e, { status: "error", message: "⛔ 驗證拒絕：請出示官方寄發之正式加密 QR Code 門票！" });
       }
 
       var lock = LockService.getScriptLock();
@@ -427,9 +622,9 @@ function handleRequest(e) {
 
     // 5. 入場檢查 Action
     if (action === "checkAdmission") {
-      var email = params.email ? params.email.trim() : "";
+      var email = getStrictEncryptedEmail(params.code, params.email);
       if (!email) {
-        return toJSON(e, { status: "error", message: "請輸入 Email！" });
+        return toJSON(e, { status: "error", message: "⛔ 驗證拒絕：請出示官方寄發之正式加密 QR Code 門票！" });
       }
 
       var lock = LockService.getScriptLock();
@@ -2187,70 +2382,171 @@ function sendDomesticEmail(name, email, transportation, paymentUrl) {
 }
 
 /**
- * 產生精美 HTML QR Code 票券信件內文 (中英雙語)
+ * 根據交通方式/車次別模糊匹配車長姓名
  */
-function buildQRCodeEmailBody(name, email, transportation) {
-  var qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(email) + "&color=0f3057";
+function getBusCaptain(busText) {
+  if (!busText) return "無 (自行前往)";
+  var clean = busText.toString().trim().toLowerCase();
+
+  if (clean.indexOf("新竹") > -1 || clean.indexOf("竹") > -1) return "狗狗 (台中新竹車)";
+  if (clean.indexOf("中壢") > -1 || clean.indexOf("壢") > -1) return "阿牧 (台中中壢車)";
+
+  if (clean.indexOf("1") > -1 || clean.indexOf("１") > -1 || clean.indexOf("一") > -1) return "小賈 (西門 1 車)";
+  if (clean.indexOf("2") > -1 || clean.indexOf("２") > -1 || clean.indexOf("二") > -1) return "房子 (西門 2 車)";
+  if (clean.indexOf("3") > -1 || clean.indexOf("３") > -1 || clean.indexOf("三") > -1) return "cosby (西門 3 車)";
+  if (clean.indexOf("4") > -1 || clean.indexOf("４") > -1 || clean.indexOf("四") > -1) return "黃球球 (西門 4 車)";
+  if (clean.indexOf("5") > -1 || clean.indexOf("５") > -1 || clean.indexOf("五") > -1) return "全全 (西門 5 車)";
+  if (clean.indexOf("6") > -1 || clean.indexOf("６") > -1 || clean.indexOf("六") > -1) return "小揚 (西門 6 車)";
+  if (clean.indexOf("7") > -1 || clean.indexOf("７") > -1 || clean.indexOf("七") > -1) return "阿龐 (西門 7 車)";
+
+  if (clean.indexOf("自") > -1 || clean.indexOf("騎") > -1 || clean.indexOf("開") > -1) return "無 (自行前往)";
+  return "現場工作人員指示";
+}
+
+/**
+ * 抓取 Google Drive 上的兩份 PDF 附件
+ */
+function getPDFAttachments() {
+  var attachments = [];
+  try {
+    var pdf1 = DriveApp.getFileById("1MjmOqaCY1KxZ9AzBcxVJV6pRX1BzxAQX").getAs(MimeType.PDF);
+    pdf1.setName("2026暮夏浪熊祭-出席活動注意事項.pdf");
+    attachments.push(pdf1);
+  } catch (e) {
+    console.error("PDF1 抓取失敗: " + e.toString());
+  }
+
+  try {
+    var pdf2 = DriveApp.getFileById("1bqNrT_GH4xXkq2Z2LsiUsnNz0cAe2W_J").getAs(MimeType.PDF);
+    pdf2.setName("2026暮夏浪熊祭-各車行程表.pdf");
+    attachments.push(pdf2);
+  } catch (e) {
+    console.error("PDF2 抓取失敗: " + e.toString());
+  }
+  return attachments;
+}
+
+/**
+ * 產生精美 HTML QR Code 票券信件內文 (彩虹 Pride ‧ 熊族 ‧ 泳池風格)
+ */
+function buildQRCodeEmailBody(name, email, transportation, token, busTrip) {
+  var qrData = token || encryptText(email.toLowerCase());
+  var qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(qrData) + "&color=0f3057";
+  var busCaptain = getBusCaptain(busTrip || transportation);
+  var busTripStr = busTrip ? "(" + busTrip + ")" : "";
 
   var html = `
-  <div style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif; background-color: #f4f7f6; padding: 30px 15px; margin: 0;">
-    <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-      <!-- Header -->
-      <div style="background-color: #1A4B82; padding: 30px 20px; text-align: center; color: #ffffff;">
-        <h1 style="margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">浪熊 Bear Wave</h1>
-        <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8; text-transform: uppercase;">Tamsui Farm Summer Bear Fest</p>
-      </div>
-      
-      <!-- Body -->
-      <div style="padding: 30px 24px; color: #2d3748; line-height: 1.6;">
-        <p style="font-size: 16px; margin-top: 0;">哈囉 <strong>${name}</strong>，</p>
-        <p style="font-size: 14px; color: #4a5568;">
-          您的付款已核對完成！以下是您專屬的活動入場票券 **QR Code**。請將此 QR Code 妥善保存於手機中，以利現場進行核銷。
-        </p>
-        <p style="font-size: 14px; color: #4a5568; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
-          Your payment has been verified! Here is your exclusive event entry **QR Code**. Please save it on your phone for on-site scanning.
-        </p>
-        
-        <!-- Info Box -->
-        <div style="background-color: #f7fafc; border-radius: 8px; padding: 16px; margin-bottom: 25px; border: 1px solid #edf2f7; font-size: 14px;">
-          <div style="margin-bottom: 8px;"><strong>活動名稱 / Event:</strong> 暮夏浪熊祭 (Tamsui Farm Summer Bear Fest)</div>
-          <div style="margin-bottom: 8px;"><strong>姓名 / Name:</strong> ${name}</div>
-          <div style="margin-bottom: 8px;"><strong>信箱 / Email:</strong> <span style="font-family: monospace; font-weight: bold; color: #1a4b82;">${email}</span></div>
-          <div><strong>交通方式 / Transportation:</strong> ${transportation}</div>
-        </div>
-        
-        <!-- QR Code Container -->
-        <div style="text-align: center; margin: 30px 0;">
-          <img src="${qrCodeUrl}" width="220" height="220" alt="Ticket QR Code" style="display: block; margin: 0 auto; border: 2px dashed #1A4B82; padding: 8px; border-radius: 12px; background: #ffffff;" />
-          <div style="font-size: 12px; color: #a0aec0; margin-top: 8px;">QR Code 內容為您的報名信箱 / QR Code contains your email</div>
-        </div>
-        
-        <!-- Instructions -->
-        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 13px; color: #718096;">
-          <h3 style="margin: 0 0 8px 0; color: #1A4B82; font-size: 14px;">💡 現場核銷指引 / Scanning Instructions</h3>
-          <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-            <li><strong>上車檢查</strong>：搭乘西門/台中/新竹遊覽車時，請向隨車工作人員出示此 QR Code 掃描上車。</li>
-            <li><strong>入場檢查</strong>：抵達淡江農場活動入口簽到處時，請出示此 QR Code 掃描入場。</li>
-            <li style="color: #e53e3e;"><strong>安全提醒</strong>：此條碼即為您的入場憑證，請勿將本信或條碼轉寄給他人，以防重複掃描導致權益受損。</li>
-          </ul>
-          
-          <hr style="border: 0; border-top: 1px dashed #e2e8f0; margin: 15px 0;" />
-          
-          <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
-            <li><strong>Boarding Check</strong>: Show this QR Code to the staff when boarding the shuttle bus.</li>
-            <li><strong>Admission Check</strong>: Present this QR Code at the registration desk of Tamsui Farm to complete check-in.</li>
-            <li style="color: #e53e3e;"><strong>Notice</strong>: This barcode is your entry ticket. Do not forward this email/code to others to prevent duplicate scan issues.</li>
-          </ul>
-        </div>
-      </div>
-      
-      <!-- Footer -->
-      <div style="background-color: #edf2f7; padding: 20px; text-align: center; font-size: 12px; color: #a0aec0; border-top: 1px solid #edf2f7;">
-        此信件為系統自動發送，請勿直接回信。<br>
-        This is an automated email. Please do not reply.
+<div style="font-family: 'Helvetica Neue', Helvetica, Arial, 'Microsoft JhengHei', sans-serif; background-color: #eef6fc; padding: 25px 10px; margin: 0;">
+  <div style="max-width: 520px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(26,75,130,0.12); border: 1px solid #d0e3f4;">
+    
+    <!-- 🌈 Pride Rainbow Top Bar -->
+    <div style="height: 6px; background: linear-gradient(90deg, #E53935 0%, #FB8C00 17%, #FDD835 33%, #43A047 50%, #1E88E5 67%, #8E24AA 83%, #D81B60 100%);"></div>
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #1A4B82 0%, #0F3057 100%); padding: 32px 20px 25px 20px; text-align: center; color: #ffffff;">
+      <div style="font-size: 32px; margin-bottom: 6px; line-height: 1;">🌊 🐾 🏊‍♂️</div>
+      <h1 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 1px; color: #ffffff;">浪熊 Bear Wave</h1>
+      <div style="font-size: 13px; font-weight: 600; color: #FF7F50; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px;">
+        ✨ 2026 暮夏浪熊祭 ‧ 淡水農場泳池烤肉派對 ✨
       </div>
     </div>
+
+    <!-- Main Content -->
+    <div style="padding: 28px 24px; color: #2c3e50; line-height: 1.6;">
+      
+      <!-- Greeting Banner (Bilingual) -->
+      <div style="background: rgba(255, 127, 80, 0.08); border-left: 4px solid #FF7F50; padding: 14px 16px; border-radius: 8px; margin-bottom: 22px;">
+        <p style="font-size: 16px; margin: 0; font-weight: bold; color: #1A4B82;">
+          嗨囉 / Hi 🐾 <strong>${name}</strong>，
+        </p>
+        <p style="font-size: 14px; margin: 6px 0 0 0; color: #4a5568; line-height: 1.6;">
+          活動即將開始嘍~! ☀️🌊<br>
+          以下是您專屬的活動資訊與入場票券 <strong>QR Code</strong>(供上車與入園時出示使用)：<br>
+          <span style="font-size: 12.5px; color: #718096; display: inline-block; margin-top: 4px;">
+            The event is starting soon! Below is your event info & ticket <strong>QR Code</strong> for boarding & admission:
+          </span>
+        </p>
+      </div>
+
+      <!-- Ticket & Bus Captain Details Card (Bilingual Labels, Sheet Values Untranslated) -->
+      <div style="background-color: #f8fafc; border-radius: 14px; padding: 18px 20px; margin-bottom: 25px; border: 1.5px dashed #38bdf8;">
+        <h3 style="margin: 0 0 12px 0; font-size: 15px; color: #1A4B82; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+          🎟️ 報名與搭車資訊 / Event & Ticket Info
+        </h3>
+        
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #334155;">
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; width: 140px; color: #64748b;">活動名稱 / Event:</td>
+            <td style="padding: 5px 0; font-weight: 600; color: #0f172a;">暮夏浪熊祭 🏖️</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; color: #64748b;">姓名 / Name:</td>
+            <td style="padding: 5px 0; font-weight: bold; color: #1A4B82;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; color: #64748b;">電子信箱 / Email:</td>
+            <td style="padding: 5px 0; font-family: monospace; font-size: 13px; color: #0f172a;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; color: #64748b;">交通車次 / Transit:</td>
+            <td style="padding: 5px 0; font-weight: 600; color: #0f172a;">${transportation} ${busTripStr}</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; color: #64748b;">專屬車長 / Captain:</td>
+            <td style="padding: 5px 0;">
+              <span style="background-color: #ff7f50; color: #ffffff; font-weight: bold; padding: 3px 10px; border-radius: 12px; font-size: 13px; display: inline-block;">
+                🚌 ${busCaptain}
+              </span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Encrypted QR Code Display -->
+      <div style="text-align: center; margin: 25px 0; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 16px; border: 1px solid #bae6fd;">
+        <div style="font-size: 13px; font-weight: bold; color: #0284c7; margin-bottom: 10px;">
+          請出示此條碼供現場掃描 / Show barcode for check-in
+        </div>
+        <div style="background: #ffffff; display: inline-block; padding: 12px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 2px solid #38bdf8;">
+          <img src="${qrCodeUrl}" width="220" height="220" alt="Ticket QR Code" style="display: block; border-radius: 8px;" />
+        </div>
+        <div style="font-size: 11px; color: #0369a1; margin-top: 10px; font-weight: 500;">
+          🔒 票券已加密保護 (防偽證件) ‧ 熊友專屬 / Encrypted Ticket Token
+        </div>
+      </div>
+
+      <!-- Staff Contact & Line Info (Bilingual) -->
+      <div style="background-color: #f0fdf4; border-radius: 12px; padding: 15px 18px; margin-bottom: 22px; border: 1px solid #bbf7d0;">
+        <div style="font-weight: bold; color: #166534; font-size: 14px; margin-bottom: 6px;">
+          💬 工作人員聯絡窗口 / Staff Contact
+        </div>
+        <div style="font-size: 13.5px; color: #15803d; line-height: 1.5;">
+          如有報名、乘車或活動疑問，請隨時聯繫工作人員【小鐵】：<br>
+          <span style="font-size: 12.5px; color: #166534;">If you have any questions, feel free to contact staff member【小鐵】:</span><br>
+          <a href="https://line.me/ti/p/3721f9MvNh" target="_blank" style="display: inline-block; margin-top: 8px; background-color: #06C755; color: #ffffff; text-decoration: none; font-weight: bold; padding: 8px 16px; border-radius: 20px; font-size: 13px; box-shadow: 0 2px 8px rgba(6,199,85,0.3);">
+            👉 點此加入小鐵 LINE 帳號 / Contact via LINE (3721f9MvNh)
+          </a>
+        </div>
+      </div>
+
+      <!-- Attachment Note (Bilingual) -->
+      <div style="font-size: 12.5px; color: #64748b; background-color: #f1f5f9; padding: 12px 16px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; line-height: 1.5;">
+        📎 <strong>信件附件提醒 / PDF Attachments</strong>：本信已附上《2026暮夏浪熊祭-出席活動注意事項.pdf》與《2026暮夏浪熊祭-各車行程表.pdf》兩份 PDF 檔案，請記得開啟查看喔！<br>
+        <span style="font-size: 11.5px; color: #94a3b8;">Two PDF files (Notice & Schedule) are attached to this email. Please check them!</span>
+      </div>
+
+    </div>
+
+    <!-- Pride Rainbow Bottom Bar & Footer -->
+    <div style="background-color: #0f172a; padding: 18px 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #1e293b;">
+      <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 4px;">
+        🌈 浪熊 Bear Wave ‧ 陽光 ‧ 熱情 ‧ 包容 🐻💦
+      </div>
+      <div>&copy; 2026 Bear Wave. All rights reserved.</div>
+    </div>
+    <div style="height: 6px; background: linear-gradient(90deg, #E53935 0%, #FB8C00 17%, #FDD835 33%, #43A047 50%, #1E88E5 67%, #8E24AA 83%, #D81B60 100%);"></div>
   </div>
+</div>
   `;
   return html;
 }
@@ -2347,6 +2643,13 @@ function getFeatureFlagsSheet(ss) {
 function sendBulkQRCodesAuto() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
+  // 0. 配額預檢：低於 0 封時自動暫停 (已達每日額度上限)
+  var remainingQuota = MailApp.getRemainingDailyQuota();
+  if (remainingQuota <= 0) {
+    console.warn("Auto trigger skipped: Daily email quota is 0. Remaining: " + remainingQuota);
+    return;
+  }
+
   // 1. 鎖前檢查：取得「功能旗標」分頁並判斷開關是否啟用
   var flagSheet = getFeatureFlagsSheet(ss);
   var flagData = flagSheet.getDataRange().getValues();
@@ -2388,45 +2691,60 @@ function sendBulkQRCodesAuto() {
   try {
     var pendingRows = [];
     for (var i = 1; i < data.length; i++) {
-      var paymentStatus = data[i][7] ? data[i][7].toString().trim() : "";
-      var qrStatus = data[i][14] ? data[i][14].toString().trim() : "";
       var email = data[i][3] ? data[i][3].toString().trim() : "";
+      var qrStatus = data[i][14] !== undefined && data[i][14] !== null ? data[i][14].toString().replace(/^'/, "").trim() : "";
+      var withdrawalStatus = data[i][11] ? data[i][11].toString().trim() : "";
+      var busTrip = data[i][16] ? data[i][16].toString().replace(/^'/, "").trim() : "";
 
-      if (email && paymentStatus.indexOf("已完成") > -1 && !qrStatus) {
+      // 僅處理 欄位 O 為 "0" 或 "Err"，且未辦理退出的席位
+      if (email && !withdrawalStatus && (qrStatus === "0" || qrStatus === "Err")) {
         pendingRows.push({
           rowIndex: i + 1,
-          name: data[i][2],
+          name: data[i][2] || "貴賓",
           email: email,
-          transportation: data[i][5] || "自行前往"
+          transportation: data[i][5] || "自行前往",
+          busTrip: busTrip
         });
       }
     }
 
     if (pendingRows.length === 0) {
       lock.releaseLock();
-      console.log("Auto trigger: No pending paid records found.");
+      console.log("Auto trigger: No pending records (qrStatus 0 or Err) found.");
       return;
     }
 
-    for (var k = 0; k < pendingRows.length; k++) {
-      var remainingQuota = MailApp.getRemainingDailyQuota();
-      if (remainingQuota <= 0) {
+    // 單次批次發信上限改為 100 封
+    var batchMax = Math.min(pendingRows.length, 100);
+
+    for (var k = 0; k < batchMax; k++) {
+      var currentQuota = MailApp.getRemainingDailyQuota();
+      if (currentQuota <= 0) {
         lock.releaseLock();
-        console.warn("Auto trigger stopped: Daily email quota exceeded. Sent: " + sentCount);
+        console.warn("Auto trigger stopped: Daily email quota reached (0 remaining). Sent: " + sentCount);
         return;
       }
 
       var person = pendingRows[k];
-      var htmlBody = buildQRCodeEmailBody(person.name, person.email, person.transportation);
-      MailApp.sendEmail({
-        to: person.email,
-        subject: "【浪熊 Bear Wave】您的活動入場票券 QR Code / Your Event Ticket QR Code",
-        htmlBody: htmlBody
-      });
+      try {
+        var token = encryptText(person.email);
+        var htmlBody = buildQRCodeEmailBody(person.name, person.email, person.transportation, token, person.busTrip);
 
-      sheet.getRange(person.rowIndex, 15).setValue("done"); // 標記為 done 表示已發送
-      SpreadsheetApp.flush();
-      sentCount++;
+        MailApp.sendEmail({
+          to: person.email,
+          subject: "【浪熊 Bear Wave】您的活動入場票券 QR Code / Your Event Ticket QR Code",
+          htmlBody: htmlBody,
+          attachments: getPDFAttachments()
+        });
+
+        sheet.getRange(person.rowIndex, 15).setValue(1); // 成功寫入 1
+        SpreadsheetApp.flush();
+        sentCount++;
+      } catch (err) {
+        console.error("Auto trigger send email error for " + person.email + ": " + err.toString());
+        sheet.getRange(person.rowIndex, 15).setValue("Err"); // 失敗寫入 Err
+        SpreadsheetApp.flush();
+      }
     }
 
     lock.releaseLock();
@@ -2436,4 +2754,53 @@ function sendBulkQRCodesAuto() {
     lock.releaseLock();
     console.error("Auto trigger error: " + err.toString());
   }
+}
+
+/**
+ * 🛠️ 輔助工具：一鍵自動建立「每日上午 08:00 - 09:00」發信排程觸發器
+ * （可在 GAS 編輯器中選擇執行此函式，即可自動在 Google 雲端設定好定時觸發器）
+ */
+function setupAutoSendTriggerDaily() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "sendBulkQRCodesAuto") {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  ScriptApp.newTrigger("sendBulkQRCodesAuto")
+    .timeBased()
+    .everyDays(1)
+    .atHour(8)
+    .create();
+
+  console.log("✅ 已成功建立「每日上午 08:00 - 09:00」自動發信觸發器！");
+}
+
+/**
+ * 🛠️ 輔助工具：一鍵自動建立「每小時」發信排程觸發器
+ */
+function setupAutoSendTriggerHourly() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "sendBulkQRCodesAuto") {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  ScriptApp.newTrigger("sendBulkQRCodesAuto")
+    .timeBased()
+    .everyHours(1)
+    .create();
+
+  console.log("✅ 已成功建立「每小時」自動發信觸發器！");
+}
+
+/**
+ * 🔑 授權 Google Drive 讀取權限測試 (首次發信前執行此函式進行 DriveApp 授權)
+ */
+function authorizeDriveApp() {
+  var file1 = DriveApp.getFileById("1MjmOqaCY1KxZ9AzBcxVJV6pRX1BzxAQX");
+  var file2 = DriveApp.getFileById("1bqNrT_GH4xXkq2Z2LsiUsnNz0cAe2W_J");
+  console.log("✅ Google Drive 附件讀取權限授權成功！檔案 1：" + file1.getName() + " | 檔案 2：" + file2.getName());
 }

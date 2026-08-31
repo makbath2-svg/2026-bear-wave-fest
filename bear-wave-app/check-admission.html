@@ -570,11 +570,11 @@
             if (!isScanningActive) return;
             
             isScanningActive = false;
-            const email = decodedText.trim();
+            const codeVal = decodedText.trim();
             
             updateStatus(false, "核銷查詢中...");
             
-            const requestUrl = `${GAS_API_URL}?action=checkAdmission&email=${encodeURIComponent(email)}`;
+            const requestUrl = `${GAS_API_URL}?action=checkAdmission&code=${encodeURIComponent(codeVal)}&email=${encodeURIComponent(codeVal)}`;
             
             requestJSONP(requestUrl, (result) => {
                 showFeedback(result);
