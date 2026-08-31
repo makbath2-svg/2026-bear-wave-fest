@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪熊 Bear Wave | QR Code 測試與管理後台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Include QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary: #1A4B82;
+            --primary-dark: #0f3057;
+            --accent: #FF7F50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(26, 75, 130, 0.2);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(26, 75, 130, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .qr-output-box {
+            margin-top: 24px;
+            padding: 20px;
+            background-color: #fafbfc;
+            border-radius: 12px;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        #qrcode {
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: inline-block;
+        }
+
+        #qrcode img {
+            display: block;
+        }
+
+        .qr-placeholder {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-placeholder i {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* Admin Section Styling */
+        .admin-section {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 2px dashed var(--border-color);
+            text-align: left;
+        }
+
+        .admin-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #475569, #1e293b);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+            margin-bottom: 16px;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 15px rgba(30, 41, 59, 0.3);
+        }
+
+        .resend-box {
+            background-color: #fafbfc;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .resend-box h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .resend-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .resend-input-group input {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            outline: none;
+        }
+
+        .resend-input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .resend-input-group .btn {
+            width: auto;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            border-radius: 6px;
+        }
+
+        .nav-links {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.85rem;
+        }
+
+        .nav-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <i class="ph ph-waves"></i>
+                <span>Bear Wave</span>
+            </div>
+            <h2>QR Code 測試與管理後台</h2>
+            
+            <!-- Part 1: QR Generator -->
+            <div class="form-group">
+                <label for="email-input">輸入報名 Email (本地產生條碼)</label>
+                <input type="email" id="email-input" placeholder="例如: test@gmail.com" required>
+            </div>
+
+            <button type="button" class="btn" onclick="generateQR()">
+                <i class="ph ph-qr-code"></i>
+                <span>產生測試 QR Code</span>
+            </button>
+
+            <div class="qr-output-box">
+                <div id="qrcode"></div>
+                <div id="placeholder" class="qr-placeholder">
+                    <i class="ph ph-aperture"></i>
+                    <span>請在上方輸入 Email 並點擊按鈕</span>
+                </div>
+            </div>
+
+            <!-- Part 2: Admin Actions Section -->
+            <div class="admin-section">
+                <div class="admin-title">
+                    <i class="ph ph-gear-six"></i>
+                    <span>主辦方管理功能</span>
+                </div>
+                
+                <button type="button" id="btn-batch-send" class="btn btn-secondary" onclick="sendBulkEmails()">
+                    <i class="ph ph-paper-plane-tilt"></i>
+                    <span>批次發送新付款的 QR Code</span>
+                </button>
+                
+                <div class="resend-box">
+                    <h4><i class="ph ph-user-gear"></i> 單一信件補發 / 強制寄送</h4>
+                    <div class="resend-input-group">
+                        <input type="email" id="resend-email-input" placeholder="學員 Email 地址">
+                        <button type="button" id="btn-single-send" class="btn" onclick="sendSingleEmail()">
+                            <span>確認補發</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <a href="check-boarding.html"><i class="ph ph-bus"></i> 前往上車核銷</a>
+                <a href="check-admission.html"><i class="ph ph-door"></i> 前往入場核銷</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycby3lHPs1qd6CxDp_1qTIh1Ipvo-z9oiIg1WlTl6ksoRoXbsK0jZ1Fvi1jjLxisqtjs_/exec";
+        let qrcodeInstance = null;
+
+        // Part 1: Local QR Code Generation logic
+        function generateQR() {
+            const emailInput = document.getElementById('email-input');
+            const placeholder = document.getElementById('placeholder');
+            const qrcodeDiv = document.getElementById('qrcode');
+            
+            const emailValue = emailInput.value.trim();
+
+            if (!emailValue) {
+                alert("請輸入 Email 地址！");
+                return;
+            }
+
+            // Clear previous QR code
+            qrcodeDiv.innerHTML = '';
+            placeholder.style.display = 'none';
+
+            // Generate new QR Code
+            qrcodeInstance = new QRCode(qrcodeDiv, {
+                text: emailValue,
+                width: 180,
+                height: 180,
+                colorDark : "#0f3057",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        // Part 2: JSONP Request Helper (for calling GAS API)
+        function requestJSONP(url, successCallback, errorCallback) {
+            const callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
+            window[callbackName] = function (data) {
+                successCallback(data);
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+            };
+            const script = document.createElement('script');
+            const separator = url.includes('?') ? '&' : '?';
+            script.src = `${url}${separator}callback=${callbackName}`;
+            script.onerror = function () {
+                errorCallback();
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+            };
+            document.body.appendChild(script);
+        }
+
+        // Batch Send QR Codes function
+        function sendBulkEmails() {
+            const btn = document.getElementById('btn-batch-send');
+            const originalText = btn.innerHTML;
+            
+            if (!confirm("確定要掃描試算表，並對所有「已完成核對」且「尚未發送」的學員批次發送 QR Code 信件嗎？\n\n這可能需要數十秒時間，請耐心等待。")) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner-gap animate-spin"></i> <span>處理中...</span>';
+
+            const url = `${GAS_API_URL}?action=sendBulkQRCodes`;
+            requestJSONP(url, (result) => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                
+                if (result.status === 'success' || result.status === 'warning') {
+                    alert(result.message);
+                } else {
+                    alert("發送失敗：" + result.message);
+                }
+            }, () => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                alert("網路通訊異常，請稍後重試。");
+            });
+        }
+
+        // Single Resend function
+        function sendSingleEmail() {
+            const emailInput = document.getElementById('resend-email-input');
+            const email = emailInput.value.trim();
+            const btn = document.getElementById('btn-single-send');
+            const originalText = btn.innerHTML;
+
+            if (!email) {
+                alert("請輸入學員的 Email 地址！");
+                return;
+            }
+
+            if (!confirm(`確定要補發/強制寄送 QR Code 信件給以下信箱嗎？\n\n信箱：${email}`)) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>處理中...</span>';
+
+            const url = `${GAS_API_URL}?action=sendSingleQRCode&email=${encodeURIComponent(email)}`;
+            requestJSONP(url, (result) => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                
+                if (result.status === 'success') {
+                    alert(result.message);
+                    emailInput.value = ''; // Clear input on success
+                } else {
+                    alert("補發失敗：" + result.message);
+                }
+            }, () => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                alert("網路通訊異常，請稍後重試。");
+            });
+        }
+
+        // Inject dynamic loading spinner rotation styles
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .animate-spin {
+                animation: spin 1s linear infinite;
+                display: inline-block;
+            }
+        `;
+        document.getElementsByTagName('head')[0].appendChild(style);
+    </script>
+</body>
+</html>

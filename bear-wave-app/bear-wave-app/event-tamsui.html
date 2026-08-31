@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9/12 淡江農場 | 浪熊 Bear Wave 活動報名</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Custom Animated Cursor -->
+    <div id="cursor-wrapper">
+        <div id="custom-cursor">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Handle -->
+                <rect x="50" y="45" width="20" height="40" rx="5" transform="rotate(-15 60 65)" fill="#1A4B82" />
+                <!-- Trigger -->
+                <rect x="40" y="55" width="10" height="15" rx="3" fill="#FF7F50" />
+                <!-- Main Body / Barrel -->
+                <rect x="10" y="35" width="70" height="25" rx="8" fill="#48D1CC" />
+                <rect x="5" y="42" width="15" height="10" rx="3" fill="#00E5FF" />
+                <!-- Water Tank -->
+                <circle cx="60" cy="30" r="10" fill="#FFD700" />
+                <rect x="57" y="35" width="6" height="6" fill="#FFD700" />
+                <circle cx="60" cy="30" r="4" fill="#FFF" opacity="0.5" />
+            </svg>
+        </div>
+    </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="ph ph-waves"></i>
+                <span class="lang-zh">浪熊 Bear Wave</span><span class="lang-en">Bear Wave</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">
+                    <span class="lang-zh">返回首頁</span><span class="lang-en">Home</span>
+                </a>
+                <a href="#about">
+                    <span class="lang-zh">關於活動</span><span class="lang-en">About</span>
+                </a>
+                <a href="#schedule">
+                    <span class="lang-zh">活動流程</span><span class="lang-en">Schedule</span>
+                </a>
+                <button id="lang-toggle" class="btn-lang">EN</button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero event-hero tamsui-bg">
+        <!-- Floating Bubbles Background -->
+        <div class="bubbles-bg" id="bubblesContainer"></div>
+        <div class="wave-bg"></div>
+        <div class="hero-content">
+            <div class="event-badge">
+                <span class="lang-zh">9/12 (六)</span><span class="lang-en">9/12 (Sat)</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="lang-zh">淡江農場<br><span class="art-text-blue" data-text="暮夏浪熊祭">暮夏浪熊祭</span></span>
+                <span class="lang-en">Tamsui Farm<br><span class="art-text-blue" data-text="Summer Bear Fest">Summer
+                        Bear
+                        Fest</span></span>
+            </h1>
+            <p class="hero-subtitle">
+                <span class="lang-zh">抓住夏天的尾巴，來淡水農場吃烤肉、玩水、交朋友！</span>
+                <span class="lang-en">Catch the end of summer! BBQ, pool play, and make friends!</span>
+            </p>
+            <a href="#register" class="btn btn-primary btn-large" id="hero-reg-btn" onclick="handleHeroRegClick(event)">
+                <span class="lang-zh" id="hero-reg-btn-text">立即報名</span><span class="lang-en" id="hero-reg-btn-text-en">Register Now</span>
+            </a>
+        </div>
+        <div class="wave-divider wave-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.83,121.17,196.42,112.5,238.45,106.91,280.4,87.72,321.39,56.44Z"
+                    class="shape-fill"></path>
+            </svg>
+        </div>
+    </header>
+
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h2>
+                        <span class="lang-zh">活動亮點</span><span class="lang-en">Event Highlights</span>
+                    </h2>
+                    <p>
+                        <span
+                            class="lang-zh">&nbsp;&nbsp;&nbsp;&nbsp;淡水農場擁有優美的自然景觀與寬敞舒適的烤肉場地。我們特別為浪熊們準備了豐盛的海陸BBQ，讓大家在美食與美景中輕鬆交流。<br>&nbsp;&nbsp;&nbsp;&nbsp;現場當然少不了沁涼的泳池戲水！這次請各位浪熊務必預備好你最厲害、最吸睛的戰袍級泳褲，現場開放大家盡情秀出自信、展現自我！
+                            歡迎自備泳圈、水槍等裝備，跟著身邊的帥氣浪熊，這個最狂熱的暮夏時光一起閃耀！</span>
+                        <span class="lang-en">&nbsp;&nbsp;Tamsui Farm features beautiful scenery and a spacious,
+                            comfortable BBQ venue. We have specially prepared a sumptuous Surf & Turf BBQ for our bears
+                            to socialize in a relaxing atmosphere.<br>&nbsp;&nbsp;Of course, refreshing pool play is a
+                            must! This time, all bears must prepare your most stunning and eye-catching battle-grade
+                            swim trunks. Show off your confidence and unique self to the fullest! You are welcome to
+                            bring
+                            your own swim rings, water guns, and gear. Shine together with the handsome bears around you
+                            in this most passionate late summer season!</span>
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="ph ph-meat"></i> <span class="lang-zh">戶外海陸BBQ</span><span class="lang-en">Outdoor
+                                Surf & Turf BBQ</span></li>
+                        <li><i class="ph ph-drop"></i> <span class="lang-zh">泳池同歡、戲水激戰</span><span class="lang-en">Pool
+                                Fun & Thrilling Water Battles</span></li>
+                        <li><i class="ph ph-users"></i> <span class="lang-zh">認識新友、聊天賞熊</span><span class="lang-en">Meet
+                                New Friends & Bear-Watching</span></li>
+                        <li><i class="ph ph-map-pin"></i>
+                            <span class="lang-zh">活動地點：<a href="https://maps.app.goo.gl/urEhic7gpJGGjy9f9"
+                                    target="_blank" class="map-link">淡江農場 (Google Map 導航)</a></span>
+                            <span class="lang-en">Location: <a href="https://maps.app.goo.gl/urEhic7gpJGGjy9f9"
+                                    target="_blank" class="map-link">Tamsui Farm (Google Map)</a></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="about-image">
+                    <div class="panorama-container">
+                        <div class="panorama-wrapper" id="tamsuiPanorama">
+                            <img src="images/tamsui-panorama.jpg" alt="淡水農場大合照" class="panorama-img">
+                        </div>
+                        <div class="panorama-overlay">
+                            <span class="lang-zh">↔ 按住滑鼠左右拖曳</span><span class="lang-en">↔ Drag left/right to
+                                scroll</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="schedule" class="schedule">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="lang-zh">活動流程</span><span class="lang-en">Event Schedule</span>
+            </h2>
+            <div class="timeline-container">
+                <div class="timeline-column">
+                    <h3 class="column-title">
+                        <span class="lang-zh">台中高鐵出發</span><span class="lang-en">Taichung HSR Depart</span>
+                    </h3>
+                    <div class="compact-timeline">
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">07:30 ~ 07:50</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">台中高鐵站集合</span><span class="lang-en">Assemble at Taichung
+                                        HSR</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">07:50 ~ 10:10</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">台中 =&gt; 淡水(淡江農場) 車程</span><span class="lang-en">Bus Ride to
+                                        Tamsui Farm</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:20 ~ 10:30</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">領取食材，生火烤肉</span><span class="lang-en">Retrieve Food & Start
+                                        Fire</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:30 ~ 15:30</div>
+                            <div class="compact-content">
+                                <h3>BBQ &amp; Pool Play</h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">15:30 ~ 16:00</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">收拾 &amp; 沖洗</span><span class="lang-en">Clean up & Wash</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">16:00 ~</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">賦歸</span><span class="lang-en">Return Home</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-column">
+                    <h3 class="column-title">
+                        <span class="lang-zh">新竹中壢出發</span><span class="lang-en">Hsinchu/Zhongli Depart</span>
+                    </h3>
+                    <div class="compact-timeline">
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">07:40 ~ 08:00</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">新竹指定地點集合/待確認</span><span class="lang-en">Assemble at
+                                        designated location in Hsinchu (TBD)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">08:00 ~ 08:40</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">中壢指定地點集合/待確認</span><span class="lang-en">Assemble at
+                                        designated location in Zhongli (TBD)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">08:40 ~ 10:10</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">中壢 =&gt; 淡水(淡江農場) 車程</span><span class="lang-en">Bus Ride to
+                                        Tamsui Farm</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:20 ~ 10:30</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">領取食材，生火烤肉</span><span class="lang-en">Retrieve Food & Start
+                                        Fire</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:30 ~ 15:30</div>
+                            <div class="compact-content">
+                                <h3>BBQ &amp; Pool Play</h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">15:30 ~ 16:00</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">收拾 &amp; 沖洗</span><span class="lang-en">Clean up & Wash</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">16:00 ~</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">賦歸</span><span class="lang-en">Return Home</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-column">
+                    <h3 class="column-title">
+                        <span class="lang-zh">台北西門出發</span><span class="lang-en">Taipei Ximen Depart</span>
+                    </h3>
+                    <div class="compact-timeline">
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">08:40 ~ 09:00</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">捷運西門站 1 號出口集合</span><span class="lang-en">Assemble at MRT
+                                        Ximen Exit 1</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">09:00 ~ 10:10</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">西門 =&gt; 淡水(淡江農場) 車程</span><span class="lang-en">Bus Ride to
+                                        Tamsui Farm</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:20 ~ 10:30</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">領取食材，生火烤肉</span><span class="lang-en">Retrieve Food & Start
+                                        Fire</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">10:30 ~ 15:30</div>
+                            <div class="compact-content">
+                                <h3>BBQ &amp; Pool Play</h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">15:30 ~ 16:00</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">收拾 &amp; 沖洗</span><span class="lang-en">Clean up & Wash</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="compact-timeline-item">
+                            <div class="compact-time">16:00 ~</div>
+                            <div class="compact-content">
+                                <h3>
+                                    <span class="lang-zh">賦歸</span><span class="lang-en">Return Home</span>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wave-divider wave-top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
+                preserveAspectRatio="none">
+                <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.83,121.17,196.42,112.5,238.45,106.91,280.4,87.72,321.39,56.44Z"
+                    class="shape-fill"></path>
+            </svg></div>
+    </section>
+
+    <section id="register" class="register">
+        <div class="container">
+            <div class="register-hub">
+                <h2 class="section-title">
+                    <span class="lang-zh">活動報名處</span><span class="lang-en">Event Registration</span>
+                </h2>
+                <p class="section-subtitle" style="text-align: center; margin-bottom: 40px; color: var(--text-muted);">
+                    <span class="lang-zh">請在下方填寫報名、登記匯款，或隨時查詢您的報名狀態與桌次。</span>
+                    <span class="lang-en">Please fill out forms to register, submit payment info, or query status and
+                        tables below.</span>
+                </p>
+
+                <!-- 報名與匯款對帳截止醒目頂部公告欄 -->
+                <div id="reg-closed-top-banner" class="reg-closed-alert-banner">
+                    <div class="reg-closed-banner-icon">
+                        <i class="ph ph-warning-circle"></i>
+                    </div>
+                    <div class="reg-closed-banner-content">
+                        <h4>
+                            <span class="lang-zh">⚠️ 匯款與對帳登記已截止</span>
+                            <span class="lang-en">⚠️ Payment Submission Closed</span>
+                        </h4>
+                        <p>
+                            <span class="lang-zh">「活動報名」「匯款登記」分頁已正式關閉。請直接切換至 <strong>「3. 狀態查詢」</strong> 查看您的對帳結果與桌次安排。</span>
+                            <span class="lang-en">"1. Register" and "2. Payment" tabs are now officially closed. Please switch to <strong>"3. Status"</strong> to view your payment status and table assignment.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tabs 選項卡切換 -->
+                <div class="hub-tabs">
+                    <button class="tab-btn tab-disabled disabled" id="tab-reg" disabled onclick="switchTab('reg')">
+                        <i class="ph ph-user-plus"></i> <span class="lang-zh">1. 活動報名</span><span class="lang-en">1. Register</span>
+                        <span class="badge-closed lang-zh">報名已截止</span><span class="badge-closed lang-en">Closed</span>
+                    </button>
+                    <button class="tab-btn tab-disabled disabled" id="tab-pay" disabled onclick="switchTab('pay')">
+                        <i class="ph ph-receipt"></i> <span class="lang-zh">2. 匯款登記</span><span class="lang-en">2. Payment</span>
+                        <span class="badge-closed lang-zh" id="badge-pay-closed">登記已截止</span><span class="badge-closed lang-en" id="badge-pay-closed-en">Closed</span>
+                    </button>
+                    <button class="tab-btn active" id="tab-query" onclick="switchTab('query')">
+                        <i class="ph ph-magnifying-glass"></i> <span class="lang-zh">3. 狀態查詢</span><span class="lang-en">3. Status</span>
+                    </button>
+                    <button class="tab-btn" id="tab-table" onclick="switchTab('table')" style="display: none;">
+                        <i class="ph ph-users-three"></i> <span class="lang-zh">4. 分桌資料</span><span class="lang-en">4. Tables</span>
+                    </button>
+                    <button class="tab-btn" id="tab-group" onclick="switchTab('group')">
+                        <i class="ph ph-chats-teardrop"></i> <span class="lang-zh">4. 揪桌友看板</span><span class="lang-en">4. Group Tables</span>
+                    </button>
+                </div>
+
+                <!-- Tab 1: 活動報名 -->
+                <div class="tab-content hidden" id="content-reg">
+                    <form id="form-registration" class="hub-form">
+                        <div class="form-group">
+                            <label for="reg-name">
+                                <i class="ph ph-user"></i> <span class="lang-zh">暱稱</span><span
+                                    class="lang-en">Nickname</span>
+                            </label>
+                            <input type="text" id="reg-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">
+                                <i class="ph ph-envelope"></i> <span class="lang-zh">電子信箱 (Email)</span><span
+                                    class="lang-en">Email Address</span>
+                            </label>
+                            <input type="email" id="reg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-phone">
+                                <i class="ph ph-phone"></i> <span class="lang-zh">手機後四碼</span><span class="lang-en">Last
+                                    4 Digits of Mobile</span>
+                            </label>
+                            <input type="text" id="reg-phone" pattern="[0-9]{4}" maxlength="4" required>
+                        </div>
+
+                        <!-- 國籍選擇 -->
+                        <div class="form-group">
+                            <label for="reg-nationality">
+                                <i class="ph ph-globe"></i> <span class="lang-zh">國籍</span><span
+                                    class="lang-en">Nationality</span>
+                            </label>
+                            <select id="reg-nationality" required>
+                                <option value="本國人">本國人 / Domestic</option>
+                                <option value="外國人">外國人 / International</option>
+                            </select>
+                        </div>
+
+                        <!-- 交通選項 -->
+                        <div class="form-group" id="group-transportation">
+                            <label for="reg-transportation">
+                                <i class="ph ph-bus"></i> <span class="lang-zh">交通方式</span><span
+                                    class="lang-en">Transportation</span>
+                            </label>
+                            <select id="reg-transportation" required>
+                                <option value="自行前往">自行前往 (NT$1,000) / Self-drive (NT$1,000)</option>
+                                <option value="西門遊覽車">西門出發遊覽車 (NT$1,250) / Ximen Bus (NT$1,250)</option>
+                                <option value="新竹中壢遊覽車">新竹中壢出發遊覽車 (NT$1,300) / Hsinchu/Zhongli Bus (NT$1,300)</option>
+                                <option value="台中遊覽車">台中出發遊覽車 (NT$1,400) / Taichung Bus (NT$1,400)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-full" id="btn-reg-submit">
+                            <i class="ph ph-paper-plane-right"></i> <span class="lang-zh">立即報名</span><span
+                                class="lang-en">Submit Registration</span>
+                        </button>
+                        <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
+                            <span class="lang-zh">如有疑問請聯絡活動信箱：<a href="mailto:ponbosch@gmail.com"
+                                    style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a></span>
+                            <span class="lang-en">If you have any questions, please contact event email: <a
+                                    href="mailto:ponbosch@gmail.com"
+                                    style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a></span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab 2: 匯款登記 -->
+                <div class="tab-content hidden" id="content-pay">
+                    <form id="form-payment" class="hub-form">
+                        <div class="form-group">
+                            <label for="pay-email">
+                                <i class="ph ph-envelope"></i> <span class="lang-zh">報名時的 Email</span><span
+                                    class="lang-en">Registered Email</span>
+                            </label>
+                            <input type="email" id="pay-email" required>
+                        </div>
+
+                        <!-- 銀行代碼下拉選單 -->
+                        <div class="form-group">
+                            <label for="pay-bank-code">
+                                <i class="ph ph-bank"></i> <span class="lang-zh">匯出銀行代碼</span><span
+                                    class="lang-en">Sender Bank Code</span>
+                            </label>
+                            <select id="pay-bank-code" required>
+                                <option value="004">004 - 臺灣銀行</option>
+                                <option value="005">005 - 土地銀行</option>
+                                <option value="006">006 - 合作金庫商業銀行</option>
+                                <option value="007">007 - 第一商業銀行</option>
+                                <option value="008">008 - 華南商業銀行</option>
+                                <option value="009">009 - 彰化商業銀行</option>
+                                <option value="011">011 - 上海商業儲蓄銀行</option>
+                                <option value="012">012 - 台北富邦商業銀行</option>
+                                <option value="013">013 - 國泰世華商業銀行</option>
+                                <option value="016">016 - 高雄銀行</option>
+                                <option value="017">017 - 兆豐國際商業銀行</option>
+                                <option value="018">018 - 全國農業金庫</option>
+                                <option value="020">020 - 日商瑞穗實業銀行</option>
+                                <option value="021">021 - 花旗(台灣)商業銀行</option>
+                                <option value="022">022 - 美商美國銀行</option>
+                                <option value="023">023 - 泰國盤谷銀行</option>
+                                <option value="048">048 - 王道商業銀行</option>
+                                <option value="050">050 - 台灣中小企業銀行</option>
+                                <option value="052">052 - 渣打國際商業銀行</option>
+                                <option value="053">053 - 台中商業銀行</option>
+                                <option value="054">054 - 京城商業銀行</option>
+                                <option value="081">081 - 匯豐(台灣)商業銀行</option>
+                                <option value="101">101 - 瑞興商業銀行</option>
+                                <option value="102">102 - 華泰商業銀行</option>
+                                <option value="103">103 - 臺灣新光商業銀行</option>
+                                <option value="104">104 - 台北市第五信用合作社</option>
+                                <option value="108">108 - 陽信商業銀行</option>
+                                <option value="114">114 - 基隆市第一信用合作社</option>
+                                <option value="115">115 - 基隆市第二信用合作社</option>
+                                <option value="118">118 - 板信商業銀行</option>
+                                <option value="119">119 - 淡水第一信合社</option>
+                                <option value="120">120 - 新北市淡水信用合作社</option>
+                                <option value="124">124 - 宜蘭信用合作社</option>
+                                <option value="127">127 - 桃園信用合作社</option>
+                                <option value="130">130 - 新竹第一信用合作社</option>
+                                <option value="132">132 - 新竹第三信用合作社</option>
+                                <option value="146">146 - 台中市第二信用合作社</option>
+                                <option value="147">147 - 三信商業銀行</option>
+                                <option value="158">158 - 彰化第一信用合作社</option>
+                                <option value="161">161 - 彰化第五信用合作社</option>
+                                <option value="162">162 - 彰化第六信用合作社</option>
+                                <option value="163">163 - 彰化第十信用合作社</option>
+                                <option value="165">165 - 彰化縣鹿港信用合作社</option>
+                                <option value="178">178 - 嘉義市第三信用合作社</option>
+                                <option value="188">188 - 台南第三信用合作社</option>
+                                <option value="204">204 - 高雄市第三信用合作社</option>
+                                <option value="215">215 - 花蓮第一信用合作社</option>
+                                <option value="216">216 - 花蓮第二信用合作社</option>
+                                <option value="222">222 - 澎湖縣第一信用合作社</option>
+                                <option value="223">223 - 澎湖第二信用合作社</option>
+                                <option value="224">224 - 金門縣信用合作社</option>
+                                <option value="250">250 - 菲律賓首都銀行</option>
+                                <option value="280">280 - 美國紐約梅隆銀行</option>
+                                <option value="290">290 - 新加坡大華銀行</option>
+                                <option value="300">300 - 美商道富銀行</option>
+                                <option value="321">321 - 日商三井住友銀行</option>
+                                <option value="324">324 - 美商花旗銀行</option>
+                                <option value="325">325 - 香港上海匯豐銀行</option>
+                                <option value="326">326 - 西班牙商西班牙對外銀行</option>
+                                <option value="327">327 - 澳商澳盛銀行</option>
+                                <option value="328">328 - 法商法國外貿銀行</option>
+                                <option value="329">329 - 印尼商印尼人民銀行</option>
+                                <option value="330">330 - 韓商韓亞銀行</option>
+                                <option value="370">370 - 法商法國興業銀行</option>
+                                <option value="380">380 - 大陸商中國銀行</option>
+                                <option value="381">381 - 大陸商交通銀行</option>
+                                <option value="382">382 - 大陸商中國建設銀行</option>
+                                <option value="501">501 - 宜蘭縣蘇澳區漁會</option>
+                                <option value="502">502 - 宜蘭縣頭城區漁會</option>
+                                <option value="506">506 - 桃園縣桃園區漁會</option>
+                                <option value="507">507 - 新竹市新竹區漁會</option>
+                                <option value="508">508 - 苗栗縣通苑區漁會</option>
+                                <option value="510">510 - 苗栗縣南龍區漁會</option>
+                                <option value="511">511 - 彰化縣彰化區漁會</option>
+                                <option value="512">512 - 雲林縣雲林區漁會</option>
+                                <option value="513">513 - 新北市瑞芳區漁會</option>
+                                <option value="514">514 - 新北市萬里區漁會</option>
+                                <option value="515">515 - 嘉義縣嘉義區漁會</option>
+                                <option value="516">516 - 基隆市基隆區漁會</option>
+                                <option value="517">517 - 南市區漁會</option>
+                                <option value="518">518 - 南縣區漁會</option>
+                                <option value="519">519 - 臺南市新化區農會</option>
+                                <option value="520">520 - 高雄區漁會</option>
+                                <option value="521">521 - 高雄市興達港區漁會</option>
+                                <option value="523">523 - 屏東縣琉球區漁會</option>
+                                <option value="524">524 - 台東縣新港區漁會</option>
+                                <option value="525">525 - 澎湖縣澎湖區漁會</option>
+                                <option value="526">526 - 金門縣金門區漁會</option>
+                                <option value="538">538 - 宜蘭縣宜蘭市農會</option>
+                                <option value="541">541 - 臺南市白河區農會</option>
+                                <option value="542">542 - 臺南市麻豆區農會</option>
+                                <option value="547">547 - 臺南市後壁區農會</option>
+                                <option value="549">549 - 臺南市下營區農會</option>
+                                <option value="551">551 - 臺南市官田區農會</option>
+                                <option value="552">552 - 臺南市大內區農會</option>
+                                <option value="556">556 - 臺南市學甲區農會</option>
+                                <option value="557">557 - 臺南市新市區農會</option>
+                                <option value="558">558 - 臺南市安定區農會</option>
+                                <option value="561">561 - 臺南市左鎮區農會</option>
+                                <option value="562">562 - 臺南市仁德區農會</option>
+                                <option value="564">564 - 臺南市關廟區農會</option>
+                                <option value="565">565 - 臺南市龍崎區農會</option>
+                                <option value="567">567 - 臺南市南化區農會</option>
+                                <option value="568">568 - 臺南市七股區農會</option>
+                                <option value="570">570 - 南投縣南投市農會</option>
+                                <option value="573">573 - 南投縣埔里鎮農會</option>
+                                <option value="574">574 - 南投縣竹山鎮農會</option>
+                                <option value="575">575 - 南投縣中寮鄉農會</option>
+                                <option value="577">577 - 南投縣魚池鄉農會</option>
+                                <option value="578">578 - 南投縣水里鄉農會</option>
+                                <option value="579">579 - 南投縣國姓鄉農會</option>
+                                <option value="580">580 - 南投縣鹿谷鄉農會</option>
+                                <option value="581">581 - 南投縣信義鄉農會</option>
+                                <option value="582">582 - 南投縣仁愛鄉農會</option>
+                                <option value="583">583 - 臺南市東山區農會</option>
+                                <option value="585">585 - 宜蘭縣頭城鎮農會</option>
+                                <option value="586">586 - 宜蘭縣羅東鎮農會</option>
+                                <option value="587">587 - 宜蘭縣礁溪鄉農會</option>
+                                <option value="588">588 - 宜蘭縣壯圍鄉農會</option>
+                                <option value="589">589 - 宜蘭縣員山鄉農會</option>
+                                <option value="596">596 - 宜蘭縣五結鄉農會</option>
+                                <option value="598">598 - 宜蘭縣蘇澳地區農會</option>
+                                <option value="599">599 - 宜蘭縣三星地區農會</option>
+                                <option value="602">602 - 中華民國農會</option>
+                                <option value="605">605 - 高雄市小港區農會</option>
+                                <option value="610">610 - 新竹縣新豐鄉農會</option>
+                                <option value="611">611 - 苗栗縣銅鑼鄉農會</option>
+                                <option value="612">612 - 臺中市豐原區農會</option>
+                                <option value="613">613 - 南投縣名間鄉農會</option>
+                                <option value="614">614 - 彰化縣芬園鄉農會</option>
+                                <option value="615">615 - 基隆市農會</option>
+                                <option value="616">616 - 雲林縣斗六市農會</option>
+                                <option value="617">617 - 嘉義縣布袋鎮農會</option>
+                                <option value="618">618 - 臺南市永康區農會</option>
+                                <option value="619">619 - 高雄市美濃區農會</option>
+                                <option value="620">620 - 屏東縣南州地區農會</option>
+                                <option value="621">621 - 花蓮縣新秀地區農會</option>
+                                <option value="622">622 - 臺東縣長濱鄉農會</option>
+                                <option value="624">624 - 澎湖縣農會</option>
+                                <option value="625">625 - 臺中市臺中地區農會</option>
+                                <option value="627">627 - 福建省連江縣農會</option>
+                                <option value="628">628 - 彰化縣鹿港鎮農會</option>
+                                <option value="629">629 - 彰化縣和美鎮農會</option>
+                                <option value="631">631 - 彰化縣溪湖鎮農會</option>
+                                <option value="632">632 - 彰化縣田中鎮農會</option>
+                                <option value="633">633 - 彰化縣北斗鎮農會</option>
+                                <option value="635">635 - 彰化縣線西鄉農會</option>
+                                <option value="636">636 - 彰化縣伸港鄉農會</option>
+                                <option value="638">638 - 彰化縣花壇鄉農會</option>
+                                <option value="639">639 - 彰化縣大村鄉農會</option>
+                                <option value="642">642 - 彰化縣社頭鄉農會</option>
+                                <option value="643">643 - 彰化縣二水鄉農會</option>
+                                <option value="646">646 - 彰化縣大城鄉農會</option>
+                                <option value="647">647 - 彰化縣溪州鄉農會</option>
+                                <option value="649">649 - 彰化縣埔鹽鄉農會</option>
+                                <option value="650">650 - 彰化縣福興鄉農會</option>
+                                <option value="651">651 - 彰化縣彰化市農會</option>
+                                <option value="683">683 - 雲林縣北港鎮農會</option>
+                                <option value="685">685 - 雲林縣土庫鎮農會</option>
+                                <option value="693">693 - 雲林縣東勢鄉農會</option>
+                                <option value="696">696 - 雲林縣水林鄉農會</option>
+                                <option value="697">697 - 雲林縣元長鄉農會</option>
+                                <option value="698">698 - 雲林縣麥寮鄉農會</option>
+                                <option value="699">699 - 雲林縣林內鄉農會</option>
+                                <option value="700">700 - 中華郵政公司</option>
+                                <option value="749">749 - 屏東縣內埔地區農會</option>
+                                <option value="750">750 - 香港商東亞銀行</option>
+                                <option value="760">760 - 美商摩根大通銀行</option>
+                                <option value="762">762 - 桃園巿大溪區農會</option>
+                                <option value="763">763 - 桃園巿桃園區農會</option>
+                                <option value="764">764 - 桃園巿平鎮區農會</option>
+                                <option value="765">765 - 桃園巿楊梅區農會</option>
+                                <option value="766">766 - 桃園巿大園區農會</option>
+                                <option value="767">767 - 桃園巿蘆竹區農會</option>
+                                <option value="768">768 - 桃園巿龜山區農會</option>
+                                <option value="769">769 - 桃園巿八德區農會</option>
+                                <option value="770">770 - 桃園巿新屋區農會</option>
+                                <option value="771">771 - 桃園巿龍潭區農會</option>
+                                <option value="772">772 - 桃園巿復興區農會</option>
+                                <option value="773">773 - 桃園巿觀音區農會</option>
+                                <option value="775">775 - 新北市土城區農會</option>
+                                <option value="776">776 - 新北市三重區農會</option>
+                                <option value="777">777 - 新北市中和地區農會</option>
+                                <option value="778">778 - 新北市淡水區農會</option>
+                                <option value="779">779 - 新北市樹林區農會</option>
+                                <option value="780">780 - 新加坡商星展銀行</option>
+                                <option value="781">781 - 新北市三峽區農會</option>
+                                <option value="785">785 - 新北市蘆洲區農會</option>
+                                <option value="786">786 - 新北市五股區農會</option>
+                                <option value="787">787 - 新北市林口區農會</option>
+                                <option value="788">788 - 新北市泰山區農會</option>
+                                <option value="789">789 - 新北市坪林區農會</option>
+                                <option value="790">790 - 新北市八里區農會</option>
+                                <option value="791">791 - 新北市金山地區農會</option>
+                                <option value="792">792 - 新北市瑞芳地區農會</option>
+                                <option value="793">793 - 新北市新店地區農會</option>
+                                <option value="795">795 - 新北市深坑區鄉農會</option>
+                                <option value="796">796 - 新北市石碇區農會</option>
+                                <option value="797">797 - 新北市平溪區農會</option>
+                                <option value="798">798 - 新北市石門區農會</option>
+                                <option value="799">799 - 新北市三芝區農會</option>
+                                <option value="803">803 - 聯邦商業銀行</option>
+                                <option value="805">805 - 遠東商業銀行</option>
+                                <option value="806">806 - 元大商業銀行</option>
+                                <option value="807">807 - 永豐商業銀行</option>
+                                <option value="808">808 - 玉山商業銀行</option>
+                                <option value="809">809 - 凱基商業銀行</option>
+                                <option value="810">810 - 星展(台灣)商業銀行</option>
+                                <option value="812">812 - 台新商業銀行</option>
+                                <option value="816">816 - 安泰商業銀行</option>
+                                <option value="820">820 - 法商法國巴黎銀行</option>
+                                <option value="822">822 - 中國信託商業銀行</option>
+                                <option value="823">823 - 將來商業銀行</option>
+                                <option value="824">824 - 連線商業銀行</option>
+                                <option value="826">826 - 樂天國際商業銀行</option>
+                                <option value="830">830 - 英商渣打銀行</option>
+                                <option value="850">850 - 新加坡華僑銀行</option>
+                                <option value="860">860 - 法商東方匯理銀行</option>
+                                <option value="866">866 - 嘉義縣阿里山鄉農會</option>
+                                <option value="868">868 - 臺中市東勢區農會</option>
+                                <option value="869">869 - 臺中市清水區農會</option>
+                                <option value="870">870 - 臺中市梧棲區農會</option>
+                                <option value="871">871 - 臺中市大甲區農會</option>
+                                <option value="872">872 - 臺中市沙鹿區農會</option>
+                                <option value="874">874 - 臺中市霧峰區農會</option>
+                                <option value="875">875 - 臺中市太平區農會</option>
+                                <option value="876">876 - 臺中市烏日區農會</option>
+                                <option value="877">877 - 臺中市后里區農會</option>
+                                <option value="878">878 - 臺中市大雅區農會</option>
+                                <option value="879">879 - 臺中市潭子區農會</option>
+                                <option value="880">880 - 臺中市石岡區農會</option>
+                                <option value="881">881 - 臺中市新社區農會</option>
+                                <option value="882">882 - 臺中市大肚區農會</option>
+                                <option value="883">883 - 臺中市外埔區農會</option>
+                                <option value="884">884 - 臺中市大安區農會</option>
+                                <option value="885">885 - 臺中市龍井區農會</option>
+                                <option value="886">886 - 臺中市和平區農會</option>
+                                <option value="891">891 - 花蓮縣花蓮巿農會</option>
+                                <option value="895">895 - 花蓮縣瑞穗鄉農會</option>
+                                <option value="896">896 - 花蓮縣玉溪地區農會</option>
+                                <option value="897">897 - 花蓮縣鳳榮地區農會</option>
+                                <option value="898">898 - 花蓮縣光豐地區農會</option>
+                                <option value="901">901 - 臺中市大里區農會</option>
+                                <option value="902">902 - 苗栗縣苗栗市農會</option>
+                                <option value="903">903 - 新北市汐止區農會</option>
+                                <option value="904">904 - 新北市新莊區農會</option>
+                                <option value="906">906 - 苗栗縣頭份市農會</option>
+                                <option value="907">907 - 苗栗縣竹南鎮農會</option>
+                                <option value="908">908 - 苗栗縣通霄鎮農會</option>
+                                <option value="909">909 - 苗栗縣苑裡鎮農會</option>
+                                <option value="912">912 - 宜蘭縣冬山鄉農會</option>
+                                <option value="913">913 - 苗栗縣後龍鎮農會</option>
+                                <option value="914">914 - 苗栗縣卓蘭鎮農會</option>
+                                <option value="915">915 - 苗栗縣西湖鄉農會</option>
+                                <option value="916">916 - 南投縣草屯鎮農會</option>
+                                <option value="917">917 - 苗栗縣公館鄉農會</option>
+                                <option value="919">919 - 苗栗縣三義鄉農會</option>
+                                <option value="920">920 - 苗栗縣造橋鄉農會</option>
+                                <option value="921">921 - 苗栗縣南庄鄉農會</option>
+                                <option value="922">922 - 臺南市臺南地區農會</option>
+                                <option value="923">923 - 苗栗縣獅潭鄉農會</option>
+                                <option value="924">924 - 苗栗縣頭屋鄉農會</option>
+                                <option value="925">925 - 苗栗縣三灣鄉農會</option>
+                                <option value="926">926 - 苗栗縣大湖地區農會</option>
+                                <option value="928">928 - 新北市板橋區農會</option>
+                                <option value="929">929 - 新竹縣關西鎮農會</option>
+                                <option value="930">930 - 新竹縣新埔鎮農會</option>
+                                <option value="931">931 - 新竹縣竹北市農會</option>
+                                <option value="932">932 - 新竹縣湖口鄉農會</option>
+                                <option value="933">933 - 新竹縣芎林鄉農會</option>
+                                <option value="934">934 - 新竹縣寶山鄉農會</option>
+                                <option value="935">935 - 新竹縣峨眉鄉農會</option>
+                                <option value="936">936 - 新竹縣北埔鄉農會</option>
+                                <option value="937">937 - 新竹縣竹東地區農會</option>
+                                <option value="938">938 - 新竹縣橫山地區農會</option>
+                                <option value="940">940 - 新竹市農會</option>
+                                <option value="953">953 - 彰化縣田尾鄉農會</option>
+                                <option value="970">970 - 美商富國銀行</option>
+                                <option value="980">980 - 日商三菱日聯銀行</option>
+                                <option value="984">984 - 臺北市北投區農會</option>
+                                <option value="985">985 - 臺北市士林區農會</option>
+                                <option value="986">986 - 臺北市內湖區農會</option>
+                                <option value="987">987 - 臺北市南港區農會</option>
+                                <option value="988">988 - 臺北市木柵區農會</option>
+                                <option value="989">989 - 臺北市景美區農會</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pay-digits">
+                                <i class="ph ph-hash"></i> <span class="lang-zh">匯款帳號後五碼</span><span
+                                    class="lang-en">Last 5 Digits</span>
+                            </label>
+                            <input type="text" id="pay-digits" pattern="[0-9]{5}" maxlength="5" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-full" id="btn-pay-submit">
+                            <i class="ph ph-check-square"></i> <span class="lang-zh">登記已匯款</span><span
+                                class="lang-en">Submit Payment Info</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 3: 狀態查詢 -->
+                <div class="tab-content hidden" id="content-query">
+                    <form id="form-query" class="hub-form">
+                        <div class="form-group">
+                            <label for="query-email">
+                                <i class="ph ph-envelope"></i> <span class="lang-zh">輸入 Email 查詢</span><span
+                                    class="lang-en">Enter Email to Query</span>
+                            </label>
+                            <input type="email" id="query-email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="btn-query-submit">
+                            <i class="ph ph-magnifying-glass"></i> <span class="lang-zh">立即查詢</span><span
+                                class="lang-en">Query Status</span>
+                        </button>
+                    </form>
+
+                    <!-- 查詢結果卡片 (預設隱藏) -->
+                    <div id="query-result-card" class="ticket-card hidden">
+                        <div class="ticket-header">
+                            <i class="ph ph-waves"></i> BEAR WAVE PASS
+                        </div>
+                        <div class="ticket-body">
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">暱稱</span><span
+                                        class="lang-en">Nickname</span></span>
+                                <span class="val" id="q-result-name">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">國籍</span><span
+                                        class="lang-en">Nationality</span></span>
+                                <span class="val" id="q-result-nationality">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">電子郵件</span><span class="lang-en">Email
+                                        Address</span></span>
+                                <span class="val" id="q-result-email">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">手機後四碼</span><span class="lang-en">Mobile (Last
+                                        4)</span></span>
+                                <span class="val" id="q-result-phone">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">交通方式</span><span
+                                        class="lang-en">Transportation</span></span>
+                                <span class="val" id="q-result-transportation">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">匯款資訊</span><span class="lang-en">Payment
+                                        Info</span></span>
+                                <span class="val" id="q-result-digits">-</span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">匯款狀態</span><span class="lang-en">Payment
+                                        Status</span></span>
+                                <span class="val"><span class="badge" id="q-result-status">-</span></span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">桌次號碼</span><span class="lang-en">Table
+                                        Number</span></span>
+                                <span class="val"><span class="table-badge" id="q-result-table">-</span></span>
+                            </div>
+                            <div class="ticket-row">
+                                <span class="label"><span class="lang-zh">桌暱稱</span><span class="lang-en">Table
+                                        Nickname</span></span>
+                                <span class="val" id="q-result-table-nickname">-</span>
+                            </div>
+                            <div class="ticket-row" id="row-qr-send" style="margin-top: 15px; padding-top: 15px; border-top: 1.5px dashed var(--border-color); display: flex; flex-direction: column; gap: 8px; align-items: stretch;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="label"><span class="lang-zh">電子票券發送</span><span class="lang-en">QR Ticket Email</span></span>
+                                    <span class="val"><span class="badge" id="q-result-qr-sent" style="background: #f1f5f9; color: #475569;">未開放</span></span>
+                                </div>
+                                <button type="button" class="btn btn-primary" id="btn-send-qr-email" onclick="handleSendQREmail(event)" style="width: 100%; padding: 10px; margin-top: 5px; font-weight: 600; font-size: 0.95rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;" disabled>
+                                    <i class="ph ph-paper-plane-tilt" style="font-size: 1.15rem;"></i>
+                                    <span class="lang-zh" id="btn-send-qr-text">寄出 QR 碼至信箱</span>
+                                    <span class="lang-en" id="btn-send-qr-text-en">Send QR Code to Email</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: 分桌資料 -->
+                <div class="tab-content hidden" id="content-table">
+                    <div class="table-list-container">
+                        <div class="table-list-header">
+                            <h3 class="table-list-title">
+                                <span class="lang-zh"><i class="ph ph-layout"
+                                        style="vertical-align: middle; margin-right: 6px;"></i>分桌看板/(目前只開放10人分桌設定)</span>
+                                <span class="lang-en"><i class="ph ph-layout"
+                                        style="vertical-align: middle; margin-right: 6px;"></i>Table Board</span>
+                            </h3>
+                            <p class="table-list-desc"
+                                style="margin-top: 8px; margin-bottom: 24px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+                                <span
+                                    class="lang-zh">您可以在此查看所有桌位的使用狀態。點擊空桌「建立桌位」或已使用桌位的「修改桌位資料」進行操作。基於個資安全，此看板僅列出桌暱稱而不洩露名單。</span>
+                                <span class="lang-en">View the status of all tables. Click "Create Table" for empty
+                                    tables or "Modify Table" for used tables. For privacy, this board only shows table
+                                    nicknames and hides member list.</span>
+                            </p>
+                        </div>
+                        <div id="tables-grid" class="tables-grid">
+                            <!-- 由 JavaScript 動態生成桌位卡片 -->
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">
+                                <i class="ph ph-spinner ph-spin"
+                                    style="font-size: 2rem; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                <span class="lang-zh">載入桌位資料中...</span><span class="lang-en">Loading tables...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: 揪桌友看板 -->
+                <div class="tab-content hidden" id="content-group">
+                    <div class="table-list-container">
+                        <div class="table-list-header"
+                            style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                            <div style="flex: 1; min-width: 280px;">
+                                <h3 class="table-list-title">
+                                    <span class="lang-zh" id="group-board-title-zh"><i class="ph ph-chats-teardrop"
+                                            style="vertical-align: middle; margin-right: 6px;"></i>揪桌友看板</span>
+                                    <span class="lang-en" id="group-board-title-en"><i class="ph ph-chats-teardrop"
+                                            style="vertical-align: middle; margin-right: 6px;"></i>Group Member
+                                        Board</span>
+                                </h3>
+                                <p class="table-list-desc"
+                                    style="margin-top: 8px; margin-bottom: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="lang-zh" id="group-board-desc-zh">在這裡您可以建立自己的桌友資料歐~。</span>
+                                    <span class="lang-en" id="group-board-desc-en">Start a new group table friends or join others. No table count
+                                        limit.</span>
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="btn-open-new-group" onclick="openNewGroupTableModal()"
+                                style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                                <i class="ph ph-plus-circle" style="font-size: 1.25rem;"></i>
+                                <span class="lang-zh">建立新桌友資料</span><span class="lang-en">Create Group Table</span>
+                            </button>
+                        </div>
+
+                        <!-- 搜尋過濾工具列 -->
+                        <div class="search-filter-bar" style="margin-top: 20px; display: flex; align-items: center; gap: 12px; background: #fafafa; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 10px;">
+                            <div style="position: relative; flex: 1; min-width: 200px;">
+                                <i class="ph ph-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.15rem;"></i>
+                                <input type="text" id="group-search-input" oninput="filterGroupTables()" placeholder="搜尋桌號 ID (如 001) 或 桌暱稱..." style="width: 100%; padding: 8px 12px 8px 36px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem; background: #ffffff;">
+                            </div>
+                            <button type="button" class="btn btn-outline btn-small" onclick="clearGroupSearch()" style="padding: 8px 12px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); background: #ffffff;">
+                                <i class="ph ph-x-circle" style="font-size: 1.05rem; color: var(--text-muted);"></i>
+                                <span class="lang-zh">清除</span><span class="lang-en">Clear</span>
+                            </button>
+                        </div>
+
+                        <div id="group-tables-grid" class="tables-grid" style="margin-top: 20px;">
+                            <!-- 由 JavaScript 動態生成揪桌友卡片 -->
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">
+                                <i class="ph ph-spinner ph-spin"
+                                    style="font-size: 2rem; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto;"></i>
+                                <span class="lang-zh">載入桌友資料中...</span><span class="lang-en">Loading group
+                                    tables...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 統一訊息提示區 -->
+                <div id="hub-message" class="hub-message hidden"></div>
+
+                <!-- 活動聲明事項 -->
+                <div class="terms-accordion"
+                    style="margin-top: 32px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                    <div class="accordion-header">
+                        <span>
+                            <i class="ph ph-shield-warning"
+                                style="vertical-align: middle; margin-right: 8px; font-size: 1.25rem; color: var(--bear-rust);"></i>
+                            <span class="lang-zh">活動聲明與注意事項</span>
+                            <span class="lang-en">Event Declaration & Notice</span>
+                        </span>
+                    </div>
+                    <div class="accordion-content" id="accordion-terms">
+                        <div class="accordion-inner">
+                            <!-- 中文聲明 -->
+                            <div class="lang-zh">
+                                <ol class="terms-list">
+                                    <li><strong>繳費期限：</strong>本次活動費用為新台幣1000元，"送出報名資料後請至email收信讀取繳費資訊"，請於報名完成後7日內完成費用匯款繳納。若7日內未繳款，第8日主辦系統會自動刪除報名資料，依舊想參加者請重新報名與繳費。<br><span
+                                            class="highlight">*若繳費後無法成功登記繳費紀錄，請盡速寄信/Email通知活動方，為您處理報名事宜。</span></li>
+                                    <li><strong>繳費管道：</strong>台灣人請優先使用線上繳費方式付款（自動更新免對帳），亦可選擇銀行轉帳匯款（備用管道）。若選擇轉帳匯款，請於取得匯款後五碼資料後，回到報名網頁「2.
+                                        匯款登記」分頁填寫相關資料，才算完成報名作業；使用線上繳費者無須登記。非台灣人則請使用 PayPal 平台繳費。</li>
+                                    <li><strong>截止日期：</strong>活動於 8/15 日截止報名，而報名系統將會於 8/31 日全部關閉（匯款登記也會關閉），所以請盡速於 8/31
+                                        日前完成繳費作業。9/1 日開始也請不要繼續匯款，以免造成活動處理困難。</li>
+                                    <li><strong>退款規則：</strong>完成報名作業後，如需申請退款，請於 9/11 日以前寄信/Email通知我們。
+                                        <ul>
+                                            <li>8/15 日以前申請退款者，將全額退還費用。</li>
+                                            <li>8/16 日～9/11 日申請退款者，將酌收 200 元之手續費。</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>不可抗力因素：</strong>因颱風、地震、政府禁令、疫情管制或其他不可抗力因素導致活動取消時，活動主辦方將公告通知處理方式。若處理方式是退款，將會再通知大家退款金額與退款申請方式，讓報名者可以順利退款，因此事由退款將不扣除任何手續費用。
+                                    </li>
+                                </ol>
+                                <div class="terms-memo">
+                                    <strong>備註（本次活動備有接駁車，各路段乘車地區及費用如下）：</strong>
+                                    <ul>
+                                        <li>(1) 台北西門上下車：250元，費用包含西門往返淡江農場</li>
+                                        <li>(2) 新竹中壢上下車：300元，費用包含新竹中壢往返淡江農場</li>
+                                        <li>(3) 台中高鐵上下車：400元，費用包含台中高鐵往返淡江農場</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- 英文聲明 -->
+                            <div class="lang-en">
+                                <ol class="terms-list">
+                                    <li><strong>Payment Deadline:</strong> The event fee is NT$1,000. Please complete
+                                        the payment within 7 days of registration. If unpaid after 7 days, the system
+                                        will delete the registration on the 8th day; those who still wish to attend must
+                                        re-register and pay.<br><span class="highlight">*If you are unable to
+                                            successfully
+                                            register your payment details after paying, please email the organizer
+                                            immediately for assistance.</span></li>
+                                    <li><strong>Payment Methods:</strong> Taiwan residents please prioritize using
+                                        online payment (credit card/convenience store, auto-matched), or optionally use
+                                        bank transfer (backup). For bank transfers, after paying and obtaining the
+                                        transaction details (last 5 digits), please return to the registration page, "2.
+                                        Payment" tab, to submit the details and finalize registration; online payments
+                                        do not require manual registration. International attendees please pay via
+                                        PayPal.</li>
+                                    <li><strong>Closing Dates:</strong> Registration closes on August 15, and the
+                                        registration system (including payment submission) will close completely on
+                                        August 31. Please complete your payment by August 31. Please do not make any
+                                        transfers starting September 1 to avoid processing difficulties.</li>
+                                    <li><strong>Refund Policy:</strong> If you need to request a refund after completing
+                                        registration, please email us before September 11.
+                                        <ul>
+                                            <li>Refunds requested on or before August 15: Full refund.</li>
+                                            <li>Refunds requested between August 16 and September 11: A processing fee
+                                                of NT$200 will be charged.</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>Force Majeure:</strong> If the event is canceled due to typhoon,
+                                        earthquake, government bans, pandemic control, or other force majeure factors,
+                                        the organizer will announce the handling method. If a refund is decided, we will
+                                        notify you of the refund amount and application process; refunds due to this
+                                        reason will not be subject to any handling fees.</li>
+                                </ol>
+                                <div class="terms-memo">
+                                    <strong>Memo (Shuttle bus routes and fares):</strong>
+                                    <ul>
+                                        <li>(1) Taipei Ximen: NT$250 (includes round-trip to Tamsui Farm)</li>
+                                        <li>(2) Hsinchu & Zhongli: NT$300 (includes round-trip to Tamsui Farm)</li>
+                                        <li>(3) Taichung HSR: NT$400 (includes round-trip to Tamsui Farm)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+       Popups / Modals (自訂彈出視窗)
+       ========================================== -->
+
+    <!-- 1. 報名成功彈出視窗 -->
+    <div id="reg-success-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button type="button" class="modal-close" onclick="closeModal('reg')">&times;</button>
+            <div class="success-icon"><i class="ph ph-check-circle" style="font-size: 3.5rem; color: #2e7d32;"></i>
+            </div>
+            <h3 style="text-align: center; color: #2e7d32; margin-bottom: 12px; font-size: 1.5rem;">
+                <span class="lang-zh">🎉 報名成功！</span><span class="lang-en">🎉 Registration Successful!</span>
+            </h3>
+            <p id="reg-success-desc-domestic"
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
+                <span class="lang-zh">我們已收到您的報名資料。請選擇下方任一方式完成繳費，優先推薦線上繳費（若有疑問請聯絡 <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）：</span>
+                <span class="lang-en">We have received your details. Please choose one of the payment methods below to
+                    complete your registration, online payment is highly recommended (Contact: <a
+                        href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>):</span>
+            </p>
+            <p id="reg-success-desc-international" class="hidden"
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.5;">
+                <span class="lang-zh">我們已發送線上繳費指引至您的信箱，您亦可直接點選下方按鈕進行線上繳費（若未收到信件請聯絡 <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>）。</span>
+                <span class="lang-en">We have sent the online payment guide to your email. You can also click the button
+                    below to pay online directly (If not received, contact: <a href="mailto:ponbosch@gmail.com"
+                        style="color: #1A4B82; text-decoration: underline;">ponbosch@gmail.com</a>).</span>
+            </p>
+
+            <!-- 方式一：主要付款管道 (線上繳費) -->
+            <div id="reg-success-online-box"
+                style="margin-bottom: 20px; padding: 16px; background: rgba(255, 127, 80, 0.1); border: 1px solid rgba(255, 127, 80, 0.2); border-radius: 12px; text-align: center;">
+                <div style="font-weight: 700; margin-bottom: 8px; color: var(--bear-rust); font-size: 1rem;">
+                    <i class="ph ph-credit-card" style="vertical-align: middle; margin-right: 4px;"></i>
+                    <span class="lang-zh">【主要付款】方式一：線上繳費</span>
+                    <span class="lang-en">【Primary】Method 1: Online Payment</span>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; font-weight: 500;">
+                    <span class="lang-zh">您所選的方案：<strong id="reg-success-online-trans"
+                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                    <span class="lang-en">Your package: <strong id="reg-success-online-trans-en"
+                            style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                </div>
+                <div
+                    style="margin-bottom: 12px; padding: 12px; background: #fff5f5; border: 1px solid #ffcbd2; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; font-weight: 700; line-height: 1.5; text-align: left;">
+                    <span class="lang-zh">⚠️ 請特別注意：前往線上付款介面時，請務必輸入您剛才填寫的 Email 信箱：<br>
+                        <span class="reg-success-email-display"
+                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
+                        系統才能自動對帳！
+                    </span>
+                    <span class="lang-en">⚠️ Please note: In the online payment interface, you MUST enter your
+                        registered email address:<br>
+                        <span class="reg-success-email-display"
+                            style="font-family: monospace; font-size: 1rem; background: #fff; padding: 3px 8px; border: 1px dashed #d32f2f; color: #1A4B82; font-weight: 700; display: inline-block; margin: 6px 0; border-radius: 4px;">-</span><br>
+                        for automatic reconciliation!
+                    </span>
+                </div>
+                <a id="btn-online-payment" href="#" target="_blank" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); color: white; width: 100%; box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3); font-size: 0.95rem; padding: 10px 20px;">
+                    <span class="lang-zh">前往主要線上繳費</span>
+                    <span class="lang-en">Go to Online Payment</span>
+                </a>
+            </div>
+
+            <!-- 方式二：備用付款管道 (轉帳匯款) -->
+            <div id="reg-success-bank-title"
+                style="font-weight: 600; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">
+                <i class="ph ph-bank" style="vertical-align: middle; margin-right: 4px;"></i>
+                <span class="lang-zh">【備用付款】方式二：轉帳匯款 (無法線上繳費者使用)</span>
+                <span class="lang-en">【Backup】Method 2: Bank Remittance (If Online Pay fails)</span>
+            </div>
+
+            <div class="bank-info-box" id="reg-success-bank-box">
+                <div class="bank-row">
+                    <span class="lang-zh">銀行：</span><span class="lang-en">Bank: </span>
+                    <strong id="bank-name">臺灣銀行 (004)</strong>
+                </div>
+                <div class="bank-row"
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <span class="lang-zh">帳號：</span><span class="lang-en">Account Number: </span>
+                        <strong id="bank-account-num">224004060158</strong>
+                    </div>
+                    <button type="button" class="btn-copy" id="btn-copy-account" onclick="copyBankAccount()">
+                        <i class="ph ph-copy"></i> <span class="lang-zh">複製帳號</span><span class="lang-en">Copy
+                            Account</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert-box" id="reg-success-alert-box">
+                <i class="ph ph-info" style="font-size: 1.5rem; color: #0288d1; margin-right: 12px;"></i>
+                <span>
+                    <span class="lang-zh">若您選擇<strong>「方式二：轉帳匯款」</strong>，匯款後請切換至 <strong>「2. 匯款登記」</strong>
+                        分頁登記後五碼，以便對帳；主要「線上繳費」則免登記對帳！</span>
+                    <span class="lang-en">If you select <strong>"Method 2: Bank Remittance"</strong>, please register
+                        your last 5 digits on the <strong>"2. Payment"</strong> tab after remitting. Online payments do
+                        not need registration!</span>
+                </span>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-full" style="margin-top: 24px;"
+                onclick="closeModal('reg')">
+                <span class="lang-zh">我瞭解了，關閉視窗</span>
+                <span class="lang-en">Got it, Close Window</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. 匯款登記成功彈出視窗 -->
+    <div id="pay-success-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button type="button" class="modal-close" onclick="closeModal('pay')">&times;</button>
+            <div class="success-icon"><i class="ph ph-sparkles" style="font-size: 3.5rem; color: #ff9800;"></i></div>
+            <h3 style="text-align: center; color: #e65100; margin-bottom: 12px; font-size: 1.5rem;">
+                <span class="lang-zh">🎉 登記成功！</span><span class="lang-en">🎉 Remittance Registered!</span>
+            </h3>
+            <p style="text-align: center; margin-bottom: 24px; color: var(--text-muted); line-height: 1.6;">
+                <span class="lang-zh">您的匯款資訊已成功登記！主辦單位將於 1-2 天內完成對帳，您可以隨時在「3. 狀態查詢」中追蹤報名狀態與桌次。</span>
+                <span class="lang-en">Your remittance has been registered! We will reconcile in 1-2 days. You can track
+                    status and tables under "3. Status".</span>
+            </p>
+            <button type="button" class="btn btn-secondary btn-full" onclick="closeModal('pay')">
+                <span class="lang-zh">關閉視窗</span><span class="lang-en">Close Window</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. 報名資料確認彈出視窗 -->
+    <div id="reg-confirm-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 500px;">
+            <button type="button" class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            <h3 style="text-align: center; color: var(--ocean-dark); margin-bottom: 20px; font-size: 1.5rem;">
+                <span class="lang-zh">📝 請核對您的報名資料</span><span class="lang-en">📝 Verify Registration Details</span>
+            </h3>
+
+            <div
+                style="background: rgba(0, 0, 0, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 24px; font-size: 1rem; line-height: 1.8;">
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">暱稱</span><span class="lang-en">Nickname</span>
+                    </span>
+                    <span id="confirm-name" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">電子信箱</span><span class="lang-en">Email</span>
+                    </span>
+                    <span id="confirm-email"
+                        style="font-weight: bold; color: var(--text-main); word-break: break-all;">-</span>
+                </div>
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">手機後四碼</span><span class="lang-en">Phone (Last 4)</span>
+                    </span>
+                    <span id="confirm-phone" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div
+                    style="display: flex; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">國籍</span><span class="lang-en">Nationality</span>
+                    </span>
+                    <span id="confirm-nationality" style="font-weight: bold; color: var(--text-main);">-</span>
+                </div>
+                <div style="display: flex; padding-bottom: 4px;">
+                    <span style="font-weight: 600; width: 110px; color: var(--text-muted); flex-shrink: 0;">
+                        <span class="lang-zh">交通與方案</span><span class="lang-en">Package</span>
+                    </span>
+                    <span id="confirm-transportation" style="font-weight: bold; color: var(--bear-rust);">-</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <button type="button" class="btn btn-outline"
+                    style="border-radius: 12px; font-size: 0.95rem; padding: 12px;" onclick="closeConfirmModal()">
+                    <span class="lang-zh">返回修改</span><span class="lang-en">Back to Edit</span>
+                </button>
+                <button type="button" class="btn btn-primary"
+                    style="border-radius: 12px; font-size: 0.95rem; padding: 12px; background: linear-gradient(135deg, var(--wave-cyan), var(--ocean-dark)); color: white; box-shadow: 0 4px 15px rgba(0, 139, 139, 0.3);"
+                    onclick="submitConfirmedRegistration()">
+                    <span class="lang-zh">確認無誤，送出</span><span class="lang-en">Confirm & Submit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 分桌密碼驗證彈出視窗 -->
+    <div id="table-password-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-small">
+            <button type="button" class="modal-close" onclick="closeTableModal('password')">&times;</button>
+            <div class="success-icon"
+                style="background: rgba(255, 127, 80, 0.1); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--bear-rust);"></i>
+            </div>
+            <h3
+                style="text-align: center; color: var(--text-main); margin-bottom: 8px; font-size: 1.35rem; font-weight: 700;">
+                <span class="lang-zh">桌位密碼驗證</span><span class="lang-en">Table Password Verify</span>
+            </h3>
+            <p
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
+                <span class="lang-zh">請輸入修改密碼以編輯：<strong id="verify-table-name-display"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                <span class="lang-en">Please enter password to edit: <strong id="verify-table-name-display-en"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+            </p>
+            <form id="form-table-password" class="hub-form" onsubmit="submitTablePassword(event)">
+                <input type="hidden" id="verify-table-id" value="">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="verify-table-pass" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                        <i class="ph ph-key"></i> <span class="lang-zh">修改密碼</span><span class="lang-en">Table
+                            Password</span>
+                    </label>
+                    <input type="password" id="verify-table-pass" required placeholder="請輸入設定密碼 / Enter Password"
+                        style="width: 100%; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="btn-password-submit"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);">
+                    <i class="ph ph-shield-check" style="margin-right: 4px; vertical-align: middle;"></i> <span
+                        class="lang-zh">驗證密碼</span><span class="lang-en">Verify Password</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. 分桌設定/編輯彈出視窗 -->
+    <div id="table-editor-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-large"
+            style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+            <!-- Header -->
+            <div class="modal-header-section"
+                style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01);">
+                <h3
+                    style="margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                    <span class="lang-zh">10人分桌設定 - 桌位 ID: <strong id="editor-table-id-display"
+                            style="color: var(--bear-rust);">-</strong></span>
+                    <span class="lang-en">10-Person Table Setup - Table ID: <strong id="editor-table-id-display-en"
+                            style="color: var(--bear-rust);">-</strong></span>
+                </h3>
+                <button type="button" class="modal-close" onclick="closeTableModal('editor')"
+                    style="position: static; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body-scroll" style="flex: 1; overflow-y: auto; padding: 24px;">
+                <!-- 桌位基本資訊 (模式A, B皆會顯示，但B中可即時更新) -->
+                <div class="table-basic-info-box"
+                    style="background: rgba(255, 127, 80, 0.03); border: 1px solid rgba(255, 127, 80, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-table-nickname"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-tag"></i> <span class="lang-zh">桌暱稱 (不可空白)</span><span class="lang-en">Table
+                                Nickname</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-table-nickname" required placeholder="例如：浪熊第一桌"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-table-nickname" class="btn btn-outline btn-small hidden"
+                                onclick="updateTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-table-password"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-key"></i> <span class="lang-zh">修改密碼 (不可空白)</span><span class="lang-en">Edit
+                                Password</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-table-password" required placeholder="請設定修改密碼"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-table-password" class="btn btn-outline btn-small hidden"
+                                onclick="updateTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10人名單填寫 -->
+                <div class="table-members-section">
+                    <h4 class="members-section-title"
+                        style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--text-main); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                        <span class="lang-zh">同桌成員 (共 10 人，人員 1 為聯絡窗口)</span>
+                        <span class="lang-en">Members (10 people max, Member 1 is contact)</span>
+                    </h4>
+
+                    <!-- 批次快速貼上區塊 (僅在新建模式下可用) -->
+                    <div id="batch-paste-section"
+                        style="background: rgba(255, 127, 80, 0.04); border: 1.5px dashed rgba(255, 127, 80, 0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h5
+                            style="margin: 0 0 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span
+                                style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">
+                                <i class="ph ph-clipboard-text" style="font-size: 1.1rem; color: var(--bear-rust);"></i>
+                                <span class="lang-zh">📋 批次快速貼上成員名單</span>
+                                <span class="lang-en">📋 Bulk Paste Members List</span>
+                            </span>
+                            <a href="#" onclick="toggleBatchPaste(event)" id="batch-paste-toggle-btn"
+                                style="font-size: 0.8rem; color: var(--bear-rust); text-decoration: none; font-weight: 600;">展開選單
+                                / Expand</a>
+                        </h5>
+                        <div id="batch-paste-container" class="hidden" style="margin-top: 10px;">
+                            <p
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4;">
+                                <span class="lang-zh">請輸入或貼上名單，每行一人，格式為「Email, 手機後四碼」（可用逗號、空格或 Tab 分隔）。例如：</span>
+                                <span class="lang-en">Paste list, one member per line, format: "Email,
+                                    PhoneLast4":</span>
+                                <br>
+                                <code
+                                    style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-top: 4px;">friend@mail.com, 1234</code>
+                            </p>
+                            <textarea id="batch-paste-textarea" rows="3"
+                                placeholder="test1@gmail.com, 1234&#10;test2@gmail.com, 5678"
+                                style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-family: monospace; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; min-height: 80px;"></textarea>
+                            <button type="button" class="btn btn-outline btn-small" onclick="applyBatchPaste()"
+                                style="padding: 6px 12px; font-weight: 600; border-color: var(--bear-rust); color: var(--bear-rust); background: white; cursor: pointer; border-radius: 6px;">
+                                <span class="lang-zh">匯入名單</span><span class="lang-en">Import</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="members-list-container" class="members-list-container"
+                        style="display: flex; flex-direction: column; gap: 16px;">
+                        <!-- JS 將動態生成 10 列成員資訊 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer-section"
+                style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01); border-radius: 0 0 16px 16px;">
+                <div class="modal-footer-left">
+                    <button type="button" id="btn-disband-table" class="btn btn-danger hidden" onclick="disbandTable()"
+                        style="background: #d32f2f; border-color: #d32f2f; color: white; display: flex; align-items: center; gap: 4px; border-radius: 8px; padding: 10px 16px; font-weight: 500;">
+                        <i class="ph ph-trash" style="font-size: 1.15rem; vertical-align: middle;"></i>
+                        <span class="lang-zh">解散並清空此桌</span><span class="lang-en">Disband Table</span>
+                    </button>
+                </div>
+                <div class="modal-footer-right" style="display: flex; gap: 12px; align-items: center;">
+                    <span id="editor-error-msg"
+                        style="color: #d32f2f; font-weight: 600; font-size: 0.95rem; margin-right: 12px; display: none;"></span>
+                    <button type="button" id="btn-create-table-submit" class="btn btn-primary"
+                        onclick="submitNewTable()"
+                        style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <i class="ph ph-check-square" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">建立分桌</span><span class="lang-en">Create Table</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeTableModal('editor')"
+                        style="border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <span class="lang-zh">關閉視窗</span><span class="lang-en">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 選擇報名人員彈出視窗 (快速選單) -->
+    <div id="member-picker-modal" class="modal hidden" style="z-index: 11000;">
+        <div class="modal-card modal-card-small"
+            style="max-width: 480px; width: 90%; border-radius: 16px; background: white; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header-section"
+                style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3
+                    style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users" style="font-size: 1.3rem; color: var(--bear-rust);"></i>
+                    <span class="lang-zh">選擇已付款報名學員</span>
+                    <span class="lang-en">Select Paid Registrant</span>
+                </h3>
+                <button type="button" onclick="closeMemberPicker()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            <div class="modal-body-section"
+                style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; max-height: 450px; overflow-y: auto;">
+                <div>
+                    <input type="text" id="member-picker-search" oninput="filterPickerMembers()"
+                        placeholder="搜尋姓名或 Email..."
+                        style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.95rem; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--bear-rust)'"
+                        onblur="this.style.borderColor='var(--border-color)'">
+                </div>
+                <div id="member-picker-list" class="modal-body-scroll"
+                    style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 280px; padding-right: 4px;">
+                    <!-- JS 將動態生成人員按鈕 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 揪桌友密碼驗證彈出視窗 -->
+    <div id="group-table-password-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-small">
+            <button type="button" class="modal-close" onclick="closeGroupTableModal('password')">&times;</button>
+            <div class="success-icon"
+                style="background: rgba(255, 127, 80, 0.1); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="ph ph-lock-key" style="font-size: 2.5rem; color: var(--bear-rust);"></i>
+            </div>
+            <h3
+                style="text-align: center; color: var(--text-main); margin-bottom: 8px; font-size: 1.35rem; font-weight: 700;">
+                <span class="lang-zh">揪桌友密碼驗證</span><span class="lang-en">Group Table Password Verify</span>
+            </h3>
+            <p
+                style="text-align: center; margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
+                <span class="lang-zh">請輸入修改密碼以管理：<strong id="verify-group-table-name-display"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+                <span class="lang-en">Please enter password to manage: <strong id="verify-group-table-name-display-en"
+                        style="color: var(--bear-rust); font-weight: 700;">-</strong></span>
+            </p>
+            <form id="form-group-table-password" class="hub-form" onsubmit="submitGroupTablePassword(event)">
+                <input type="hidden" id="verify-group-table-id" value="">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="verify-group-table-pass" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                        <i class="ph ph-key"></i> <span class="lang-zh">管理密碼</span><span class="lang-en">Group Table
+                            Password</span>
+                    </label>
+                    <input type="password" id="verify-group-table-pass" required placeholder="請輸入設定密碼 / Enter Password"
+                        style="width: 100%; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="btn-group-password-submit"
+                    style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);">
+                    <i class="ph ph-shield-check" style="margin-right: 4px; vertical-align: middle;"></i> <span
+                        class="lang-zh">驗證密碼</span><span class="lang-en">Verify Password</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 揪桌友設定/編輯彈出視窗 -->
+    <div id="group-table-editor-modal" class="modal-overlay hidden">
+        <div class="modal-card modal-card-large"
+            style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; padding: 0;">
+            <!-- Header -->
+            <div class="modal-header-section"
+                style="padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01);">
+                <h3
+                    style="margin: 0; font-size: 1.4rem; color: var(--text-main); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-chats-teardrop" style="color: var(--bear-rust);"></i>
+                    <span class="lang-zh">桌友設定 <strong id="editor-group-table-id-display"
+                            style="color: var(--bear-rust);">-</strong></span>
+                    <span class="lang-en">Group Table <strong id="editor-group-table-id-display-en"
+                            style="color: var(--bear-rust);">-</strong></span>
+                </h3>
+                <button type="button" class="modal-close" onclick="closeGroupTableModal('editor')"
+                    style="position: static; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body-scroll" style="flex: 1; overflow-y: auto; padding: 24px;">
+                <!-- 揪桌友基本資訊 -->
+                <div class="table-basic-info-box"
+                    style="background: rgba(255, 127, 80, 0.03); border: 1px solid rgba(255, 127, 80, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-group-table-nickname"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-tag"></i> <span class="lang-zh">桌友暱稱 (不可空白)</span><span
+                                class="lang-en">Group Table
+                                Nickname</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-group-table-nickname" required placeholder="例如：熊族歡樂烤肉桌"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-group-table-nickname"
+                                class="btn btn-outline btn-small hidden" onclick="updateGroupTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin: 0;">
+                        <label for="editor-group-table-password"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;">
+                            <i class="ph ph-key"></i> <span class="lang-zh">修改密碼 (不可空白)</span><span class="lang-en">Edit
+                                Password</span>
+                        </label>
+                        <div class="input-with-btn" style="display: flex; gap: 8px;">
+                            <input type="text" id="editor-group-table-password" required placeholder="請設定修改密碼"
+                                style="flex: 1; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);">
+                            <button type="button" id="btn-save-group-table-password"
+                                class="btn btn-outline btn-small hidden" onclick="updateGroupTableNicknameAndPassword()"
+                                style="padding: 8px 12px; font-size: 0.85rem; border-radius: 8px; flex-shrink: 0;">
+                                <span class="lang-zh">變更</span><span class="lang-en">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10人名單填寫 -->
+                <div class="table-members-section">
+                    <!-- 提示最低人數限制 -->
+                    <div id="group-min-limit-alert"
+                        style="background: rgba(255, 165, 0, 0.1); border: 1px solid orange; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-weight: 600; color: #d87d00; font-size: 0.95rem;">
+                        <i class="ph ph-warning" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">最低送出表單人數為 <span id="group-min-limit-display">5</span> 人 (含發起人)</span>
+                        <span class="lang-en">Minimum submission count is <span id="group-min-limit-display-en">5</span>
+                            people.</span>
+                    </div>
+
+                    <h4 class="members-section-title"
+                        style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--text-main); font-weight: 700; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="ph ph-users-three" style="color: var(--bear-rust);"></i>
+                        <span class="lang-zh">桌友成員 (共 10 人，人員 1 為發起人/聯絡窗口)</span>
+                        <span class="lang-en">Members (10 people max, Member 1 is creator)</span>
+                    </h4>
+
+                    <!-- 批次快速貼上區塊 (僅在新建模式下可用) -->
+                    <div id="group-batch-paste-section"
+                        style="background: rgba(255, 127, 80, 0.04); border: 1.5px dashed rgba(255, 127, 80, 0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h5
+                            style="margin: 0 0 8px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <span
+                                style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">
+                                <i class="ph ph-clipboard-text" style="font-size: 1.1rem; color: var(--bear-rust);"></i>
+                                <span class="lang-zh">📋 批次快速貼上成員名單，多格式支援，可excel直接貼上。</span>
+                                <span class="lang-en">📋 Bulk Paste Members List</span>
+                            </span>
+                            <a href="#" onclick="toggleGroupBatchPaste(event)" id="group-batch-paste-toggle-btn"
+                                style="font-size: 0.8rem; color: var(--bear-rust); text-decoration: none; font-weight: 600;">展開選單
+                                / Expand</a>
+                        </h5>
+                        <div id="group-batch-paste-container" class="hidden" style="margin-top: 10px;">
+                            <p
+                                style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4;">
+                                <span class="lang-zh">請輸入或貼上名單，每行一人，格式為「Email, 手機後四碼」（可用逗號、空格或 Tab 分隔）。例如：</span>
+                                <span class="lang-en">Paste list, one member per line, format: "Email,
+                                    PhoneLast4":</span>
+                                <br>
+                                <code
+                                    style="background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-top: 4px;">friend@mail.com, 1234</code>
+                            </p>
+                            <textarea id="group-batch-paste-textarea" rows="3"
+                                placeholder="test1@gmail.com, 1234&#10;test2@gmail.com, 5678"
+                                style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-family: monospace; font-size: 0.85rem; margin-bottom: 10px; resize: vertical; min-height: 80px;"></textarea>
+                            <button type="button" class="btn btn-outline btn-small" onclick="applyGroupBatchPaste()"
+                                style="padding: 6px 12px; font-weight: 600; border-color: var(--bear-rust); color: var(--bear-rust); background: white; cursor: pointer; border-radius: 6px;">
+                                <span class="lang-zh">匯入名單</span><span class="lang-en">Import</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="group-members-list-container" class="members-list-container"
+                        style="display: flex; flex-direction: column; gap: 16px;">
+                        <!-- JS 將動態生成 10 列成員資訊 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer-section"
+                style="padding: 20px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.01); border-radius: 0 0 16px 16px;">
+                <div class="modal-footer-left">
+                    <button type="button" id="btn-disband-group-table" class="btn btn-danger hidden"
+                        onclick="disbandGroupTable()"
+                        style="background: #d32f2f; border-color: #d32f2f; color: white; display: flex; align-items: center; gap: 4px; border-radius: 8px; padding: 10px 16px; font-weight: 500;">
+                        <i class="ph ph-trash" style="font-size: 1.15rem; vertical-align: middle;"></i>
+                        <span class="lang-zh">解散揪桌友</span><span class="lang-en">Disband Table</span>
+                    </button>
+                </div>
+                <div class="modal-footer-right" style="display: flex; gap: 12px; align-items: center;">
+                    <span id="group-editor-error-msg"
+                        style="color: #d32f2f; font-weight: 600; font-size: 0.95rem; margin-right: 12px; display: none;"></span>
+                    <button type="button" id="btn-create-group-table-submit" class="btn btn-primary"
+                        onclick="submitNewGroupTable()"
+                        style="background: linear-gradient(135deg, var(--bear-rust), var(--bear-gold)); box-shadow: 0 4px 15px rgba(255, 127, 80, 0.25); border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <i class="ph ph-check-square" style="margin-right: 4px; vertical-align: middle;"></i>
+                        <span class="lang-zh">建立新揪桌資料</span><span class="lang-en">Create Table</span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeGroupTableModal('editor')"
+                        style="border-radius: 8px; padding: 10px 20px; font-weight: 500;">
+                        <span class="lang-zh">關閉視窗</span><span class="lang-en">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 揪桌友：選擇報名人員彈出視窗 -->
+    <div id="group-member-picker-modal" class="modal hidden" style="z-index: 11000;">
+        <div class="modal-card modal-card-small"
+            style="max-width: 480px; width: 90%; border-radius: 16px; background: white; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header-section"
+                style="padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <h3
+                    style="margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-users" style="font-size: 1.3rem; color: var(--bear-rust);"></i>
+                    <span class="lang-zh">選擇已付款報名學員</span>
+                    <span class="lang-en">Select Paid Registrant</span>
+                </h3>
+                <button type="button" onclick="closeGroupMemberPicker()"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            <div class="modal-body-section"
+                style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; max-height: 450px; overflow-y: auto;">
+                <div>
+                    <input type="text" id="group-member-picker-search" oninput="filterGroupPickerMembers()"
+                        placeholder="搜尋姓名或 Email..."
+                        style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.95rem; outline: none; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='var(--bear-rust)'"
+                        onblur="this.style.borderColor='var(--border-color)'">
+                </div>
+                <div id="group-member-picker-list" class="modal-body-scroll"
+                    style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 280px; padding-right: 4px;">
+                    <!-- JS 將動態生成人員按鈕 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2026 浪熊 Bear Wave. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
