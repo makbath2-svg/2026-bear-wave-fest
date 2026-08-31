@@ -560,6 +560,7 @@ function handleRequest(e) {
         var data = sheet.getDataRange().getValues();
         var foundRowIndex = -1;
         var name = "";
+        var phone = "";
         var transportation = "";
         var paymentStatus = "";
         var withdrawalStatus = "";
@@ -569,6 +570,7 @@ function handleRequest(e) {
           if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
             foundRowIndex = i + 1; // 轉為 1-indexed 列號
             name = data[i][2];
+            phone = data[i][4] ? data[i][4].toString().trim() : "";
             transportation = data[i][5] || "自行前往";
             paymentStatus = data[i][7] ? data[i][7].toString().trim() : "";
             withdrawalStatus = data[i][11] ? data[i][11].toString().trim() : "";
@@ -598,13 +600,13 @@ function handleRequest(e) {
         // 檢查是否已經上車過
         if (currentBoardingStatus === "已上車") {
           lock.releaseLock();
-          return toJSON(e, { status: "warning", name: name, message: "此人先前已核銷上車囉！" });
+          return toJSON(e, { status: "warning", name: name, email: email, phone: phone, message: "此人先前已核銷上車囉！" });
         }
 
         // 交通方式如果為 自行前往
         if (transportation === "自行前往") {
           lock.releaseLock();
-          return toJSON(e, { status: "warning", name: name, message: "此人為自行前往，不需上車！" });
+          return toJSON(e, { status: "warning", name: name, email: email, phone: phone, message: "此人為自行前往，不需上車！" });
         }
 
         // 寫入上車狀態：M 欄 (第 13 欄)
@@ -612,7 +614,7 @@ function handleRequest(e) {
         SpreadsheetApp.flush();
         lock.releaseLock();
 
-        return toJSON(e, { status: "success", name: name, message: "上車成功" });
+        return toJSON(e, { status: "success", name: name, email: email, phone: phone, message: "上車成功" });
 
       } catch (innerErr) {
         lock.releaseLock();
@@ -637,6 +639,7 @@ function handleRequest(e) {
       try {
         var data = sheet.getDataRange().getValues();
         var name = "";
+        var phone = "";
         var paymentStatus = "";
         var withdrawalStatus = "";
         var currentAdmissionStatus = "";
@@ -645,6 +648,7 @@ function handleRequest(e) {
           if (data[i][3] && data[i][3].toString().trim().toLowerCase() === email.toLowerCase()) {
             foundRowIndex = i + 1; // 轉為 1-indexed 列號
             name = data[i][2];
+            phone = data[i][4] ? data[i][4].toString().trim() : "";
             paymentStatus = data[i][7] ? data[i][7].toString().trim() : "";
             withdrawalStatus = data[i][11] ? data[i][11].toString().trim() : "";
             currentAdmissionStatus = data[i][13] ? data[i][13].toString().trim() : "";
@@ -673,7 +677,7 @@ function handleRequest(e) {
         // 檢查是否已經入場過
         if (currentAdmissionStatus === "已入場") {
           lock.releaseLock();
-          return toJSON(e, { status: "warning", name: name, message: "此人先前已核銷入場囉！" });
+          return toJSON(e, { status: "warning", name: name, email: email, phone: phone, message: "此人先前已核銷入場囉！" });
         }
 
         // 寫入入場狀態：N 欄 (第 14 欄)
@@ -681,7 +685,7 @@ function handleRequest(e) {
         SpreadsheetApp.flush();
         lock.releaseLock();
 
-        return toJSON(e, { status: "success", name: name, message: "入場成功" });
+        return toJSON(e, { status: "success", name: name, email: email, phone: phone, message: "入場成功" });
 
       } catch (innerErr) {
         lock.releaseLock();

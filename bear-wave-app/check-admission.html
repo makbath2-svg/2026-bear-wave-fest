@@ -337,6 +337,10 @@
                     <div id="modal-icon" class="feedback-icon"></div>
                     <div id="modal-title" class="feedback-title"></div>
                     <div id="modal-name" class="feedback-name"></div>
+                    <div id="modal-details" class="feedback-details" style="display: none; margin: 12px 0; font-size: 0.88rem; text-align: left; background: rgba(255,255,255,0.08); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15); line-height: 1.5;">
+                        <div style="margin-bottom: 4px; word-break: break-all;"><i class="ph ph-envelope-simple"></i> Email：<span id="modal-email" style="font-family: monospace; font-weight: 600; color: #38bdf8;"></span></div>
+                        <div><i class="ph ph-phone"></i> 手機號碼後四碼：<span id="modal-phone" style="font-weight: 700; color: #ff7f50;"></span></div>
+                    </div>
                     <p id="modal-desc" class="feedback-desc"></p>
                     <button type="button" class="modal-btn" onclick="closeFeedback()">
                         <span>點擊繼續掃描 (3s)</span>
@@ -357,6 +361,9 @@
                         <option value="">載入中...</option>
                     </select>
                 </div>
+                <button type="button" onclick="initCameraList()" style="margin-top: 8px; width: 100%; background-color: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 9px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s;">
+                    <i class="ph ph-arrow-counter-clockwise" style="font-size: 1rem; color: #38bdf8;"></i> 允許權限後 點此重新啟動相機
+                </button>
             </div>
             
             <div style="font-size: 0.8rem; color: #f59e0b; margin-top: -12px; margin-bottom: 16px; text-align: left; line-height: 1.4; display: flex; align-items: start; gap: 4px; padding: 6px 10px; background-color: rgba(245, 158, 11, 0.05); border-radius: 6px;">
@@ -374,7 +381,6 @@
             </div>
 
             <div class="footer-links">
-                <a href="generate-qr.html"><i class="ph ph-qr-code"></i> 測試 QR 產生器</a>
                 <a href="check-boarding.html"><i class="ph ph-bus"></i> 切換至上車核銷</a>
             </div>
 
@@ -478,9 +484,12 @@
         }
 
         // Camera Initialization
-        document.addEventListener('DOMContentLoaded', () => {
+        function initCameraList() {
+            const cameraSelect = document.getElementById('camera-select');
+            cameraSelect.innerHTML = '<option value="">正在取得相機權限...</option>';
+            updateStatus(false, "請求相機權限中...");
+
             Html5Qrcode.getCameras().then(devices => {
-                const cameraSelect = document.getElementById('camera-select');
                 cameraSelect.innerHTML = '';
                 
                 if (devices && devices.length > 0) {
@@ -497,20 +506,22 @@
 
                     startCamera(cameraSelect.value);
 
-                    cameraSelect.addEventListener('change', () => {
+                    cameraSelect.onchange = () => {
                         startCamera(cameraSelect.value);
-                    });
+                    };
                 } else {
                     cameraSelect.innerHTML = '<option value="">未偵測到鏡頭</option>';
                     updateStatus(false, "未偵測到相機鏡頭");
                 }
             }).catch(err => {
                 console.error("Error getting cameras: ", err);
-                const cameraSelect = document.getElementById('camera-select');
-                cameraSelect.innerHTML = '<option value="">相機開啟權限遭拒</option>';
-                updateStatus(false, "取得鏡頭權限失敗");
+                cameraSelect.innerHTML = '<option value="">相機開啟權限遭拒（請點擊下方重試）</option>';
+                updateStatus(false, "請在瀏覽器彈窗點擊【允許】後，點擊「重新啟動相機」");
             });
+        }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            initCameraList();
             document.body.addEventListener('click', initAudio, { once: true });
         });
 
@@ -592,6 +603,9 @@
             const modalTitle = document.getElementById('modal-title');
             const modalName = document.getElementById('modal-name');
             const modalDesc = document.getElementById('modal-desc');
+            const modalDetails = document.getElementById('modal-details');
+            const modalEmail = document.getElementById('modal-email');
+            const modalPhone = document.getElementById('modal-phone');
 
             modal.className = 'modal active';
             modal.classList.add(result.status);
@@ -616,6 +630,17 @@
                 modalTitle.innerText = '核銷失敗';
                 modalName.style.display = 'none';
                 modalDesc.innerText = result.message || '查無此報名，請重新確認！';
+            }
+
+            // Populate Details Card (Email & Column E)
+            if (result.status === 'success' || result.status === 'warning') {
+                if (modalDetails) {
+                    modalDetails.style.display = 'block';
+                    if (modalEmail) modalEmail.innerText = result.email || '-';
+                    if (modalPhone) modalPhone.innerText = result.phone || '-';
+                }
+            } else {
+                if (modalDetails) modalDetails.style.display = 'none';
             }
 
             clearTimeout(autoCloseTimeout);
